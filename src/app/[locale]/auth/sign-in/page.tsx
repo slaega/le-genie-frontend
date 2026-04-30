@@ -1,8 +1,15 @@
-import React, { Suspense } from 'react'
-import Login from '@/features/auth/Login'
+import { Suspense } from 'react'
+import type { Metadata } from 'next'
+import { SignInPage } from '@/components/organisms/sign-in-page'
 
-function AuthPage() {
-  return <Suspense><Login /></Suspense>
+export const metadata: Metadata = {
+  title: 'Connexion — Le Génie',
 }
 
-export default AuthPage
+export default function AuthPage() {
+  return (
+    <Suspense>
+      <SignInPage />
+    </Suspense>
+  )
+}

@@ -1,23 +1,87 @@
-import Layout from '@/components/Layout/Layout'
-import Profile from '@/features/auth/Profile'
-import { getPaginatedPosts } from '@/features/post/actions/get-post.action';
-import PostListingWrapper from '@/features/post/PostListingWrapper'
-import React from 'react'
-type Props = {
-  searchParams: Promise<{
-    page?: string;
-  }>;
-};
-export default async function MePage({ searchParams }: Props) {
-  const searchParamsData = await searchParams;
-  const limit = 5;
-  const page = Number(searchParamsData.page ?? "1");
+import { redirect } from 'next/navigation'
+import { serverApi } from '@/lib/api/server'
+import type { User, PaginatedResponse, Post } from '@/lib/api/types'
+import { ApiError } from '@/lib/api/types'
+import { MainLayout } from '@/components/templates/main-layout'
+import { UserAvatar } from '@/components/atoms/user-avatar'
+import { PostsGrid } from '@/components/organisms/posts-grid'
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
+import { postKeys } from '@/hooks/queries/use-posts'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Separator } from '@/components/ui/separator'
 
-  const { posts, total } = await getPaginatedPosts({ page, limit, mode: 'me' });
+type Props = { params: Promise<{ locale: string }> }
+
+export const metadata = { title: 'Mon profil — Le Génie' }
+
+export default async function ProfilePage({ params }: Props) {
+  const { locale } = await params
+  let me: User
+
+  try {
+    me = await serverApi.get<User>('auth/me')
+  } catch (err) {
+    if (err instanceof ApiError) redirect(`/${locale}/auth/sign-in`)
+    throw err
+  }
+
+  const qc = new QueryClient()
+  await qc.prefetchQuery({
+    queryKey: postKeys.list({ status: 'PUBLISHED', limit: 12 }),
+    queryFn: () => serverApi.get<PaginatedResponse<Post>>('posts?status=PUBLISHED&limit=12'),
+  })
+
   return (
-    <Layout sidebar>
-      <Profile />
-      <PostListingWrapper page={page} posts={posts} totalPages={total} editMode source='me' />
-    </Layout>
+    <MainLayout>
+      <div className="max-w-4xl mx-auto space-y-10">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <UserAvatar
+            name={me.name}
+            avatarPath={me.avatarPath}
+            size="lg"
+            className="h-20 w-20 text-2xl"
+          />
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold">{me.name}</h1>
+            <p className="text-muted-foreground">{me.email}</p>
+            {me.professionalRole && (
+              <Badge variant="secondary" className="mt-2">
+                {me.professionalRole}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <Separator />
+
+        <Tabs defaultValue="published">
+          <TabsList>
+            <TabsTrigger value="published">Publications</TabsTrigger>
+            <TabsTrigger value="drafts">Brouillons</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="published" className="mt-6">
+            <HydrationBoundary state={dehydrate(qc)}>
+              <PostsGrid
+                params={{ status: 'PUBLISHED', limit: 12 }}
+                showStatus
+                emptyTitle="Aucune publication"
+                emptyDescription="Vous n'avez pas encore publié d'article."
+              />
+            </HydrationBoundary>
+          </TabsContent>
+
+          <TabsContent value="drafts" className="mt-6">
+            <PostsGrid
+              params={{ status: 'DRAFT', limit: 12 }}
+              showStatus
+              emptyTitle="Aucun brouillon"
+              emptyDescription="Vos brouillons apparaîtront ici."
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </MainLayout>
   )
 }
