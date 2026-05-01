@@ -11,18 +11,27 @@ import { routing } from './i18nNavigation';
 // 2. Run manually the workflow on GitHub Actions
 // 3. Every 24 hours at 5am, the workflow will run automatically
 
-// Using internationalization in Server Components
-export default getRequestConfig(async ({ requestLocale }) => {
-  // This typically corresponds to the `[locale]` segment
-  let locale = await requestLocale;
-
+// Using internationalization in Server Components (next-intl v4)
+export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  if (!locale || !routing.locales.includes(locale)) {
-    locale = routing.defaultLocale;
+  let validLocale = locale;
+  if (!validLocale || !routing.locales.includes(validLocale)) {
+    validLocale = routing.defaultLocale;
   }
 
-  return {
-    locale,
-    messages: (await import(`../locales/${locale}.json`)).default,
-  };
+  try {
+    const messages = (await import(`../locales/${validLocale}.json`)).default;
+    return {
+      locale: validLocale,
+      messages,
+    };
+  } catch (error) {
+    console.error(`Failed to load messages for locale: ${validLocale}`, error);
+    // Fallback to default locale if translation file not found
+    const fallbackMessages = (await import(`../locales/${routing.defaultLocale}.json`)).default;
+    return {
+      locale: routing.defaultLocale,
+      messages: fallbackMessages,
+    };
+  }
 });

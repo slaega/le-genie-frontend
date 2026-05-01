@@ -1,9 +1,9 @@
 // middleware.ts
+import { routing } from '@/libs/i18nNavigation';
+import { createRouteMatcher } from '@/utils/Helpers';
+import createMiddleware from 'next-intl/middleware';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import createMiddleware from 'next-intl/middleware';
-import { createRouteMatcher } from '@/utils/Helpers';
-import { routing } from '@/libs/i18nNavigation';
 import { Env } from './libs/Env';
 
 const intlMiddleware = createMiddleware(routing);
