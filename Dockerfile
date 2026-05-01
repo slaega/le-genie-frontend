@@ -7,6 +7,8 @@ RUN corepack enable
 # ── Builder ───────────────────────────────────────────────────────────────────
 FROM base AS builder
 WORKDIR /app
+# Limite explicite pour éviter OOM sur Docker Desktop avec peu de RAM
+ENV NODE_OPTIONS=--max-old-space-size=3072
 
 COPY package.json yarn.lock ./
 RUN yarn install --immutable
