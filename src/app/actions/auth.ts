@@ -16,7 +16,7 @@ export const createToken = safeAction
   .action(async ({ parsedInput }) => {
     const { code, provider } = parsedInput
 
-    const res = await fetch(`${Env.BOG_API_BASE_URL}auth/token/`, {
+    const res = await fetch(`${Env.API_BASE_URL}auth/token/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code, provider, callbackURL: Env.NEXT_PUBLIC_REDIRECT_URI }),

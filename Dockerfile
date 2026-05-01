@@ -2,6 +2,7 @@ FROM node:20-alpine AS base
 ENV NODE_ENV=production
 RUN corepack enable
 
+# ── Builder ───────────────────────────────────────────────────────────────────
 FROM base AS builder
 WORKDIR /app
 
@@ -10,8 +11,26 @@ COPY package.json yarn.lock ./
 RUN yarn install --immutable
 
 COPY . .
+
+# NEXT_PUBLIC_* sont baked dans le bundle au moment du build.
+# Elles doivent être passées via --build-arg (ou build.args dans docker-compose).
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ARG NEXT_PUBLIC_GITHUB_CLIENT_ID
+ARG NEXT_PUBLIC_REDIRECT_URI
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST
+
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+ENV NEXT_PUBLIC_GITHUB_CLIENT_ID=${NEXT_PUBLIC_GITHUB_CLIENT_ID}
+ENV NEXT_PUBLIC_REDIRECT_URI=${NEXT_PUBLIC_REDIRECT_URI}
+ENV NEXT_PUBLIC_POSTHOG_KEY=${NEXT_PUBLIC_POSTHOG_KEY}
+ENV NEXT_PUBLIC_POSTHOG_HOST=${NEXT_PUBLIC_POSTHOG_HOST}
+
 RUN yarn build
 
+# ── Production ────────────────────────────────────────────────────────────────
 FROM base AS production
 WORKDIR /app
 ENV TZ=Europe/Paris

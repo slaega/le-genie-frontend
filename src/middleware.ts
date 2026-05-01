@@ -67,7 +67,7 @@ async function tryRefreshToken(
 ): Promise<NextResponse | null> {
     try {
         const refreshRes = await fetch(
-            `${Env.BOG_API_BASE_URL}auth/refresh-token`,
+            `${Env.API_BASE_URL}auth/refresh-token`,
             {
                 method: 'POST',
                 headers: {

@@ -2,7 +2,7 @@ import 'server-only'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
-const NestJS = process.env.BOG_API_BASE_URL ?? ''
+const NestJS = process.env.API_BASE_URL ?? ''
 
 export async function proxyRequest(
   req: NextRequest,

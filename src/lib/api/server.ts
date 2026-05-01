@@ -2,7 +2,7 @@ import 'server-only'
 import { cookies } from 'next/headers'
 import { ApiError, type AuthTokens } from './types'
 
-const BASE = process.env.BOG_API_BASE_URL ?? ''
+const BASE = process.env.API_BASE_URL ?? ''
 
 async function serverFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const jar = await cookies()

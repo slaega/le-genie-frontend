@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const Env = createEnv({
     server: {
         LOGTAIL_SOURCE_TOKEN: z.string().optional(),
-        BOG_API_BASE_URL: z.string(),
+        API_BASE_URL: z.string(),
     },
     client: {
         NEXT_PUBLIC_APP_URL: z.string().optional(),
@@ -24,7 +24,7 @@ export const Env = createEnv({
         NODE_ENV: process.env.NODE_ENV,
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-        BOG_API_BASE_URL: process.env.BOG_API_BASE_URL,
+        API_BASE_URL: process.env.API_BASE_URL,
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
         NEXT_PUBLIC_REDIRECT_URI: process.env.NEXT_PUBLIC_REDIRECT_URI,
