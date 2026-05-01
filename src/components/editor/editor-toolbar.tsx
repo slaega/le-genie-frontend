@@ -2,7 +2,7 @@
 
 import type { Editor } from '@tiptap/react'
 import {
-  Bold, Italic, Underline, Strikethrough, Code2, Link2, Image,
+  Bold, Italic, Underline, Strikethrough, Code2, Link2, Image as ImageIcon,
   List, ListOrdered, CheckSquare, Quote, AlignLeft, AlignCenter,
   AlignRight, AlignJustify, Heading1, Heading2, Heading3,
   Highlighter, Subscript, Superscript, Undo, Redo, Minus,
@@ -168,7 +168,7 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
       </ToolBtn>
       {onImageUpload && (
         <ToolBtn label="Image" onClick={handleImageInsert}>
-          <Image className="h-3.5 w-3.5" />
+          <ImageIcon className="h-3.5 w-3.5" />
         </ToolBtn>
       )}
     </div>

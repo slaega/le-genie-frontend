@@ -65,7 +65,7 @@ describe('useMe', () => {
     vi.mocked(authApi.me).mockResolvedValue(mockUser)
 
     const client = new QueryClient()
-    const { result } = renderHook(() => useMe(), {
+    renderHook(() => useMe(), {
       wrapper: ({ children }) => (
         <QueryClientProvider client={client}>{children}</QueryClientProvider>
       ),

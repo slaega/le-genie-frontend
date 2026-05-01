@@ -35,7 +35,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
   const [coverPreview, setCoverPreview] = useState<string | null>(post.imagePath)
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const { mutateAsync: updatePost, isPending: isSaving } = useUpdatePost()
-  const { mutateAsync: publishPost, isPending: isPublishing } = usePublishPost()
+  const { isPending: isPublishing } = usePublishPost()
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),

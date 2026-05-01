@@ -1,0 +1,35 @@
+# Dépendances — réinstallées dans l'image
+node_modules
+
+# Build Next.js
+.next
+out
+
+# Git
+.git
+.gitignore
+
+# Dev
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Tests / couverture
+coverage
+.nyc_output
+
+# CI / éditeur
+.github
+.vscode
+.idea
+*.swp
+
+# macOS
+.DS_Store
