@@ -31,6 +31,9 @@ ENV NEXT_PUBLIC_REDIRECT_URI=${NEXT_PUBLIC_REDIRECT_URI}
 ENV NEXT_PUBLIC_POSTHOG_KEY=${NEXT_PUBLIC_POSTHOG_KEY}
 ENV NEXT_PUBLIC_POSTHOG_HOST=${NEXT_PUBLIC_POSTHOG_HOST}
 
+# Les variables serveur (API_BASE_URL…) sont injectées au runtime, pas au build.
+# On désactive la validation t3-env uniquement pendant le build Docker.
+ENV SKIP_ENV_VALIDATION=1
 RUN yarn build
 
 # ── Production ────────────────────────────────────────────────────────────────

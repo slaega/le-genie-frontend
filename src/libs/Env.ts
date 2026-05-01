@@ -2,6 +2,10 @@ import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
 export const Env = createEnv({
+    // Pendant `next build` dans Docker, les variables serveur (ex. API_BASE_URL)
+    // ne sont pas disponibles (elles sont injectées au runtime via environment:).
+    // SKIP_ENV_VALIDATION=1 est positionné uniquement dans le Dockerfile builder.
+    skipValidation: !!process.env.SKIP_ENV_VALIDATION,
     server: {
         LOGTAIL_SOURCE_TOKEN: z.string().optional(),
         API_BASE_URL: z.string(),
