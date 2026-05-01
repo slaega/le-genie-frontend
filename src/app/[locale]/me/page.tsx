@@ -11,6 +11,9 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 
+// Page protégée — rendu serveur à la demande (cookies requis, pas de prerender).
+export const dynamic = 'force-dynamic'
+
 type Props = { params: Promise<{ locale: string }> }
 
 export const metadata = { title: 'Mon profil — Le Génie' }

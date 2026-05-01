@@ -6,6 +6,9 @@ import { PostEditor } from '@/components/organisms/post-editor'
 import { EditorLayout } from '@/components/templates/editor-layout'
 import { SiteHeader } from '@/components/organisms/site-header'
 
+// Page protégée — rendu serveur à la demande (cookies + ID dynamique).
+export const dynamic = 'force-dynamic'
+
 type Props = { params: Promise<{ locale: string; id: string }> }
 
 export const metadata = {
