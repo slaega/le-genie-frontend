@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -37,10 +37,35 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
   const { mutateAsync: updatePost, isPending: isSaving } = useUpdatePost()
   const { isPending: isPublishing } = usePublishPost()
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { title: post.title },
   })
+
+  /**
+   * Silent autosave triggered by BlogEditor (debounced 5s after the last edit).
+   * Only persists drafts — never auto-publishes. Skips empty titles.
+   */
+  const autosave = useCallback(
+    async (json: Record<string, unknown>) => {
+      const title = getValues('title')?.trim()
+      if (!title) return
+      try {
+        await updatePost({
+          id: post.id,
+          payload: {
+            title,
+            content: json,
+            // Keep the current status — autosave never changes DRAFT → PUBLISHED
+            status: post.status === 'EMPTY' ? 'DRAFT' : post.status,
+          },
+        })
+      } catch {
+        // silent — autosave failures are surfaced by the next manual save
+      }
+    },
+    [getValues, updatePost, post.id, post.status],
+  )
 
   async function save(status: PostStatus) {
     const json = editorRef.current?.getJSON()
@@ -175,6 +200,8 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
           <BlogEditor
             defaultContent={post.content}
             onImageUpload={handleImageUpload}
+            onAutoSave={autosave}
+            autoSaveInterval={5_000}
             editorRef={editorRef}
             className="min-h-[500px]"
           />

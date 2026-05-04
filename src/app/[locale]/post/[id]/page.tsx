@@ -13,6 +13,8 @@ import { StatusBadge } from '@/components/atoms/status-badge'
 import { CommentsSection } from '@/components/organisms/comments-section'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { LikeButton } from '@/components/molecules/like-button'
+import { ViewCounter } from '@/components/molecules/view-counter'
 
 type Props = { params: Promise<{ locale: string; id: string }> }
 
@@ -118,7 +120,13 @@ export default async function PostPage({ params }: Props) {
           )}
         </header>
 
-        <Separator className="mb-8" />
+        <Separator className="mb-4" />
+
+        {/* Engagement bar — likes (anonymous OK) + view count (idempotent) */}
+        <div className="flex items-center gap-4 mb-8">
+          <LikeButton postId={post.id} />
+          <ViewCounter postId={post.id} />
+        </div>
 
         {/* HTML généré server-side à partir du JSON TipTap — 100% SEO-friendly */}
         <BlogViewer content={post.content} className="mb-16" />
