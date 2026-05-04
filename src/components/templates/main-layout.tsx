@@ -1,4 +1,5 @@
 import { SiteHeader } from '@/components/organisms/site-header'
+import { SiteFooter } from '@/components/templates/site-footer'
 import { cn } from '@/lib/utils'
 
 interface MainLayoutProps {
@@ -13,9 +14,7 @@ export function MainLayout({ children, className }: MainLayoutProps) {
       <main className={cn('flex-1 container mx-auto px-4 py-8', className)}>
         {children}
       </main>
-      <footer className="border-t py-6 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} Le Génie — Plateforme de publication collaborative
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

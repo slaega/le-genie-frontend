@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
-import { MainLayout } from '@/components/templates/main-layout'
-import { PostsGrid } from '@/components/organisms/posts-grid'
+import { SiteHeader } from '@/components/organisms/site-header'
+import { HomeFeatured } from '@/components/organisms/home-featured'
+import { HomeRecent } from '@/components/organisms/home-recent'
+import { HomeSidebar } from '@/components/organisms/home-sidebar'
 import { serverApi } from '@/lib/api/server'
 import { postKeys } from '@/hooks/queries/use-posts'
 import type { PaginatedResponse, Post } from '@/lib/api/types'
+import { SiteFooter } from '@/components/templates/site-footer'
 
 export const metadata: Metadata = {
   title: 'Le Génie — Plateforme de publication collaborative',
@@ -29,25 +32,30 @@ export default async function HomePage() {
   }
 
   return (
-    <MainLayout>
-      <div className="space-y-10">
-        <div className="text-center space-y-3 py-10">
-          <h1 className="text-4xl font-bold tracking-tight">
-            Bienvenue sur Le Génie
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Une plateforme collaborative pour partager vos idées, tutoriels et articles techniques.
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <SiteHeader />
 
-        <HydrationBoundary state={dehydrate(qc)}>
-          <PostsGrid
-            params={{ status: 'PUBLISHED', limit: 9 }}
-            emptyTitle="Aucune publication pour l'instant"
-            emptyDescription="Soyez le premier à publier sur Le Génie."
-          />
-        </HydrationBoundary>
-      </div>
-    </MainLayout>
+      <HydrationBoundary state={dehydrate(qc)}>
+        {/* Dark featured hero */}
+        <HomeFeatured />
+
+        {/* Main content + sidebar */}
+        <main className="container mx-auto px-4 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            {/* Recently posted — takes 2/3 */}
+            <div className="lg:col-span-2">
+              <HomeRecent />
+            </div>
+
+            {/* Sidebar — takes 1/3 */}
+            <div>
+              <HomeSidebar />
+            </div>
+          </div>
+        </main>
+      </HydrationBoundary>
+
+      <SiteFooter />
+    </div>
   )
 }

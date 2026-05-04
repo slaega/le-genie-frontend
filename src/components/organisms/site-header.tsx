@@ -2,13 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { PenSquare, BookOpen, User, LogOut, Menu } from 'lucide-react'
+import { Search, Moon, Sun, Menu, PenSquare, User, LogOut, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import { useAuth } from '@/providers/auth-provider'
 import { useCreatePost } from '@/hooks/mutations/use-create-post'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,13 +19,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Separator } from '@/components/ui/separator'
 
 export function SiteHeader() {
   const { user, isAuthenticated, logout } = useAuth()
   const { mutateAsync: createPost, isPending } = useCreatePost()
   const router = useRouter()
   const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   async function handleNewPost() {
     try {
@@ -36,49 +41,92 @@ export function SiteHeader() {
 
   const navLinks = [
     { href: '/', label: 'Accueil' },
-    { href: '/publications', label: 'Publications' },
+    { href: '/publications', label: 'Catégorie' },
+    { href: '/about', label: 'À propos' },
+    { href: '/contact', label: 'Contact' },
   ]
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center gap-4 px-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
-          <BookOpen className="h-5 w-5 text-primary" />
-          Le Génie
+    <header className="sticky top-0 z-50 bg-gray-900 text-white shadow-lg">
+      <div className="container mx-auto flex h-16 items-center gap-6 px-4">
+
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl shrink-0">
+          <BookOpen className="h-5 w-5 text-blue-400" />
+          <span>
+            Le Génie<span className="text-blue-400">.</span>
+          </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        {/* Desktop nav links */}
+        <nav className="hidden md:flex items-center gap-6 flex-1">
           {navLinks.map((link) => (
-            <Button
+            <Link
               key={link.href}
-              variant="ghost"
-              size="sm"
-              asChild
-              className={pathname === link.href ? 'text-primary' : 'text-muted-foreground'}
+              href={link.href}
+              className={`text-sm font-medium transition-colors ${
+                pathname === link.href
+                  ? 'text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
-              <Link href={link.href}>{link.label}</Link>
-            </Button>
+              {link.label}
+            </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 ml-auto">
+        {/* Right actions */}
+        <div className="flex items-center gap-1 ml-auto">
+          {/* Search */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-gray-400 hover:text-white hover:bg-gray-800"
+            aria-label="Rechercher"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+
+          {/* Theme toggle */}
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-400 hover:text-white hover:bg-gray-800"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              aria-label="Basculer le thème"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          )}
+
+          {/* Write button (authenticated) */}
           {isAuthenticated && (
             <Button
               size="sm"
-              variant="default"
-              className="hidden md:flex gap-2"
+              variant="ghost"
+              className="hidden md:flex gap-2 ml-2 text-gray-300 hover:text-white hover:bg-gray-800"
               onClick={handleNewPost}
               disabled={isPending}
             >
               <PenSquare className="h-4 w-4" />
-              {isPending ? 'Création...' : 'Nouvelle publication'}
+              {isPending ? 'Création…' : 'Écrire'}
             </Button>
           )}
 
+          {/* User menu / Login */}
           {isAuthenticated && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 p-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full h-8 w-8 p-0 ml-1"
+                >
                   <UserAvatar name={user.name} avatarPath={user.avatarPath} size="sm" />
                 </Button>
               </DropdownMenuTrigger>
@@ -89,20 +137,20 @@ export function SiteHeader() {
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/me" className="gap-2">
+                  <Link href="/me" className="gap-2 cursor-pointer">
                     <User className="h-4 w-4" />
                     Mon profil
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/publications?mine=true" className="gap-2">
+                  <Link href="/publications?mine=true" className="gap-2 cursor-pointer">
                     <BookOpen className="h-4 w-4" />
                     Mes publications
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="text-destructive gap-2 focus:text-destructive"
+                  className="text-destructive gap-2 focus:text-destructive cursor-pointer"
                   onClick={logout}
                 >
                   <LogOut className="h-4 w-4" />
@@ -111,37 +159,53 @@ export function SiteHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild size="sm">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="ml-2 border-gray-600 bg-transparent text-white hover:bg-gray-800 hover:text-white hover:border-gray-500"
+            >
               <Link href="/auth/sign-in">Connexion</Link>
             </Button>
           )}
 
+          {/* Mobile hamburger */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden h-8 w-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden h-8 w-8 ml-1 text-gray-400 hover:text-white hover:bg-gray-800"
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-64">
-              <nav className="flex flex-col gap-1 mt-6">
+            <SheetContent side="right" className="w-64 bg-gray-900 text-white border-gray-800">
+              <div className="flex items-center gap-2 font-bold text-lg mb-6 mt-2">
+                <BookOpen className="h-5 w-5 text-blue-400" />
+                Le Génie<span className="text-blue-400">.</span>
+              </div>
+              <nav className="flex flex-col gap-3">
                 {navLinks.map((link) => (
-                  <Button key={link.href} variant="ghost" asChild className="justify-start">
-                    <Link href={link.href}>{link.label}</Link>
-                  </Button>
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-medium py-1 transition-colors ${
+                      pathname === link.href ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
                 ))}
                 {isAuthenticated && (
-                  <>
-                    <Separator className="my-2" />
-                    <Button
-                      variant="default"
-                      className="gap-2 justify-start"
-                      onClick={handleNewPost}
-                      disabled={isPending}
-                    >
-                      <PenSquare className="h-4 w-4" />
-                      Nouvelle publication
-                    </Button>
-                  </>
+                  <button
+                    onClick={handleNewPost}
+                    disabled={isPending}
+                    className="mt-2 flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                  >
+                    <PenSquare className="h-4 w-4" />
+                    Écrire un article
+                  </button>
                 )}
               </nav>
             </SheetContent>
