@@ -11,6 +11,7 @@ import { MainLayout } from '@/components/templates/main-layout'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import { StatusBadge } from '@/components/atoms/status-badge'
 import { CommentsSection } from '@/components/organisms/comments-section'
+import { RelatedPosts } from '@/components/organisms/related-posts'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { LikeButton } from '@/components/molecules/like-button'
@@ -134,6 +135,8 @@ export default async function PostPage({ params }: Props) {
         <Separator className="mb-8" />
 
         <CommentsSection postId={post.id} />
+
+        <RelatedPosts postId={post.id} />
       </article>
     </MainLayout>
   )

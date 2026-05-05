@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { BlogEditor, type BlogEditorRef } from '@/components/editor/blog-editor'
 import { CollaboratorsPanel } from '@/components/organisms/collaborators-panel'
+import { TagsInput } from '@/components/molecules/tags-input'
 import { StatusBadge } from '@/components/atoms/status-badge'
 import { useUpdatePost } from '@/hooks/mutations/use-update-post'
 import { usePublishPost } from '@/hooks/mutations/use-publish-post'
@@ -256,6 +257,11 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
               <p className="text-xs text-destructive mt-1">{errors.title.message}</p>
             )}
           </div>
+
+          <TagsInput
+            postId={post.id}
+            initialTags={post.postTags.map((t) => t.name)}
+          />
 
           <BlogEditor
             defaultContent={post.content}

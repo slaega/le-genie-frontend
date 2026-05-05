@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { Users } from 'lucide-react'
+import { Clock, MessageSquare, Users } from 'lucide-react'
 import { StatusBadge } from '@/components/atoms/status-badge'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import type { Post } from '@/lib/api/types'
@@ -83,6 +83,12 @@ export function PostCard({
               </>
             )}
             <span>{timeAgo}</span>
+            {post.readingTime > 0 && (
+              <>
+                <span className="text-gray-500">•</span>
+                <span>{post.readingTime} min</span>
+              </>
+            )}
           </div>
         </div>
       </Link>
@@ -131,6 +137,12 @@ export function PostCard({
             {owner && <span>{owner.user.name}</span>}
             <span>•</span>
             <span>{timeAgo}</span>
+            {post.readingTime > 0 && (
+              <>
+                <span>•</span>
+                <span>{post.readingTime} min</span>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -196,6 +208,18 @@ export function PostCard({
             <span className="flex items-center gap-1">
               <Users className="h-3 w-3" />
               {post.contributors.length}
+            </span>
+          )}
+          {post.readingTime > 0 && (
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {post.readingTime} min
+            </span>
+          )}
+          {post.commentsCount > 0 && (
+            <span className="flex items-center gap-1">
+              <MessageSquare className="h-3 w-3" />
+              {post.commentsCount}
             </span>
           )}
           <span>{timeAgo}</span>

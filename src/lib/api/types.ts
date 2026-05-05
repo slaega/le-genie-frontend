@@ -34,6 +34,8 @@ export interface Post {
   imagePath: string | null
   status: PostStatus
   scheduledAt: string | null
+  readingTime: number
+  commentsCount: number
   contributors: Contributor[]
   postTags: PostTag[]
   createdAt: string
