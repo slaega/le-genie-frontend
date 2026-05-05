@@ -36,7 +36,9 @@ export const postsApi = {
     if (payload.content !== undefined)
       form.append('content', JSON.stringify(payload.content))
     if (payload.status !== undefined) form.append('status', payload.status)
-    if (cover) form.append('image', cover)
+    if (payload.scheduledAt !== undefined)
+      form.append('scheduledAt', payload.scheduledAt ?? '')
+    if (cover) form.append('imageFile', cover)
     return api.patch<Post>(`${base}/${id}`, form)
   },
 

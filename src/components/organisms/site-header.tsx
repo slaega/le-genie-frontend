@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Search, Moon, Sun, Menu, PenSquare, User, LogOut, BookOpen } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import { useAuth } from '@/providers/auth-provider'
 import { useCreatePost } from '@/hooks/mutations/use-create-post'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,8 +28,26 @@ export function SiteHeader() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if (searchOpen) {
+      setTimeout(() => searchInputRef.current?.focus(), 50)
+    }
+  }, [searchOpen])
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const q = searchQuery.trim()
+    if (!q) return
+    router.push(`/search?q=${encodeURIComponent(q)}`)
+    setSearchOpen(false)
+    setSearchQuery('')
+  }
 
   async function handleNewPost() {
     try {
@@ -77,15 +96,38 @@ export function SiteHeader() {
 
         {/* Right actions */}
         <div className="flex items-center gap-1 ml-auto">
-          {/* Search */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-gray-400 hover:text-white hover:bg-gray-800"
-            aria-label="Rechercher"
-          >
-            <Search className="h-5 w-5" />
-          </Button>
+          {/* Search — inline form that expands on click */}
+          {searchOpen ? (
+            <form onSubmit={handleSearch} className="flex items-center gap-1">
+              <Input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher…"
+                className="h-8 w-40 sm:w-56 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus-visible:ring-blue-500"
+                onKeyDown={(e) => e.key === 'Escape' && setSearchOpen(false)}
+              />
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-400 hover:text-white"
+                aria-label="Lancer la recherche"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </form>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-400 hover:text-white hover:bg-gray-800"
+              aria-label="Rechercher"
+              onClick={() => setSearchOpen(true)}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+          )}
 
           {/* Theme toggle */}
           {mounted && (

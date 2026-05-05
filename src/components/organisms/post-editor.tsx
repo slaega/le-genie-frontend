@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Save, Eye, EyeOff, Archive } from 'lucide-react'
+import { Save, Eye, EyeOff, Archive, CalendarClock, X } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,6 +34,10 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
   const editorRef = useRef<BlogEditorRef>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(post.imagePath)
   const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [showScheduler, setShowScheduler] = useState(false)
+  const [scheduledAt, setScheduledAt] = useState<string>(
+    post.scheduledAt ? new Date(post.scheduledAt).toISOString().slice(0, 16) : ''
+  )
   const { mutateAsync: updatePost, isPending: isSaving } = useUpdatePost()
   const { isPending: isPublishing } = usePublishPost()
 
@@ -73,11 +77,26 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
       try {
         await updatePost({
           id: post.id,
-          payload: { title, content: json ?? undefined, status },
+          payload: {
+            title,
+            content: json ?? undefined,
+            status,
+            // Pass scheduledAt only when saving a draft (not when publishing directly)
+            scheduledAt:
+              status === 'DRAFT' && scheduledAt
+                ? new Date(scheduledAt).toISOString()
+                : status === 'PUBLISHED'
+                  ? null // clear schedule when manually publishing
+                  : undefined,
+          },
           cover: coverFile ?? undefined,
         })
         toast.success(
-          status === 'PUBLISHED' ? 'Publication publiée !' : 'Brouillon enregistré',
+          status === 'PUBLISHED'
+            ? 'Publication publiée !'
+            : scheduledAt && status === 'DRAFT'
+              ? `Publication programmée pour le ${new Date(scheduledAt).toLocaleString('fr-FR')}`
+              : 'Brouillon enregistré',
         )
       } catch {
         toast.error("Erreur lors de l'enregistrement")
@@ -130,6 +149,19 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             <Save className="h-4 w-4" />
             {isSaving ? 'Enregistrement...' : 'Brouillon'}
           </Button>
+          {isOwner && post.status !== 'PUBLISHED' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-muted-foreground"
+              onClick={() => setShowScheduler((v) => !v)}
+              disabled={isSaving}
+              title="Programmer la publication"
+            >
+              <CalendarClock className="h-4 w-4" />
+              {scheduledAt ? new Date(scheduledAt).toLocaleDateString('fr-FR') : 'Programmer'}
+            </Button>
+          )}
           {isOwner && (
             <Button
               size="sm"
@@ -146,6 +178,34 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
           )}
         </div>
       </div>
+
+      {showScheduler && (
+        <div className="border-b bg-muted/30 px-4 py-3 flex items-center gap-3 flex-wrap">
+          <CalendarClock className="h-4 w-4 text-muted-foreground shrink-0" />
+          <span className="text-sm text-muted-foreground">Publier automatiquement le :</span>
+          <Input
+            type="datetime-local"
+            value={scheduledAt}
+            min={new Date().toISOString().slice(0, 16)}
+            onChange={(e) => setScheduledAt(e.target.value)}
+            className="w-auto h-8 text-sm"
+          />
+          {scheduledAt && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-muted-foreground hover:text-destructive"
+              onClick={() => setScheduledAt('')}
+            >
+              <X className="h-3.5 w-3.5" />
+              Annuler la programmation
+            </Button>
+          )}
+          <span className="text-xs text-muted-foreground ml-auto">
+            Enregistrez en brouillon pour appliquer la programmation.
+          </span>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">

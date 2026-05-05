@@ -33,6 +33,7 @@ export interface Post {
   content: Record<string, unknown> | null
   imagePath: string | null
   status: PostStatus
+  scheduledAt: string | null
   contributors: Contributor[]
   postTags: PostTag[]
   createdAt: string
@@ -89,6 +90,7 @@ export interface UpdatePostPayload {
   title?: string
   content?: Record<string, unknown>
   status?: PostStatus
+  scheduledAt?: string | null
 }
 
 export interface SendInvitationPayload {
