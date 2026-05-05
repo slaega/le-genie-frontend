@@ -5,6 +5,8 @@ import { ApiError } from '@/lib/api/types'
 import { MainLayout } from '@/components/templates/main-layout'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import { PostsGrid } from '@/components/organisms/posts-grid'
+import { ProfileEditDialog } from '@/components/organisms/profile-edit-dialog'
+import { FollowingList } from '@/components/organisms/following-list'
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query'
 import { postKeys } from '@/hooks/queries/use-posts'
 import { Badge } from '@/components/ui/badge'
@@ -46,7 +48,10 @@ export default async function ProfilePage({ params }: Props) {
             className="h-20 w-20 text-2xl"
           />
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold">{me.name}</h1>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl font-bold">{me.name}</h1>
+              <ProfileEditDialog user={me} />
+            </div>
             <p className="text-muted-foreground">{me.email}</p>
             {me.professionalRole && (
               <Badge variant="secondary" className="mt-2">
@@ -86,9 +91,7 @@ export default async function ProfilePage({ params }: Props) {
           </TabsContent>
 
           <TabsContent value="following" className="mt-6">
-            <p className="text-sm text-muted-foreground">
-              Retrouvez ici les auteurs que vous suivez.
-            </p>
+            <FollowingList />
           </TabsContent>
         </Tabs>
       </div>

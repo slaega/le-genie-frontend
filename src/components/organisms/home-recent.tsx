@@ -3,11 +3,15 @@
 import { PostCard, PostCardSkeleton } from '@/components/molecules/post-card'
 import { usePosts } from '@/hooks/queries/use-posts'
 
+interface HomeRecentProps {
+  tags?: string[]
+}
+
 /**
  * "Recently Posted" section — horizontal cards, offset past the featured posts.
  */
-export function HomeRecent() {
-  const { data, isLoading } = usePosts({ status: 'PUBLISHED', limit: 9 })
+export function HomeRecent({ tags }: HomeRecentProps) {
+  const { data, isLoading } = usePosts({ status: 'PUBLISHED', limit: 9, tags })
 
   const recent = data?.items.slice(6) ?? []
 

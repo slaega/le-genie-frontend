@@ -167,7 +167,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             <Button
               size="sm"
               className="gap-2"
-              onClick={() => save(post.status === 'PUBLISHED' ? 'PUBLISHED' : 'PUBLISHED')}
+              onClick={() => save(post.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED')}
               disabled={isSaving || isPublishing}
             >
               {post.status === 'PUBLISHED' ? (

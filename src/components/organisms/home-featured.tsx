@@ -61,12 +61,16 @@ function PopularCard({ post }: { post: Post }) {
   )
 }
 
+interface HomeFeaturedProps {
+  tags?: string[]
+}
+
 /**
  * Dark "Featured" hero section — first 2 posts as large overlay cards,
  * popular posts (3-6) on the right column.
  */
-export function HomeFeatured() {
-  const { data, isLoading } = usePosts({ status: 'PUBLISHED', limit: 9 })
+export function HomeFeatured({ tags }: HomeFeaturedProps) {
+  const { data, isLoading } = usePosts({ status: 'PUBLISHED', limit: 9, tags })
 
   const posts = data?.items ?? []
   const [first, second] = posts

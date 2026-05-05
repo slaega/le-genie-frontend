@@ -18,14 +18,22 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function HomePage() {
+type Props = { searchParams: Promise<{ tags?: string }> }
+
+export default async function HomePage({ searchParams }: Props) {
+  const { tags } = await searchParams
+  const tagList = tags ? tags.split(',').filter(Boolean) : []
+
   const qc = new QueryClient()
 
   try {
     await qc.prefetchQuery({
-      queryKey: postKeys.list({ status: 'PUBLISHED', limit: 9 }),
-      queryFn: () =>
-        serverApi.get<PaginatedResponse<Post>>('posts?status=PUBLISHED&limit=9'),
+      queryKey: postKeys.list({ status: 'PUBLISHED', limit: 9, tags: tagList.length ? tagList : undefined }),
+      queryFn: () => {
+        const qs = new URLSearchParams({ status: 'PUBLISHED', limit: '9' })
+        tagList.forEach((t) => qs.append('tags', t))
+        return serverApi.get<PaginatedResponse<Post>>(`posts?${qs.toString()}`)
+      },
     })
   } catch {
     // prefetch échoue silencieusement — le client refetch
@@ -37,14 +45,14 @@ export default async function HomePage() {
 
       <HydrationBoundary state={dehydrate(qc)}>
         {/* Dark featured hero */}
-        <HomeFeatured />
+        <HomeFeatured tags={tagList.length ? tagList : undefined} />
 
         {/* Main content + sidebar */}
         <main className="container mx-auto px-4 py-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {/* Recently posted — takes 2/3 */}
             <div className="lg:col-span-2">
-              <HomeRecent />
+              <HomeRecent tags={tagList.length ? tagList : undefined} />
             </div>
 
             {/* Sidebar — takes 1/3 */}

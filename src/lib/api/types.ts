@@ -112,4 +112,5 @@ export interface PostsQueryParams {
   page?: number
   limit?: number
   status?: PostStatus
+  tags?: string[]
 }
