@@ -32,9 +32,10 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   const qc = new QueryClient()
+  // Précharge uniquement les posts de l'utilisateur connecté (me=true)
   await qc.prefetchQuery({
-    queryKey: postKeys.list({ status: 'PUBLISHED', limit: 12 }),
-    queryFn: () => serverApi.get<PaginatedResponse<Post>>('posts?status=PUBLISHED&limit=12'),
+    queryKey: postKeys.list({ status: 'PUBLISHED', limit: 12, me: true }),
+    queryFn: () => serverApi.get<PaginatedResponse<Post>>('posts?status=PUBLISHED&limit=12&me=true'),
   })
 
   return (
@@ -73,7 +74,7 @@ export default async function ProfilePage({ params }: Props) {
           <TabsContent value="published" className="mt-6">
             <HydrationBoundary state={dehydrate(qc)}>
               <PostsGrid
-                params={{ status: 'PUBLISHED', limit: 12 }}
+                params={{ status: 'PUBLISHED', limit: 12, me: true }}
                 showStatus
                 emptyTitle="Aucune publication"
                 emptyDescription="Vous n'avez pas encore publié d'article."
@@ -83,7 +84,7 @@ export default async function ProfilePage({ params }: Props) {
 
           <TabsContent value="drafts" className="mt-6">
             <PostsGrid
-              params={{ status: 'DRAFT', limit: 12 }}
+              params={{ status: 'DRAFT', limit: 12, me: true }}
               showStatus
               emptyTitle="Aucun brouillon"
               emptyDescription="Vos brouillons apparaîtront ici."

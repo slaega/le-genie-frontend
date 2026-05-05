@@ -113,4 +113,6 @@ export interface PostsQueryParams {
   limit?: number
   status?: PostStatus
   tags?: string[]
+  /** Filtre sur les posts de l'utilisateur connecté (backend: ?me=true) */
+  me?: boolean
 }

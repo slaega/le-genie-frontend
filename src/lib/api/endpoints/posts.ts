@@ -15,6 +15,7 @@ export const postsApi = {
     if (params?.limit) qs.set('limit', String(params.limit))
     if (params?.status) qs.set('status', params.status)
     if (params?.tags?.length) params.tags.forEach((t) => qs.append('tags', t))
+    if (params?.me) qs.set('me', 'true')
     const query = qs.toString()
     return api.get<PaginatedResponse<Post>>(`${base}${query ? `?${query}` : ''}`)
   },
