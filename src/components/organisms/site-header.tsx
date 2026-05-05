@@ -23,7 +23,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 export function SiteHeader() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, isLoading, logout } = useAuth()
   const { mutateAsync: createPost, isPending } = useCreatePost()
   const router = useRouter()
   const pathname = usePathname()
@@ -147,8 +147,8 @@ export function SiteHeader() {
             </Button>
           )}
 
-          {/* Notification bell (authenticated) */}
-          {isAuthenticated && <NotificationBell />}
+          {/* Notification bell — uniquement pour les utilisateurs connectés */}
+          {isAuthenticated && !isLoading && <NotificationBell />}
 
           {/* Write button (authenticated) */}
           {isAuthenticated && (

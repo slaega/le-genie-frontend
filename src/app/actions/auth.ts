@@ -8,7 +8,7 @@ import { returnValidationErrors } from 'next-safe-action'
 
 const tokenSchema = z.object({
   code: z.string(),
-  provider: z.enum(['GOOGLE', 'GITHUB']),
+  provider: z.enum(['GOOGLE', 'GITHUB', 'MICROSOFT']),
 })
 
 export const createToken = safeAction

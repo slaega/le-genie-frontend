@@ -1,9 +1,11 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { Tag, TrendingUp, Users, BookOpen } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import { serverApi } from '@/lib/api/server'
 import { NewsletterForm } from '@/components/molecules/newsletter-form'
+import { TagFilterLink } from '@/components/molecules/tag-filter-link'
 
 interface CmsStats {
   totalPosts: number
@@ -103,15 +105,19 @@ export async function HomeSidebar() {
         <ul className="flex flex-col gap-2">
           {categories.map((cat) => (
             <li key={cat.label}>
-              <Link
-                href={`/?tags=${encodeURIComponent(cat.label)}`}
-                className="flex items-center justify-between w-full text-sm py-1 hover:text-primary transition-colors text-left"
+              <Suspense
+                fallback={
+                  <Link
+                    href={`/?tags=${encodeURIComponent(cat.label)}`}
+                    className="flex items-center justify-between w-full text-sm py-1 hover:text-primary transition-colors"
+                  >
+                    <span>{cat.label}</span>
+                    <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{cat.count}</span>
+                  </Link>
+                }
               >
-                <span>{cat.label}</span>
-                <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                  {cat.count}
-                </span>
-              </Link>
+                <TagFilterLink name={cat.label} count={cat.count} variant="list" />
+              </Suspense>
             </li>
           ))}
         </ul>
@@ -154,13 +160,19 @@ export async function HomeSidebar() {
         <div className="flex flex-wrap gap-2">
           {tagCloud.length > 0 ? (
             tagCloud.map((tag) => (
-              <Link
+              <Suspense
                 key={tag.name}
-                href={`/?tags=${encodeURIComponent(tag.name)}`}
-                className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+                fallback={
+                  <Link
+                    href={`/?tags=${encodeURIComponent(tag.name)}`}
+                    className="text-xs px-3 py-1.5 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+                  >
+                    {tag.name}
+                  </Link>
+                }
               >
-                {tag.name}
-              </Link>
+                <TagFilterLink name={tag.name} variant="pill" />
+              </Suspense>
             ))
           ) : (
             <p className="text-xs text-muted-foreground">Aucun tag disponible.</p>

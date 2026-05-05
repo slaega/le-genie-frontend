@@ -16,6 +16,7 @@ export const Env = createEnv({
         NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string(),
         NEXT_PUBLIC_GITHUB_CLIENT_ID: z.string(),
+        NEXT_PUBLIC_MICROSOFT_CLIENT_ID: z.string(),
         NEXT_PUBLIC_REDIRECT_URI: z.string(),
     },
     shared: {
@@ -31,6 +32,7 @@ export const Env = createEnv({
         API_BASE_URL: process.env.API_BASE_URL,
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+        NEXT_PUBLIC_MICROSOFT_CLIENT_ID: process.env.NEXT_PUBLIC_MICROSOFT_CLIENT_ID,
         NEXT_PUBLIC_REDIRECT_URI: process.env.NEXT_PUBLIC_REDIRECT_URI,
     },
 });

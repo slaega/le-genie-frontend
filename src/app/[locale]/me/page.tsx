@@ -32,11 +32,17 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   const qc = new QueryClient()
-  // Précharge uniquement les posts de l'utilisateur connecté (me=true)
-  await qc.prefetchQuery({
-    queryKey: postKeys.list({ status: 'PUBLISHED', limit: 12, me: true }),
-    queryFn: () => serverApi.get<PaginatedResponse<Post>>('posts?status=PUBLISHED&limit=12&me=true'),
-  })
+  // Précharge les deux tabs en parallèle côté serveur
+  await Promise.all([
+    qc.prefetchQuery({
+      queryKey: postKeys.list({ status: 'PUBLISHED', limit: 12, me: true }),
+      queryFn: () => serverApi.get<PaginatedResponse<Post>>('posts?status=PUBLISHED&limit=12&me=true'),
+    }),
+    qc.prefetchQuery({
+      queryKey: postKeys.list({ status: 'DRAFT', limit: 12, me: true }),
+      queryFn: () => serverApi.get<PaginatedResponse<Post>>('posts?status=DRAFT&limit=12&me=true'),
+    }),
+  ])
 
   return (
     <MainLayout>
@@ -83,12 +89,14 @@ export default async function ProfilePage({ params }: Props) {
           </TabsContent>
 
           <TabsContent value="drafts" className="mt-6">
-            <PostsGrid
-              params={{ status: 'DRAFT', limit: 12, me: true }}
-              showStatus
-              emptyTitle="Aucun brouillon"
-              emptyDescription="Vos brouillons apparaîtront ici."
-            />
+            <HydrationBoundary state={dehydrate(qc)}>
+              <PostsGrid
+                params={{ status: 'DRAFT', limit: 12, me: true }}
+                showStatus
+                emptyTitle="Aucun brouillon"
+                emptyDescription="Vos brouillons apparaîtront ici."
+              />
+            </HydrationBoundary>
           </TabsContent>
 
           <TabsContent value="following" className="mt-6">

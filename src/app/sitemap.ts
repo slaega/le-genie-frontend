@@ -36,17 +36,28 @@ const staticRoutes: MetadataRoute.Sitemap = [
   },
 ];
 
-async function fetchPublishedPosts(): Promise<
-  Array<{ id: string; updatedAt: string }>
-> {
+async function fetchPublishedPosts(): Promise<Array<{ id: string; updatedAt: string }>> {
   try {
     const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3030';
     const res = await fetch(`${apiUrl}/posts?status=PUBLISHED&limit=100`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
-    const data: { items?: Array<{ id: string; updatedAt: string }> } =
-      await res.json();
+    const data: { items?: Array<{ id: string; updatedAt: string }> } = await res.json();
+    return data.items ?? [];
+  } catch {
+    return [];
+  }
+}
+
+async function fetchAuthors(): Promise<Array<{ id: string; updatedAt: string }>> {
+  try {
+    const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3030';
+    const res = await fetch(`${apiUrl}/cms/authors?limit=100`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    const data: { items?: Array<{ id: string; updatedAt: string }> } = await res.json();
     return data.items ?? [];
   } catch {
     return [];
@@ -54,7 +65,7 @@ async function fetchPublishedPosts(): Promise<
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await fetchPublishedPosts();
+  const [posts, authors] = await Promise.all([fetchPublishedPosts(), fetchAuthors()]);
 
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${base}/post/${post.id}`,
@@ -63,5 +74,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...postEntries];
+  const authorEntries: MetadataRoute.Sitemap = authors.map((author) => ({
+    url: `${base}/authors/${author.id}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...postEntries, ...authorEntries];
 }

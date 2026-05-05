@@ -10,9 +10,21 @@ import { toast } from 'sonner'
 import { createToken } from '@/app/actions/auth'
 import { Env } from '@/libs/Env'
 
-type OAuthProvider = 'GOOGLE' | 'GITHUB'
+type OAuthProvider = 'GOOGLE' | 'GITHUB' | 'MICROSOFT'
 
 let oauthPopup: Window | null = null
+
+/** Microsoft "M" logo as inline SVG — no external dep needed */
+function MicrosoftIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 21 21" className={className} aria-hidden="true">
+      <rect x="1"  y="1"  width="9" height="9" fill="#f25022" />
+      <rect x="11" y="1"  width="9" height="9" fill="#00a4ef" />
+      <rect x="1"  y="11" width="9" height="9" fill="#7fba00" />
+      <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+    </svg>
+  )
+}
 
 export function SignInPage() {
   const [loading, setLoading] = useState<OAuthProvider | null>(null)
@@ -86,16 +98,26 @@ export function SignInPage() {
         `&response_type=code` +
         `&scope=${encodeURIComponent('openid email profile')}` +
         `&state=GOOGLE`
-    } else {
+    } else if (provider === 'GITHUB') {
       url =
         `https://github.com/login/oauth/authorize` +
         `?client_id=${Env.NEXT_PUBLIC_GITHUB_CLIENT_ID}` +
         `&redirect_uri=${redirectUri}` +
         `&scope=${encodeURIComponent('user:email')}` +
         `&state=GITHUB`
+    } else {
+      // Microsoft Azure AD — common tenant (personal + work accounts)
+      url =
+        `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` +
+        `?client_id=${Env.NEXT_PUBLIC_MICROSOFT_CLIENT_ID}` +
+        `&redirect_uri=${redirectUri}` +
+        `&response_type=code` +
+        `&scope=${encodeURIComponent('openid email profile')}` +
+        `&state=MICROSOFT` +
+        `&response_mode=query`
     }
 
-    const w = 600, h = 600
+    const w = 600, h = 650
     const left = window.screenX + (window.outerWidth - w) / 2
     const top = window.screenY + (window.outerHeight - h) / 2
     const features = `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars=yes`
@@ -121,7 +143,7 @@ export function SignInPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Connexion</h1>
             <p className="text-muted-foreground text-sm mt-1">
-              Connectez-vous avec votre compte Google ou GitHub
+              Connectez-vous avec Google, GitHub ou Microsoft
             </p>
           </div>
 
@@ -154,6 +176,21 @@ export function SignInPage() {
                 <Github className="h-4 w-4" />
               )}
               {loading === 'GITHUB' ? 'Connexion...' : 'Continuer avec GitHub'}
+            </Button>
+
+            <Button
+              className="w-full gap-3"
+              variant="outline"
+              size="lg"
+              disabled={!!loading}
+              onClick={() => openOAuth('MICROSOFT')}
+            >
+              {loading === 'MICROSOFT' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <MicrosoftIcon className="h-4 w-4" />
+              )}
+              {loading === 'MICROSOFT' ? 'Connexion...' : 'Continuer avec Microsoft'}
             </Button>
           </div>
 
