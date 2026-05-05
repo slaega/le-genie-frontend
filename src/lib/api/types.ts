@@ -108,6 +108,24 @@ export interface UpdateCommentPayload {
   content: string
 }
 
+export type NotificationType = 'NEW_POST' | 'NEW_FOLLOWER' | 'NEW_COMMENT'
+
+export interface Notification {
+  id: string
+  userId: string
+  type: NotificationType
+  title: string
+  body: string | null
+  postId: string | null
+  read: boolean
+  createdAt: string
+}
+
+export interface NotificationList {
+  items: Notification[]
+  unreadCount: number
+}
+
 export interface PostsQueryParams {
   page?: number
   limit?: number

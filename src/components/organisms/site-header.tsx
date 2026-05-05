@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Search, Moon, Sun, Menu, PenSquare, User, LogOut, BookOpen } from 'lucide-react'
+import { NotificationBell } from '@/components/molecules/notification-bell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { UserAvatar } from '@/components/atoms/user-avatar'
@@ -145,6 +146,9 @@ export function SiteHeader() {
               )}
             </Button>
           )}
+
+          {/* Notification bell (authenticated) */}
+          {isAuthenticated && <NotificationBell />}
 
           {/* Write button (authenticated) */}
           {isAuthenticated && (
