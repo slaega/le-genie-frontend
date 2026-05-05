@@ -1,10 +1,9 @@
 import Link from 'next/link'
 import { Tag, TrendingUp, Users, BookOpen } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { UserAvatar } from '@/components/atoms/user-avatar'
 import { serverApi } from '@/lib/api/server'
+import { NewsletterForm } from '@/components/molecules/newsletter-form'
 
 interface CmsStats {
   totalPosts: number
@@ -177,14 +176,7 @@ export async function HomeSidebar() {
         <p className="text-xs text-muted-foreground mb-4">
           Recevez les meilleurs articles directement dans votre boîte mail.
         </p>
-        <Input
-          type="email"
-          placeholder="votre@email.com"
-          className="mb-2 text-sm h-9"
-        />
-        <Button size="sm" className="w-full text-xs">
-          S'abonner
-        </Button>
+        <NewsletterForm />
       </div>
     </aside>
   )

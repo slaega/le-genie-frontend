@@ -62,6 +62,7 @@ export default async function ProfilePage({ params }: Props) {
           <TabsList>
             <TabsTrigger value="published">Publications</TabsTrigger>
             <TabsTrigger value="drafts">Brouillons</TabsTrigger>
+            <TabsTrigger value="following">Abonnements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="published" className="mt-6">
@@ -82,6 +83,12 @@ export default async function ProfilePage({ params }: Props) {
               emptyTitle="Aucun brouillon"
               emptyDescription="Vos brouillons apparaîtront ici."
             />
+          </TabsContent>
+
+          <TabsContent value="following" className="mt-6">
+            <p className="text-sm text-muted-foreground">
+              Retrouvez ici les auteurs que vous suivez.
+            </p>
           </TabsContent>
         </Tabs>
       </div>

@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { LikeButton } from '@/components/molecules/like-button'
 import { ViewCounter } from '@/components/molecules/view-counter'
+import { FollowButton } from '@/components/molecules/follow-button'
 
 type Props = { params: Promise<{ locale: string; id: string }> }
 
@@ -95,6 +96,8 @@ export default async function PostPage({ params }: Props) {
                   Mis à jour {timeAgo}
                 </p>
               </div>
+
+              <FollowButton authorId={owner.user.id} />
 
               {post.contributors.length > 1 && (
                 <div className="flex -space-x-2 ml-2">
