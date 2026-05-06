@@ -1,5 +1,7 @@
 export type PostStatus = 'EMPTY' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
 
+export type UserRole = 'USER' | 'ADMIN'
+
 export interface User {
   id: string
   email: string
@@ -7,8 +9,47 @@ export interface User {
   avatarPath: string | null
   coverPath: string | null
   professionalRole: string | null
+  role: UserRole
+  suspended: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface AdminUser {
+  id: string
+  name: string
+  email: string
+  avatarPath: string | null
+  role: UserRole
+  suspended: boolean
+  createdAt: string
+  _count: { contributors: number; comments: number }
+}
+
+export interface AdminPost {
+  id: string
+  title: string
+  status: PostStatus
+  readingTime: number | null
+  createdAt: string
+  updatedAt: string
+  contributors: Array<{ user: { id: string; name: string; email: string } }>
+  _count: { comments: number; likes: number }
+}
+
+export interface AdminStats {
+  totalUsers: number
+  totalPosts: number
+  totalComments: number
+  totalSubscribers: number
+  totalFollows: number
+  postsByStatus: { PUBLISHED: number; DRAFT: number; EMPTY: number; ARCHIVED: number }
+}
+
+export interface AdminSubscriber {
+  id: string
+  email: string
+  createdAt: string
 }
 
 export interface Contributor {
