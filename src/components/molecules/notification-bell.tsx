@@ -65,7 +65,7 @@ export function NotificationBell() {
 
   async function handleClearAll() {
     try {
-      await Promise.all(notifications.map((n) => notificationsApi.remove(n.id)))
+      await notificationsApi.removeAll()
       setNotifications([])
       setUnreadCount(0)
     } catch {

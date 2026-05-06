@@ -19,4 +19,8 @@ export const notificationsApi = {
   remove(id: string) {
     return api.delete<{ success: boolean }>(`${base}/${id}`)
   },
+
+  removeAll() {
+    return api.delete<{ success: boolean }>(base)
+  },
 }
