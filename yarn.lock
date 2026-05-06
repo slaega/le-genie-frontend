@@ -9924,7 +9924,6 @@ __metadata:
     lint-staged: "npm:^15.5.0"
     lowlight: "npm:^3.3.0"
     lucide-react: "npm:^0.513.0"
-    nanoid: "npm:^5.1.11"
     next: "npm:^16.2.4"
     next-intl: "npm:^4.0.0"
     next-safe-action: "npm:^8.0.1"
@@ -11307,15 +11306,6 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 10c0/40e7f70b3d15f725ca072dfc4f74e81fcf1fbb02e491cf58ac0c79093adc9b0a73b152bcde57df4b79cd097e13023d7504acb38404a4da7bc1cd8e887b82fe0b
-  languageName: node
-  linkType: hard
-
-"nanoid@npm:^5.1.11":
-  version: 5.1.11
-  resolution: "nanoid@npm:5.1.11"
-  bin:
-    nanoid: bin/nanoid.js
-  checksum: 10c0/91580d18c29263ac0e871734f0d86e7f906f523f974d3c30fc65354ccf387ccffd606c2a6c28acc2977a3950146347e790ce9e3f514133a48995af5ccdb308ce
   languageName: node
   linkType: hard
 
