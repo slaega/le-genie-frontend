@@ -175,3 +175,94 @@ export interface PostsQueryParams {
   /** Filtre sur les posts de l'utilisateur connecté (backend: ?me=true) */
   me?: boolean
 }
+
+// ─── CV Builder ──────────────────────────────────────────────────────────────
+
+export const TEMPLATE_IDS = [
+  'minimal-light',
+  'minimal-dark',
+  'warm',
+  'corporate',
+  'french-classic',
+] as const
+
+export type TemplateId = (typeof TEMPLATE_IDS)[number]
+
+export interface ResumePersonal {
+  fullName?: string
+  title?: string
+  email?: string
+  phone?: string
+  location?: string
+  website?: string
+  linkedin?: string
+  github?: string
+  summary?: string
+  photo?: string
+}
+
+export interface ResumeExperience {
+  id: string
+  company: string
+  position: string
+  startDate: string
+  endDate?: string
+  current?: boolean
+  description?: string
+}
+
+export interface ResumeEducation {
+  id: string
+  institution: string
+  degree: string
+  field?: string
+  startDate: string
+  endDate?: string
+  current?: boolean
+}
+
+export interface ResumeSkill {
+  id: string
+  name: string
+  level?: number // 1–5
+}
+
+export interface ResumeLanguage {
+  id: string
+  name: string
+  level?: string // e.g. "Natif", "Courant", "Intermédiaire"
+}
+
+export interface ResumeCertification {
+  id: string
+  name: string
+  issuer?: string
+  date?: string
+  url?: string
+}
+
+export interface ResumeData {
+  personal?: ResumePersonal
+  experiences?: ResumeExperience[]
+  education?: ResumeEducation[]
+  skills?: ResumeSkill[]
+  languages?: ResumeLanguage[]
+  certifications?: ResumeCertification[]
+}
+
+export interface Resume {
+  id: string
+  userId: string
+  templateId: TemplateId
+  isPublic: boolean
+  data: ResumeData
+  user?: Pick<User, 'id' | 'name' | 'avatarPath'>
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UpsertResumePayload {
+  templateId?: TemplateId
+  isPublic?: boolean
+  data?: ResumeData
+}

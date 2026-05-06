@@ -43,6 +43,14 @@ export const api = {
       ...init,
     })
   },
+  put<T>(path: string, body?: unknown, init?: RequestInit) {
+    const isForm = body instanceof FormData
+    return apiFetch<T>(path, {
+      method: 'PUT',
+      body: isForm ? body : body !== undefined ? JSON.stringify(body) : undefined,
+      ...init,
+    })
+  },
   delete<T>(path: string, init?: RequestInit) {
     return apiFetch<T>(path, { method: 'DELETE', ...init })
   },

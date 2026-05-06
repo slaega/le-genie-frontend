@@ -48,6 +48,13 @@ export const serverApi = {
       body: isForm ? body : body !== undefined ? JSON.stringify(body) : undefined,
     })
   },
+  put<T>(path: string, body?: unknown) {
+    const isForm = body instanceof FormData
+    return serverFetch<T>(path, {
+      method: 'PUT',
+      body: isForm ? body : body !== undefined ? JSON.stringify(body) : undefined,
+    })
+  },
   delete<T>(path: string) {
     return serverFetch<T>(path, { method: 'DELETE' })
   },
