@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, Moon, Sun, Menu, PenSquare, User, LogOut, BookOpen } from 'lucide-react'
+import { Search, Moon, Sun, Menu, PenSquare, User, LogOut, BookOpen, LayoutDashboard } from 'lucide-react'
 import { NotificationBell } from '@/components/molecules/notification-bell'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -194,6 +194,17 @@ export function SiteHeader() {
                     Mes publications
                   </Link>
                 </DropdownMenuItem>
+                {user.role === 'ADMIN' && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="gap-2 cursor-pointer text-indigo-500 focus:text-indigo-500">
+                        <LayoutDashboard className="h-4 w-4" />
+                        Panel admin
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-destructive gap-2 focus:text-destructive cursor-pointer"
