@@ -102,6 +102,7 @@ export default async function ProfilePage({ params }: Props) {
                                     me: true,
                                 }}
                                 showStatus
+                                showActions
                                 emptyTitle="Aucune publication"
                                 emptyDescription="Vous n'avez pas encore publié d'article."
                             />
@@ -117,6 +118,7 @@ export default async function ProfilePage({ params }: Props) {
                                     me: true,
                                 }}
                                 showStatus
+                                showActions
                                 emptyTitle="Aucun brouillon"
                                 emptyDescription="Vos brouillons apparaîtront ici."
                             />
