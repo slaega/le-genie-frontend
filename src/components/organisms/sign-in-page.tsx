@@ -332,27 +332,36 @@ export function SignInPage() {
     const exchangeCode = useCallback(
         async (provider: OAuthProvider, code: string) => {
             const res = await createToken({ code, provider });
-            const target = window.opener ? window : null;
 
             if (res?.data?.success) {
-                target?.postMessage?.(
-                    { type: 'OAUTH_SUCCESS' },
-                    window.location.origin
-                );
-                if (window.opener) window.close();
+                if (window.opener) {
+                    // Popup mode: notify parent window then close self
+                    window.opener.postMessage(
+                        { type: 'OAUTH_SUCCESS' },
+                        window.location.origin
+                    );
+                    window.close();
+                } else {
+                    // Same-window fallback: navigate directly
+                    router.push(redirect);
+                }
                 return;
             }
 
             const message =
                 res?.validationErrors?._errors?.join(', ') ??
                 'Une erreur est survenue.';
-            target?.postMessage?.(
-                { type: 'OAUTH_ERROR', message },
-                window.location.origin
-            );
-            if (window.opener) window.close();
+            if (window.opener) {
+                window.opener.postMessage(
+                    { type: 'OAUTH_ERROR', message },
+                    window.location.origin
+                );
+                window.close();
+            } else {
+                toast.error(message);
+            }
         },
-        []
+        [redirect, router]
     );
 
     // Handle OAuth callback when this page is the popup target
