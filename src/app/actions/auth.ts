@@ -29,40 +29,7 @@ async function setAuthCookies(accessToken: string, refreshToken: string) {
     });
 }
 
-// ─── OAuth ────────────────────────────────────────────────────────────────────
-
-const tokenSchema = z.object({
-    code: z.string(),
-    provider: z.enum(['GOOGLE', 'GITHUB', 'MICROSOFT']),
-});
-
-export const createToken = safeAction
-    .inputSchema(tokenSchema)
-    .action(async ({ parsedInput }) => {
-        const { code, provider } = parsedInput;
-
-        const res = await fetch(`${Env.API_BASE_URL}auth/token/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                code,
-                provider,
-                callbackURL: Env.NEXT_PUBLIC_REDIRECT_URI,
-            }),
-        });
-
-        if (!res.ok) {
-            return returnValidationErrors(tokenSchema, {
-                _errors: ['Identifiants incorrects'],
-            });
-        }
-
-        const { accessToken, refreshToken } = await res.json();
-        await setAuthCookies(accessToken, refreshToken);
-        return { success: true };
-    });
-
-// ─── OTP ──────────────────────────────────────────────────────────────────────
+// ─── OTP — send code ──────────────────────────────────────────────────────────
 
 const sendOtpSchema = z.object({ email: z.string().email() });
 
@@ -77,7 +44,8 @@ export const sendOtp = safeAction
 
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));
-            const message = body?.message ?? "Impossible d'envoyer le code.";
+            const message =
+                (body?.message as string) ?? "Impossible d'envoyer le code.";
             return returnValidationErrors(sendOtpSchema, {
                 _errors: [message],
             });
@@ -85,6 +53,8 @@ export const sendOtp = safeAction
 
         return { success: true };
     });
+
+// ─── OTP — verify code ────────────────────────────────────────────────────────
 
 const verifyOtpSchema = z.object({
     email: z.string().email(),
@@ -102,7 +72,8 @@ export const verifyOtp = safeAction
 
         if (!res.ok) {
             const body = await res.json().catch(() => ({}));
-            const message = body?.message ?? 'Code invalide ou expiré.';
+            const message =
+                (body?.message as string) ?? 'Code invalide ou expiré.';
             return returnValidationErrors(verifyOtpSchema, {
                 _errors: [message],
             });

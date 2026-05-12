@@ -1,21 +1,21 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
+    ArrowLeft,
     BookOpen,
     Github,
     Globe,
     Loader2,
     Mail,
-    ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { createToken, sendOtp, verifyOtp } from '@/app/actions/auth';
+import { sendOtp, verifyOtp } from '@/app/actions/auth';
 import { Env } from '@/libs/Env';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -23,7 +23,41 @@ import { Env } from '@/libs/Env';
 type OAuthProvider = 'GOOGLE' | 'GITHUB' | 'MICROSOFT';
 type AuthTab = 'oauth' | 'otp-email' | 'otp-code';
 
-let oauthPopup: Window | null = null;
+// ─── OAuth URL builder ────────────────────────────────────────────────────────
+
+function buildOAuthUrl(provider: OAuthProvider): string {
+    const callbackUri = encodeURIComponent(Env.NEXT_PUBLIC_REDIRECT_URI);
+
+    switch (provider) {
+        case 'GOOGLE':
+            return (
+                `https://accounts.google.com/o/oauth2/v2/auth` +
+                `?client_id=${Env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}` +
+                `&redirect_uri=${callbackUri}` +
+                `&response_type=code` +
+                `&scope=${encodeURIComponent('openid email profile')}` +
+                `&state=GOOGLE`
+            );
+        case 'GITHUB':
+            return (
+                `https://github.com/login/oauth/authorize` +
+                `?client_id=${Env.NEXT_PUBLIC_GITHUB_CLIENT_ID}` +
+                `&redirect_uri=${callbackUri}` +
+                `&scope=${encodeURIComponent('user:email')}` +
+                `&state=GITHUB`
+            );
+        case 'MICROSOFT':
+            return (
+                `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` +
+                `?client_id=${Env.NEXT_PUBLIC_MICROSOFT_CLIENT_ID}` +
+                `&redirect_uri=${callbackUri}` +
+                `&response_type=code` +
+                `&scope=${encodeURIComponent('openid email profile')}` +
+                `&state=MICROSOFT` +
+                `&response_mode=query`
+            );
+    }
+}
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -64,7 +98,7 @@ function OAuthButtons({
                     <Globe className="h-4 w-4" />
                 )}
                 {loading === 'GOOGLE'
-                    ? 'Connexion...'
+                    ? 'Redirection...'
                     : 'Continuer avec Google'}
             </Button>
 
@@ -81,7 +115,7 @@ function OAuthButtons({
                     <Github className="h-4 w-4" />
                 )}
                 {loading === 'GITHUB'
-                    ? 'Connexion...'
+                    ? 'Redirection...'
                     : 'Continuer avec GitHub'}
             </Button>
 
@@ -98,7 +132,7 @@ function OAuthButtons({
                     <MicrosoftIcon className="h-4 w-4" />
                 )}
                 {loading === 'MICROSOFT'
-                    ? 'Connexion...'
+                    ? 'Redirection...'
                     : 'Continuer avec Microsoft'}
             </Button>
 
@@ -127,7 +161,7 @@ function OAuthButtons({
     );
 }
 
-// ─── OTP email step ───────────────────────────────────────────────────────────
+// ─── OTP — email step ─────────────────────────────────────────────────────────
 
 function OtpEmailStep({
     onCodeSent,
@@ -199,7 +233,7 @@ function OtpEmailStep({
     );
 }
 
-// ─── OTP code step ────────────────────────────────────────────────────────────
+// ─── OTP — code step ──────────────────────────────────────────────────────────
 
 function OtpCodeStep({
     email,
@@ -326,106 +360,18 @@ export function SignInPage() {
     );
     const router = useRouter();
     const searchParams = useSearchParams();
-    const redirect = decodeURIComponent(searchParams.get('redirect') ?? '/');
-    const handledRef = useRef(false);
+    const redirectTo = decodeURIComponent(searchParams.get('redirect') ?? '/');
+    const oauthError = searchParams.get('error');
 
-    const exchangeCode = useCallback(
-        async (provider: OAuthProvider, code: string) => {
-            const res = await createToken({ code, provider });
-
-            if (res?.data?.success) {
-                if (window.opener) {
-                    // Popup mode: notify parent window then close self
-                    window.opener.postMessage(
-                        { type: 'OAUTH_SUCCESS' },
-                        window.location.origin
-                    );
-                    window.close();
-                } else {
-                    // Same-window fallback: navigate directly
-                    router.push(redirect);
-                }
-                return;
-            }
-
-            const message =
-                res?.validationErrors?._errors?.join(', ') ??
-                'Une erreur est survenue.';
-            if (window.opener) {
-                window.opener.postMessage(
-                    { type: 'OAUTH_ERROR', message },
-                    window.location.origin
-                );
-                window.close();
-            } else {
-                toast.error(message);
-            }
-        },
-        [redirect, router]
-    );
-
-    // Handle OAuth callback when this page is the popup target
+    // Surface OAuth errors forwarded by the callback route
     useEffect(() => {
-        if (handledRef.current) return;
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('code');
-        const state = params.get('state');
-        if (code && state) {
-            handledRef.current = true;
-            exchangeCode(state as OAuthProvider, code);
-        }
-    }, [exchangeCode]);
+        if (oauthError) toast.error('Connexion OAuth échouée. Réessayez.');
+    }, [oauthError]);
 
-    // Listen for messages from popup
-    useEffect(() => {
-        function onMessage(event: MessageEvent) {
-            if (event.origin !== window.location.origin) return;
-            if (event.data.type === 'OAUTH_SUCCESS') router.push(redirect);
-            if (event.data.type === 'OAUTH_ERROR') {
-                toast.error(event.data.message ?? 'Erreur de connexion');
-                setOauthLoading(null);
-            }
-        }
-        window.addEventListener('message', onMessage);
-        return () => window.removeEventListener('message', onMessage);
-    }, [redirect, router]);
-
-    function openOAuth(provider: OAuthProvider) {
+    // Navigate the current window to the OAuth provider — no popup needed
+    function startOAuth(provider: OAuthProvider) {
         setOauthLoading(provider);
-        const redirectUri = encodeURIComponent(Env.NEXT_PUBLIC_REDIRECT_URI);
-        const urls: Record<OAuthProvider, string> = {
-            GOOGLE:
-                `https://accounts.google.com/o/oauth2/v2/auth` +
-                `?client_id=${Env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}` +
-                `&response_type=code&scope=${encodeURIComponent('openid email profile')}&state=GOOGLE`,
-            GITHUB:
-                `https://github.com/login/oauth/authorize` +
-                `?client_id=${Env.NEXT_PUBLIC_GITHUB_CLIENT_ID}&redirect_uri=${redirectUri}` +
-                `&scope=${encodeURIComponent('user:email')}&state=GITHUB`,
-            MICROSOFT:
-                `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` +
-                `?client_id=${Env.NEXT_PUBLIC_MICROSOFT_CLIENT_ID}&redirect_uri=${redirectUri}` +
-                `&response_type=code&scope=${encodeURIComponent('openid email profile')}` +
-                `&state=MICROSOFT&response_mode=query`,
-        };
-
-        const w = 600,
-            h = 650;
-        const left = window.screenX + (window.outerWidth - w) / 2;
-        const top = window.screenY + (window.outerHeight - h) / 2;
-        const features = `width=${w},height=${h},left=${left},top=${top},resizable,scrollbars=yes`;
-
-        if (oauthPopup && !oauthPopup.closed) {
-            oauthPopup.location.href = urls[provider];
-            oauthPopup.focus();
-        } else {
-            oauthPopup = window.open(urls[provider], 'OAuthLogin', features);
-        }
-    }
-
-    function handleOtpCodeSent(email: string) {
-        setOtpEmail(email);
-        setTab('otp-code');
+        window.location.href = buildOAuthUrl(provider);
     }
 
     return (
@@ -458,14 +404,17 @@ export function SignInPage() {
                     {tab === 'oauth' && (
                         <OAuthButtons
                             loading={oauthLoading}
-                            onOAuth={openOAuth}
+                            onOAuth={startOAuth}
                             onSwitchToOtp={() => setTab('otp-email')}
                         />
                     )}
 
                     {tab === 'otp-email' && (
                         <OtpEmailStep
-                            onCodeSent={handleOtpCodeSent}
+                            onCodeSent={(email) => {
+                                setOtpEmail(email);
+                                setTab('otp-code');
+                            }}
                             onBack={() => setTab('oauth')}
                         />
                     )}
@@ -473,7 +422,7 @@ export function SignInPage() {
                     {tab === 'otp-code' && (
                         <OtpCodeStep
                             email={otpEmail}
-                            onSuccess={() => router.push(redirect)}
+                            onSuccess={() => router.push(redirectTo)}
                             onBack={() => setTab('otp-email')}
                         />
                     )}
