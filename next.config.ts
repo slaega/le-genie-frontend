@@ -19,102 +19,76 @@ const securityHeaders = [
         key: 'Strict-Transport-Security',
         value: 'max-age=63072000; includeSubDomains; preload',
     },
-]
+];
 
-/** @type {import('next').NextConfig} */
-export default withSentryConfig(
-    bundleAnalyzer(
-        withNextIntl({
-            poweredByHeader: false,
-            reactStrictMode: true,
-            /**
-             * Proxy natif Next.js — remplace tous les route handlers /api/*.
-             * afterFiles = les route handlers existants (ex: /api/auth/refresh)
-             * gardent la priorité ; tout le reste est forwardé à NestJS.
-             */
-            async rewrites() {
-                const nestUrl = (
-                    process.env.API_BASE_URL ?? 'http://localhost:3030/api/'
-                ).replace(/\/$/, '')
-                return {
-                    afterFiles: [
-                        {
-                            source: '/api/:path*',
-                            destination: `${nestUrl}/:path*`,
-                        },
-                    ],
-                }
-            },
-            async headers() {
-                return [
+const nextConfig = bundleAnalyzer(
+    withNextIntl({
+        poweredByHeader: false,
+        reactStrictMode: true,
+        /**
+         * Proxy natif Next.js — remplace tous les route handlers /api/*.
+         * afterFiles = les route handlers existants (ex: /api/auth/refresh)
+         * gardent la priorité ; tout le reste est forwardé à NestJS.
+         */
+        async rewrites() {
+            const nestUrl = (
+                process.env.API_BASE_URL ?? 'http://localhost:3030/api/'
+            ).replace(/\/$/, '');
+            return {
+                afterFiles: [
                     {
-                        source: '/(.*)',
-                        headers: securityHeaders,
-                    },
-                ]
-            },
-            images: {
-                remotePatterns: [
-                    {
-                        protocol: 'https',
-                        hostname: 'images.unsplash.com',
-                        port: '',
-                        pathname: '/**',
-                    },
-                    {
-                        protocol: 'https',
-                        hostname: 'play.min.io',
-                        port: '',
-                        pathname: '/**',
-                    },
-                    {
-                        protocol: 'https',
-                        hostname: '*',
-                        port: '',
-                        pathname: '/**',
+                        source: '/api/:path*',
+                        destination: `${nestUrl}/:path*`,
                     },
                 ],
-            },
-        })
-    ),
-    {
-        // For all available options, see:
-        // https://github.com/getsentry/sentry-webpack-plugin#options
-        // FIXME: Add your Sentry organization and project names
-        org: 'nextjs-boilerplate-org',
-        project: 'nextjs-boilerplate',
-
-        // Only print logs for uploading source maps in CI
-        silent: !process.env.CI,
-        
-        // For all available options, see:
-        // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-        // Upload a larger set of source maps for prettier stack traces (increases build time)
-        widenClientFileUpload: true,
-
-        // Automatically annotate React components to show their full name in breadcrumbs and session replay
-        reactComponentAnnotation: {
-            enabled: true,
+            };
         },
-
-        // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-        // This can increase your server load as well as your hosting bill.
-        // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-        // side errors will fail.
-        tunnelRoute: '/monitoring',
-
-
-        // Automatically tree-shake Sentry logger statements to reduce bundle size
-        disableLogger: true,
-
-        // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-        // See the following for more information:
-        // https://docs.sentry.io/product/crons/
-        // https://vercel.com/docs/cron-jobs
-        automaticVercelMonitors: true,
-
-        // Disable Sentry telemetry
-        telemetry: false,
-    }
+        async headers() {
+            return [
+                {
+                    source: '/(.*)',
+                    headers: securityHeaders,
+                },
+            ];
+        },
+        images: {
+            remotePatterns: [
+                {
+                    protocol: 'https',
+                    hostname: 'images.unsplash.com',
+                    port: '',
+                    pathname: '/**',
+                },
+                {
+                    protocol: 'https',
+                    hostname: 'play.min.io',
+                    port: '',
+                    pathname: '/**',
+                },
+                {
+                    protocol: 'https',
+                    hostname: '*',
+                    port: '',
+                    pathname: '/**',
+                },
+            ],
+        },
+    })
 );
+
+// Sentry is only applied in production builds to avoid slowing down dev compilation.
+// withSentryConfig instruments every file (source maps, component annotations)
+// which can add 10× overhead in watch mode with no benefit locally.
+export default process.env.NODE_ENV === 'production'
+    ? withSentryConfig(nextConfig, {
+          org: 'nextjs-boilerplate-org',
+          project: 'nextjs-boilerplate',
+          silent: !process.env.CI,
+          widenClientFileUpload: true,
+          reactComponentAnnotation: { enabled: true },
+          tunnelRoute: '/monitoring',
+          disableLogger: true,
+          automaticVercelMonitors: true,
+          telemetry: false,
+      })
+    : nextConfig;
