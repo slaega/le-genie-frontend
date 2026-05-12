@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
+    "clean": "rm -rf .next",
+    "dev:clean": "npm run clean && npm run dev",
     "dev:spotlight": "spotlight",
     "dev:next": "next dev --turbo",
     "dev:all": "run-p dev:spotlight dev:next",
