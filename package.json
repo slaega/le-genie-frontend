@@ -5,9 +5,9 @@
   "scripts": {
     "dev:spotlight": "spotlight",
     "dev:next": "next dev --turbo",
-    "dev": "run-p dev:*",
+    "dev": "run-p dev:spotlight dev:next",
     "clean": "rm -rf .next",
-    "dev:clean": "run-p dev:*",
+    "fresh": "npm run clean && npm run dev",
     "build": "next build",
     "start": "next start",
     "build-stats": "cross-env ANALYZE=true npm run build",
