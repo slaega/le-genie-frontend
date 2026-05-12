@@ -57,7 +57,7 @@ export function SiteHeader() {
 
             <header
                 className={cn(
-                    'sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border transition-shadow duration-200',
+                    'sticky top-0 z-50 w-full bg-background/75 backdrop-blur-md border-b border-border/60 transition-shadow duration-200',
                     scrolled && 'shadow-sm'
                 )}
             >
