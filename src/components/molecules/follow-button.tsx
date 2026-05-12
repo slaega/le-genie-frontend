@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { UserPlus, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api/client';
@@ -29,6 +29,7 @@ export function FollowButton({
 }: FollowButtonProps) {
     const { user } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
 
     const [following, setFollowing] = useState(initialFollowing);
     const [count, setCount] = useState(initialCount);
@@ -70,7 +71,9 @@ export function FollowButton({
             setCount(prevCount);
 
             if (err instanceof ApiError && err.status === 401) {
-                router.push('/auth/sign-in');
+                router.push(
+                    `/auth/sign-in?redirect=${encodeURIComponent(pathname)}`
+                );
             }
         } finally {
             setIsPending(false);

@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Menu, PenSquare, Search, BookOpen, X } from 'lucide-react';
 import { NotificationBell } from '@/components/molecules/notification-bell';
-import { UserMenu } from '@/components/molecules/user-menu';
 import { SearchOverlay } from '@/components/organisms/search-overlay';
+import { UserAvatar } from '@/components/atoms/user-avatar';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/providers/auth-provider';
 import { useCreatePost } from '@/hooks/mutations/use-create-post';
@@ -22,7 +22,7 @@ const NAV_LINKS = [
 ];
 
 export function SiteHeader() {
-    const { user, isAuthenticated, isLoading, logout } = useAuth();
+    const { user, isAuthenticated, isLoading } = useAuth();
     const { mutateAsync: createPost, isPending } = useCreatePost();
     const router = useRouter();
     const pathname = usePathname();
@@ -117,19 +117,25 @@ export function SiteHeader() {
                             </Button>
                         )}
 
-                        {/* User menu / Login */}
+                        {/* Profile link / Login */}
                         {!isLoading && (
                             <>
                                 {isAuthenticated && user ? (
-                                    <UserMenu
-                                        user={user}
-                                        isPending={isPending}
-                                        onNewPost={handleNewPost}
-                                        onLogout={logout}
-                                    />
+                                    <Link
+                                        href="/me"
+                                        className="ml-1 rounded-full block ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                        aria-label="Mon espace auteur"
+                                    >
+                                        <UserAvatar
+                                            name={user.name}
+                                            avatarPath={user.avatarPath}
+                                            size="sm"
+                                            className="h-8 w-8"
+                                        />
+                                    </Link>
                                 ) : (
                                     <Button asChild size="sm" className="ml-1">
-                                        <Link href="/auth/sign-in">
+                                        <Link href="/auth/sign-in?redirect=/me">
                                             Connexion
                                         </Link>
                                     </Button>
