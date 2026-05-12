@@ -2,10 +2,11 @@ import { redirect } from 'next/navigation';
 import { serverApi } from '@/lib/api/server';
 import type { User, PaginatedResponse, Post } from '@/lib/api/types';
 import { ApiError } from '@/lib/api/types';
+import Link from 'next/link';
+import { Settings } from 'lucide-react';
 import { MainLayout } from '@/components/templates/main-layout';
 import { UserAvatar } from '@/components/atoms/user-avatar';
 import { PostsGrid } from '@/components/organisms/posts-grid';
-import { ProfileEditDialog } from '@/components/organisms/profile-edit-dialog';
 import { FollowingList } from '@/components/organisms/following-list';
 import {
     dehydrate,
@@ -71,7 +72,13 @@ export default async function ProfilePage({ params }: Props) {
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 flex-wrap">
                             <h1 className="text-2xl font-bold">{me.name}</h1>
-                            <ProfileEditDialog user={me} />
+                            <Link
+                                href="/me/profile"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-muted/40 hover:bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Settings className="h-3.5 w-3.5" />
+                                Modifier le profil
+                            </Link>
                         </div>
                         <p className="text-muted-foreground">{me.email}</p>
                         {me.professionalRole && (

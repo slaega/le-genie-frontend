@@ -12,7 +12,7 @@ import { BookOpen, PenSquare, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { PostsQueryParams } from '@/lib/api/types';
-import { postUrl } from '@/lib/post-url';
+import { postUrl, postEditUrl } from '@/lib/post-url';
 
 interface PostsGridProps {
     params?: PostsQueryParams;
@@ -39,7 +39,7 @@ export function PostsGrid({
     async function handleNew() {
         try {
             const post = await createPost();
-            router.push(`/post/${post.id}/edit`);
+            router.push(`/post/${post.id}/edit`); // new post has no slug yet
         } catch {
             toast.error('Erreur lors de la création');
         }
@@ -105,7 +105,7 @@ export function PostsGrid({
                     {showActions && (
                         <div className="flex gap-2 mt-2">
                             <Link
-                                href={`/post/${post.id}/edit`}
+                                href={postEditUrl(post)}
                                 className="flex items-center justify-center gap-1.5 flex-1 rounded-lg border border-border bg-muted/40 hover:bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <Pencil className="h-3 w-3" />

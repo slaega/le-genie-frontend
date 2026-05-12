@@ -9,14 +9,14 @@ import { SiteHeader } from '@/components/organisms/site-header';
 // Page protégée — rendu serveur à la demande (cookies + ID dynamique).
 export const dynamic = 'force-dynamic';
 
-type Props = { params: Promise<{ locale: string; id: string }> };
+type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export const metadata = {
     title: 'Éditeur — Le Génie',
 };
 
 export default async function EditPage({ params }: Props) {
-    const { id, locale } = await params;
+    const { slug, locale } = await params;
 
     let post: Post;
     let me: User | null = null;
@@ -24,11 +24,12 @@ export default async function EditPage({ params }: Props) {
     try {
         me = await serverApi.get<User>('auth/me');
     } catch {
-        redirect(`/${locale}/auth/sign-in?redirect=/post/${id}/edit`);
+        redirect(`/${locale}/auth/sign-in?redirect=/post/${slug}/edit`);
     }
 
     try {
-        post = await serverApi.get<Post>(`posts/${id}`);
+        // Backend accepts both slug and id transparently
+        post = await serverApi.get<Post>(`posts/${slug}`);
     } catch (err) {
         if (err instanceof ApiError && err.status === 404) notFound();
         throw err;
@@ -36,7 +37,7 @@ export default async function EditPage({ params }: Props) {
 
     const myContrib = post.contributors.find((c) => c.userId === me!.id);
     if (!myContrib) {
-        redirect(`/${locale}/post/${id}`);
+        redirect(`/${locale}/post/${slug}`);
     }
 
     const isOwner = myContrib.owner;

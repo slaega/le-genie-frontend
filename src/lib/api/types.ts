@@ -9,6 +9,12 @@ export interface User {
     avatarPath: string | null;
     coverPath: string | null;
     professionalRole: string | null;
+    bio: string | null;
+    about: string | null;
+    website: string | null;
+    twitterHandle: string | null;
+    githubHandle: string | null;
+    location: string | null;
     role: UserRole;
     suspended: boolean;
     createdAt: string;
