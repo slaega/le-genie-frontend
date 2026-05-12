@@ -2,7 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { ApiError, type AuthTokens } from './types';
 
-const BASE = process.env.API_BASE_URL ?? '';
+const BASE = (process.env.API_BASE_URL ?? '').replace(/\/$/, '');
 
 async function serverFetch<T>(path: string, init?: RequestInit): Promise<T> {
     const jar = await cookies();
@@ -15,7 +15,8 @@ async function serverFetch<T>(path: string, init?: RequestInit): Promise<T> {
         ...(init?.headers ?? {}),
     };
 
-    const res = await fetch(`${BASE}${path}`, {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const res = await fetch(`${BASE}${normalizedPath}`, {
         ...init,
         headers,
         next: { revalidate: 0 },
