@@ -1,177 +1,182 @@
-export type PostStatus = 'EMPTY' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+export type PostStatus = 'EMPTY' | 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
-export type UserRole = 'USER' | 'ADMIN'
+export type UserRole = 'USER' | 'ADMIN';
 
 export interface User {
-  id: string
-  email: string
-  name: string
-  avatarPath: string | null
-  coverPath: string | null
-  professionalRole: string | null
-  role: UserRole
-  suspended: boolean
-  createdAt: string
-  updatedAt: string
+    id: string;
+    email: string;
+    name: string;
+    avatarPath: string | null;
+    coverPath: string | null;
+    professionalRole: string | null;
+    role: UserRole;
+    suspended: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface AdminUser {
-  id: string
-  name: string
-  email: string
-  avatarPath: string | null
-  role: UserRole
-  suspended: boolean
-  createdAt: string
-  _count: { contributors: number; comments: number }
+    id: string;
+    name: string;
+    email: string;
+    avatarPath: string | null;
+    role: UserRole;
+    suspended: boolean;
+    createdAt: string;
+    _count: { contributors: number; comments: number };
 }
 
 export interface AdminPost {
-  id: string
-  title: string
-  status: PostStatus
-  readingTime: number | null
-  createdAt: string
-  updatedAt: string
-  contributors: Array<{ user: { id: string; name: string; email: string } }>
-  _count: { comments: number; likes: number }
+    id: string;
+    title: string;
+    status: PostStatus;
+    readingTime: number | null;
+    createdAt: string;
+    updatedAt: string;
+    contributors: Array<{ user: { id: string; name: string; email: string } }>;
+    _count: { comments: number; likes: number };
 }
 
 export interface AdminStats {
-  totalUsers: number
-  totalPosts: number
-  totalComments: number
-  totalSubscribers: number
-  totalFollows: number
-  postsByStatus: { PUBLISHED: number; DRAFT: number; EMPTY: number; ARCHIVED: number }
+    totalUsers: number;
+    totalPosts: number;
+    totalComments: number;
+    totalSubscribers: number;
+    totalFollows: number;
+    postsByStatus: {
+        PUBLISHED: number;
+        DRAFT: number;
+        EMPTY: number;
+        ARCHIVED: number;
+    };
 }
 
 export interface AdminSubscriber {
-  id: string
-  email: string
-  createdAt: string
+    id: string;
+    email: string;
+    createdAt: string;
 }
 
 export interface Contributor {
-  id: string
-  postId: string
-  userId: string
-  owner: boolean
-  user: User
-  createdAt: string
-  updatedAt: string
+    id: string;
+    postId: string;
+    userId: string;
+    owner: boolean;
+    user: User;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface PostTag {
-  id: string
-  postId: string
-  name: string
+    id: string;
+    postId: string;
+    name: string;
 }
 
 export interface Post {
-  id: string
-  title: string
-  content: Record<string, unknown> | null
-  imagePath: string | null
-  status: PostStatus
-  scheduledAt: string | null
-  readingTime: number
-  commentsCount: number
-  contributors: Contributor[]
-  postTags: PostTag[]
-  createdAt: string
-  updatedAt: string
+    id: string;
+    title: string;
+    content: Record<string, unknown> | null;
+    imagePath: string | null;
+    status: PostStatus;
+    scheduledAt: string | null;
+    readingTime: number;
+    commentsCount: number;
+    contributors: Contributor[];
+    postTags: PostTag[];
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Comment {
-  id: string
-  content: string
-  refactorAt: string | null
-  postId: string
-  userId: string
-  user: User
-  createdAt: string
-  updatedAt: string
+    id: string;
+    content: string;
+    refactorAt: string | null;
+    postId: string;
+    userId: string;
+    user: User;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Invitation {
-  id: string
-  email: string
-  content: string | null
-  postId: string
-  token: string
-  expiredAt: string
-  createdAt: string
-  updatedAt: string
+    id: string;
+    email: string;
+    content: string | null;
+    postId: string;
+    token: string;
+    expiredAt: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface PaginatedResponse<T> {
-  items: T[]
-  total: number
-  page: number
-  limit: number
-  hasNextPage: boolean
+    items: T[];
+    total: number;
+    page: number;
+    limit: number;
+    hasNextPage: boolean;
 }
 
 export interface AuthTokens {
-  accessToken: string
-  refreshToken: string
+    accessToken: string;
+    refreshToken: string;
 }
 
 export class ApiError extends Error {
-  constructor(
-    public readonly status: number,
-    message: string,
-    public readonly data?: unknown,
-  ) {
-    super(message)
-    this.name = 'ApiError'
-  }
+    constructor(
+        public readonly status: number,
+        message: string,
+        public readonly data?: unknown
+    ) {
+        super(message);
+        this.name = 'ApiError';
+    }
 }
 
 export interface UpdatePostPayload {
-  title?: string
-  content?: Record<string, unknown>
-  status?: PostStatus
-  scheduledAt?: string | null
+    title?: string;
+    content?: Record<string, unknown>;
+    status?: PostStatus;
+    scheduledAt?: string | null;
 }
 
 export interface SendInvitationPayload {
-  email: string
-  content?: string
+    email: string;
+    content?: string;
 }
 
 export interface CreateCommentPayload {
-  content: string
+    content: string;
 }
 
 export interface UpdateCommentPayload {
-  content: string
+    content: string;
 }
 
-export type NotificationType = 'NEW_POST' | 'NEW_FOLLOWER' | 'NEW_COMMENT'
+export type NotificationType = 'NEW_POST' | 'NEW_FOLLOWER' | 'NEW_COMMENT';
 
 export interface Notification {
-  id: string
-  userId: string
-  type: NotificationType
-  title: string
-  body: string | null
-  postId: string | null
-  read: boolean
-  createdAt: string
+    id: string;
+    userId: string;
+    type: NotificationType;
+    title: string;
+    body: string | null;
+    postId: string | null;
+    read: boolean;
+    createdAt: string;
 }
 
 export interface NotificationList {
-  items: Notification[]
-  unreadCount: number
+    items: Notification[];
+    unreadCount: number;
 }
 
 export interface PostsQueryParams {
-  page?: number
-  limit?: number
-  status?: PostStatus
-  tags?: string[]
-  /** Filtre sur les posts de l'utilisateur connecté (backend: ?me=true) */
-  me?: boolean
+    page?: number;
+    limit?: number;
+    status?: PostStatus;
+    tags?: string[];
+    /** Filtre sur les posts de l'utilisateur connecté (backend: ?me=true) */
+    me?: boolean;
 }

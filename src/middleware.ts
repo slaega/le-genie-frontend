@@ -14,17 +14,26 @@ const isProtectedRoute = createRouteMatcher([
 export default function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Allow static files
+    // Static files — pass through
     if (pathname === '/sitemap.xml' || pathname === '/robots.txt') {
         return NextResponse.next();
     }
 
     const accessToken = request.cookies.get('access_token')?.value;
-    const locale = pathname.match(/^\/([^/]+)/)?.[1] ?? '';
 
-    // Protected route without a session → redirect to sign-in
+    // For /api/* requests: inject Authorization header so NestJS receives it
+    // via the next.config.ts rewrite proxy (no fetch, no latency)
+    if (pathname.startsWith('/api/')) {
+        if (!accessToken) return NextResponse.next();
+        const headers = new Headers(request.headers);
+        headers.set('Authorization', `Bearer ${accessToken}`);
+        return NextResponse.next({ request: { headers } });
+    }
+
+    // Protected pages — redirect to sign-in if no session
     if (isProtectedRoute(request) && !accessToken) {
-        let pathWithoutLocale = pathname.startsWith(`/${locale}`)
+        const locale = pathname.match(/^\/([^/]+)/)?.[1] ?? '';
+        const pathWithoutLocale = pathname.startsWith(`/${locale}`)
             ? pathname.slice(`/${locale}`.length) || '/'
             : pathname;
 

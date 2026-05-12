@@ -13,25 +13,31 @@ import { routing } from './i18nNavigation';
 
 // Using internationalization in Server Components (next-intl v4)
 export default getRequestConfig(async ({ locale }) => {
-  // Validate that the incoming `locale` parameter is valid
-  let validLocale = locale;
-  if (!validLocale || !routing.locales.includes(validLocale)) {
-    validLocale = routing.defaultLocale;
-  }
+    // Validate that the incoming `locale` parameter is valid
+    let validLocale = locale;
+    if (!validLocale || !routing.locales.includes(validLocale)) {
+        validLocale = routing.defaultLocale;
+    }
 
-  try {
-    const messages = (await import(`../locales/${validLocale}.json`)).default;
-    return {
-      locale: validLocale,
-      messages,
-    };
-  } catch (error) {
-    console.error(`Failed to load messages for locale: ${validLocale}`, error);
-    // Fallback to default locale if translation file not found
-    const fallbackMessages = (await import(`../locales/${routing.defaultLocale}.json`)).default;
-    return {
-      locale: routing.defaultLocale,
-      messages: fallbackMessages,
-    };
-  }
+    try {
+        const messages = (await import(`../locales/${validLocale}.json`))
+            .default;
+        return {
+            locale: validLocale,
+            messages,
+        };
+    } catch (error) {
+        console.error(
+            `Failed to load messages for locale: ${validLocale}`,
+            error
+        );
+        // Fallback to default locale if translation file not found
+        const fallbackMessages = (
+            await import(`../locales/${routing.defaultLocale}.json`)
+        ).default;
+        return {
+            locale: routing.defaultLocale,
+            messages: fallbackMessages,
+        };
+    }
 });

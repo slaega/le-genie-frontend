@@ -27,6 +27,24 @@ export default withSentryConfig(
         withNextIntl({
             poweredByHeader: false,
             reactStrictMode: true,
+            /**
+             * Proxy natif Next.js — remplace tous les route handlers /api/*.
+             * afterFiles = les route handlers existants (ex: /api/auth/refresh)
+             * gardent la priorité ; tout le reste est forwardé à NestJS.
+             */
+            async rewrites() {
+                const nestUrl = (
+                    process.env.API_BASE_URL ?? 'http://localhost:3030/api/'
+                ).replace(/\/$/, '')
+                return {
+                    afterFiles: [
+                        {
+                            source: '/api/:path*',
+                            destination: `${nestUrl}/:path*`,
+                        },
+                    ],
+                }
+            },
             async headers() {
                 return [
                     {

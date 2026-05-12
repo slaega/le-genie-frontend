@@ -170,7 +170,7 @@ export const handleImageUpload = async (
     // Simulate upload progress for the determined URL (actual or placeholder)
     for (let progress = 0; progress <= 100; progress += 10) {
         if (abortSignal?.aborted) {
-            // If the operation is aborted during progress simulation, 
+            // If the operation is aborted during progress simulation,
             // it implies the (real or simulated) upload should be considered cancelled.
             throw new Error('Upload cancelled');
         }
