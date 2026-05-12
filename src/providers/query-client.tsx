@@ -1,8 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState, type ReactNode } from 'react';
+import React, { useState, useEffect, useRef, type ReactNode } from 'react';
 
 function makeQueryClient() {
     return new QueryClient({
@@ -28,12 +27,28 @@ function getQueryClient() {
     return browserClient;
 }
 
+// Devtools are loaded lazily after hydration — no SSR, no hydration mismatch.
+function DevtoolsLazy() {
+    const [Devtools, setDevtools] = useState<React.ComponentType | null>(null);
+    const loadedRef = useRef(false);
+
+    useEffect(() => {
+        if (loadedRef.current || process.env.NODE_ENV !== 'development') return;
+        loadedRef.current = true;
+        import('@tanstack/react-query-devtools').then((m) => {
+            setDevtools(() => () => <m.ReactQueryDevtools initialIsOpen={false} />);
+        });
+    }, []);
+
+    return Devtools ? <Devtools /> : null;
+}
+
 export function QueryProvider({ children }: { children: ReactNode }) {
     const [client] = useState(() => getQueryClient());
     return (
         <QueryClientProvider client={client}>
             {children}
-            <ReactQueryDevtools initialIsOpen={false} />
+            <DevtoolsLazy />
         </QueryClientProvider>
     );
 }
