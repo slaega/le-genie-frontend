@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { serverApi } from '@/lib/api/server';
 import { ApiError } from '@/lib/api/types';
 import type { Post } from '@/lib/api/types';
+import { postUrl } from '@/lib/post-url';
 import { MainLayout } from '@/components/templates/main-layout';
 import { UserAvatar } from '@/components/atoms/user-avatar';
 import { PostCard } from '@/components/molecules/post-card';
@@ -116,7 +117,7 @@ export default async function AuthorPage({ params }: Props) {
                             <PostCard
                                 key={post.id}
                                 post={post}
-                                href={`/post/${post.id}`}
+                                href={postUrl(post)}
                                 variant="vertical"
                             />
                         ))}

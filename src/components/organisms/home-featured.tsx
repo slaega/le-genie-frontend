@@ -7,6 +7,7 @@ import { fr } from 'date-fns/locale';
 import { PostCard, PostCardSkeleton } from '@/components/molecules/post-card';
 import { usePosts } from '@/hooks/queries/use-posts';
 import type { Post } from '@/lib/api/types';
+import { postUrl } from '@/lib/post-url';
 
 /**
  * A small horizontal card rendered on the dark featured background.
@@ -22,7 +23,7 @@ function PopularCard({ post }: { post: Post }) {
 
     return (
         <Link
-            href={`/post/${post.id}`}
+            href={postUrl(post)}
             className="group flex gap-3 items-start"
         >
             {/* Thumbnail */}
@@ -108,7 +109,7 @@ export function HomeFeatured({ tags }: HomeFeaturedProps) {
                                 {first && (
                                     <PostCard
                                         post={first}
-                                        href={`/post/${first.id}`}
+                                        href={postUrl(first)}
                                         variant="featured"
                                         className="min-h-[300px]"
                                     />
@@ -116,7 +117,7 @@ export function HomeFeatured({ tags }: HomeFeaturedProps) {
                                 {second && (
                                     <PostCard
                                         post={second}
-                                        href={`/post/${second.id}`}
+                                        href={postUrl(second)}
                                         variant="featured"
                                         className="min-h-[300px]"
                                     />

@@ -1,6 +1,7 @@
 import { serverApi } from '@/lib/api/server';
 import type { Post } from '@/lib/api/types';
 import { PostCard } from '@/components/molecules/post-card';
+import { postUrl } from '@/lib/post-url';
 
 interface RelatedPostsProps {
     postId: string;
@@ -22,7 +23,7 @@ export async function RelatedPosts({ postId }: RelatedPostsProps) {
             <h2 className="text-xl font-bold mb-6">Articles similaires</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {posts.map((p) => (
-                    <PostCard key={p.id} post={p} href={`/post/${p.id}`} />
+                    <PostCard key={p.id} post={p} href={postUrl(p)} />
                 ))}
             </div>
         </section>

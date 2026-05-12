@@ -27,9 +27,9 @@ export default async function AdminLayout({ children, params }: Props) {
     }
 
     return (
-        <div className="min-h-screen flex bg-gray-950 text-white">
+        <div className="min-h-screen flex bg-background text-foreground">
             <AdminSidebar user={me} />
-            <main className="flex-1 overflow-y-auto p-8">{children}</main>
+            <main className="flex-1 overflow-y-auto bg-background px-8 py-8">{children}</main>
         </div>
     );
 }

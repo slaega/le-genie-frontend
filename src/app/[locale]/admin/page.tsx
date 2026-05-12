@@ -35,31 +35,31 @@ export default async function AdminDashboard() {
             label: 'Utilisateurs',
             value: stats.totalUsers,
             icon: Users,
-            color: 'text-blue-400',
+            color: 'text-blue-500',
         },
         {
             label: 'Publications',
             value: stats.totalPosts,
             icon: FileText,
-            color: 'text-green-400',
+            color: 'text-green-500',
         },
         {
             label: 'Commentaires',
             value: stats.totalComments,
             icon: MessageSquare,
-            color: 'text-yellow-400',
+            color: 'text-yellow-500',
         },
         {
             label: 'Abonnés newsletter',
             value: stats.totalSubscribers,
             icon: Mail,
-            color: 'text-purple-400',
+            color: 'text-purple-500',
         },
         {
             label: 'Abonnements (follow)',
             value: stats.totalFollows,
             icon: Heart,
-            color: 'text-rose-400',
+            color: 'text-rose-500',
         },
     ];
 
@@ -68,25 +68,25 @@ export default async function AdminDashboard() {
             label: 'Publiés',
             value: stats.postsByStatus.PUBLISHED,
             icon: BookOpen,
-            color: 'text-green-400',
+            color: 'text-green-500',
         },
         {
             label: 'Brouillons',
             value: stats.postsByStatus.DRAFT,
             icon: PenLine,
-            color: 'text-yellow-400',
+            color: 'text-yellow-500',
         },
         {
             label: 'Archivés',
             value: stats.postsByStatus.ARCHIVED,
             icon: Archive,
-            color: 'text-gray-400',
+            color: 'text-muted-foreground',
         },
         {
             label: 'Vides',
             value: stats.postsByStatus.EMPTY,
             icon: FileText,
-            color: 'text-gray-600',
+            color: 'text-muted-foreground/60',
         },
     ];
 
@@ -94,9 +94,9 @@ export default async function AdminDashboard() {
         <div className="space-y-10">
             <div className="flex items-start justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold">Dashboard</h1>
-                    <p className="text-gray-400 text-sm mt-1">
-                        Vue d'ensemble de la plateforme
+                    <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+                    <p className="text-muted-foreground text-sm mt-1">
+                        Vue d&apos;ensemble de la plateforme
                     </p>
                 </div>
                 <OnlineCounter />
@@ -104,21 +104,21 @@ export default async function AdminDashboard() {
 
             {/* Global stats */}
             <section>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
                     Chiffres globaux
                 </h2>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                     {globalCards.map(({ label, value, icon: Icon, color }) => (
                         <div
                             key={label}
-                            className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col gap-3"
+                            className="bg-card border border-border rounded-xl p-5 flex flex-col gap-3"
                         >
                             <Icon className={`h-5 w-5 ${color}`} />
                             <div>
-                                <p className="text-2xl font-bold">
+                                <p className="text-2xl font-bold text-foreground">
                                     {value.toLocaleString('fr-FR')}
                                 </p>
-                                <p className="text-xs text-gray-400 mt-0.5">
+                                <p className="text-xs text-muted-foreground mt-0.5">
                                     {label}
                                 </p>
                             </div>
@@ -129,25 +129,25 @@ export default async function AdminDashboard() {
 
             {/* Posts by status */}
             <section>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
                     Articles par statut
                 </h2>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {statusCards.map(({ label, value, icon: Icon, color }) => (
                         <div
                             key={label}
-                            className="bg-gray-900 border border-gray-800 rounded-xl p-5 flex items-center gap-4"
+                            className="bg-card border border-border rounded-xl p-5 flex items-center gap-4"
                         >
                             <div
-                                className={`p-2 rounded-lg bg-gray-800 ${color}`}
+                                className={`p-2 rounded-lg bg-muted ${color}`}
                             >
                                 <Icon className="h-4 w-4" />
                             </div>
                             <div>
-                                <p className="text-xl font-bold">
+                                <p className="text-xl font-bold text-foreground">
                                     {value.toLocaleString('fr-FR')}
                                 </p>
-                                <p className="text-xs text-gray-400">{label}</p>
+                                <p className="text-xs text-muted-foreground">{label}</p>
                             </div>
                         </div>
                     ))}
@@ -156,7 +156,7 @@ export default async function AdminDashboard() {
 
             {/* Quick links */}
             <section>
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
                     Actions rapides
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -183,14 +183,14 @@ export default async function AdminDashboard() {
                         <a
                             key={href}
                             href={href}
-                            className="flex items-center gap-4 bg-gray-900 border border-gray-800 hover:border-indigo-600/50 rounded-xl p-4 transition-colors group"
+                            className="flex items-center gap-4 bg-card border border-border hover:border-primary/50 rounded-xl p-4 transition-colors group"
                         >
-                            <div className="p-2 rounded-lg bg-indigo-600/10 text-indigo-400 group-hover:bg-indigo-600/20 transition-colors">
+                            <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
                                 <Icon className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="font-medium text-sm">{label}</p>
-                                <p className="text-xs text-gray-500">{desc}</p>
+                                <p className="font-medium text-sm text-foreground">{label}</p>
+                                <p className="text-xs text-muted-foreground">{desc}</p>
                             </div>
                         </a>
                     ))}

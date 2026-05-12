@@ -6,6 +6,7 @@ import { fr } from 'date-fns/locale';
 import { Search } from 'lucide-react';
 import { serverApi } from '@/lib/api/server';
 import type { PaginatedResponse, Post } from '@/lib/api/types';
+import { postUrl } from '@/lib/post-url';
 import { MainLayout } from '@/components/templates/main-layout';
 import { Badge } from '@/components/ui/badge';
 import { UserAvatar } from '@/components/atoms/user-avatar';
@@ -82,7 +83,7 @@ export default async function SearchPage({ searchParams }: Props) {
                             return (
                                 <li key={post.id}>
                                     <Link
-                                        href={`/post/${post.id}`}
+                                        href={postUrl(post)}
                                         className="group flex gap-4 rounded-xl border bg-card p-4 hover:shadow-md transition-shadow"
                                     >
                                         {post.imagePath && (

@@ -31,18 +31,16 @@ export const postsApi = {
         return api.post<Post>(base);
     },
 
-    update(id: string, payload: UpdatePostPayload) {
-        return api.patch<Post>(`${base}/${id}`, payload);
-    },
-
-    updateWithCover(id: string, payload: UpdatePostPayload, cover?: File) {
+    update(id: string, payload: UpdatePostPayload, cover?: File) {
+        // Always multipart — controller uses @FormDataRequest()
         const form = new FormData();
         if (payload.title !== undefined) form.append('title', payload.title);
         if (payload.content !== undefined)
             form.append('content', JSON.stringify(payload.content));
         if (payload.status !== undefined) form.append('status', payload.status);
-        if (payload.scheduledAt !== undefined)
-            form.append('scheduledAt', payload.scheduledAt ?? '');
+        // Only send scheduledAt when it's a real date string — null/undefined = omit
+        // (backend auto-clears scheduledAt when transitioning to PUBLISHED)
+        if (payload.scheduledAt) form.append('scheduledAt', payload.scheduledAt);
         if (cover) form.append('imageFile', cover);
         return api.patch<Post>(`${base}/${id}`, form);
     },

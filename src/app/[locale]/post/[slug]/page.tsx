@@ -18,12 +18,12 @@ import { LikeButton } from '@/components/molecules/like-button';
 import { ViewCounter } from '@/components/molecules/view-counter';
 import { FollowButton } from '@/components/molecules/follow-button';
 
-type Props = { params: Promise<{ locale: string; id: string }> };
+type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { id } = await params;
+    const { slug } = await params;
     try {
-        const post = await serverApi.get<Post>(`posts/${id}`);
+        const post = await serverApi.get<Post>(`posts/${slug}`);
         return {
             title: `${post.title} — Le Génie`,
             openGraph: {
@@ -37,11 +37,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PostPage({ params }: Props) {
-    const { id } = await params;
+    const { slug } = await params;
 
     let post: Post;
     try {
-        post = await serverApi.get<Post>(`posts/${id}`);
+        post = await serverApi.get<Post>(`posts/${slug}`);
     } catch (err) {
         if (err instanceof ApiError && err.status === 404) notFound();
         throw err;

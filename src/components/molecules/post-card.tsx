@@ -6,14 +6,19 @@ import { Clock, MessageSquare, Users } from 'lucide-react';
 import { StatusBadge } from '@/components/atoms/status-badge';
 import { UserAvatar } from '@/components/atoms/user-avatar';
 import type { Post } from '@/lib/api/types';
-import { cn } from '@/lib/utils';
+import { cn, extractExcerpt, formatDate } from '@/lib/utils';
 
 interface PostCardProps {
     post: Post;
     href: string;
     showStatus?: boolean;
-    /** 'vertical' = grid card (default), 'featured' = large overlay card, 'horizontal' = thumbnail + text */
-    variant?: 'vertical' | 'featured' | 'horizontal';
+    /**
+     * 'vertical'   = grid card (default)
+     * 'featured'   = large overlay card (dark hero)
+     * 'horizontal' = thumbnail left + text right
+     * 'blog'       = Supabase-style editorial card
+     */
+    variant?: 'vertical' | 'featured' | 'horizontal' | 'blog';
     className?: string;
 }
 
@@ -149,6 +154,75 @@ export function PostCard({
         );
     }
 
+    /* ── Blog: editorial card (Supabase-style) ──────────────────────────── */
+    if (variant === 'blog') {
+        const excerpt = extractExcerpt(post.content);
+        return (
+            <Link
+                href={href}
+                className={cn('group flex flex-col gap-4', className)}
+            >
+                {/* Image */}
+                <div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
+                    {post.imagePath ? (
+                        <Image
+                            src={post.imagePath}
+                            alt={post.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
+                            <span className="text-5xl font-black text-primary/15 select-none">
+                                {post.title.charAt(0).toUpperCase()}
+                            </span>
+                        </div>
+                    )}
+                    {/* Category chip on image */}
+                    {category && (
+                        <span className="absolute top-3 left-3 text-[11px] font-semibold uppercase tracking-wider bg-background/90 backdrop-blur-sm text-foreground px-2.5 py-1 rounded-full border border-border/50">
+                            {category}
+                        </span>
+                    )}
+                </div>
+
+                {/* Meta + content */}
+                <div className="flex flex-col gap-2 flex-1">
+                    <p className="text-xs text-muted-foreground">
+                        {formatDate(post.createdAt)}
+                        {post.readingTime > 0 && (
+                            <> · {post.readingTime} min de lecture</>
+                        )}
+                    </p>
+                    <h3 className="font-semibold text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                        {post.title || 'Sans titre'}
+                    </h3>
+                    {excerpt && (
+                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                            {excerpt}
+                        </p>
+                    )}
+                </div>
+
+                {/* Author */}
+                {owner && (
+                    <div className="flex items-center gap-2 mt-auto">
+                        <UserAvatar
+                            name={owner.user.name}
+                            avatarPath={owner.user.avatarPath}
+                            size="sm"
+                            className="h-6 w-6"
+                        />
+                        <span className="text-xs text-muted-foreground font-medium">
+                            {owner.user.name}
+                        </span>
+                    </div>
+                )}
+            </Link>
+        );
+    }
+
     /* ── Vertical (default): grid card ───────────────────────────────────── */
     return (
         <div
@@ -241,6 +315,28 @@ export function PostCardSkeleton({
 }: {
     variant?: PostCardProps['variant'];
 }) {
+    if (variant === 'blog') {
+        return (
+            <div className="flex flex-col gap-4 animate-pulse">
+                <div className="aspect-video rounded-lg bg-muted" />
+                <div className="space-y-2">
+                    <div className="h-3 w-28 bg-muted rounded" />
+                    <div className="h-4 w-full bg-muted rounded" />
+                    <div className="h-4 w-3/4 bg-muted rounded" />
+                </div>
+                <div className="space-y-1.5">
+                    <div className="h-3 w-full bg-muted rounded" />
+                    <div className="h-3 w-full bg-muted rounded" />
+                    <div className="h-3 w-2/3 bg-muted rounded" />
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-full bg-muted" />
+                    <div className="h-3 w-24 bg-muted rounded" />
+                </div>
+            </div>
+        );
+    }
+
     if (variant === 'horizontal') {
         return (
             <div className="flex gap-4 items-start">

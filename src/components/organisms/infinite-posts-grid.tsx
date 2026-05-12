@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useInfinitePosts } from '@/hooks/queries/use-posts';
 import { BookOpen, Loader2 } from 'lucide-react';
 import type { PostsQueryParams } from '@/lib/api/types';
+import { postUrl } from '@/lib/post-url';
 
 interface InfinitePostsGridProps {
     params?: Omit<PostsQueryParams, 'page'>;
@@ -52,7 +53,7 @@ export function InfinitePostsGrid({
                     <PostCard
                         key={post.id}
                         post={post}
-                        href={`/post/${post.id}`}
+                        href={postUrl(post)}
                         showStatus={showStatus}
                     />
                 ))}

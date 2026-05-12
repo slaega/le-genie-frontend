@@ -14,15 +14,10 @@ export const Env = createEnv({
         NEXT_PUBLIC_APP_URL: z.string().optional(),
         NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
         NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional().default(''),
-        NEXT_PUBLIC_GITHUB_CLIENT_ID: z.string().optional().default(''),
-        NEXT_PUBLIC_MICROSOFT_CLIENT_ID: z.string().optional().default(''),
-        NEXT_PUBLIC_REDIRECT_URI: z.string().optional().default(''),
     },
     shared: {
         NODE_ENV: z.enum(['test', 'development', 'production']).optional(),
     },
-    // You need to destructure all the keys manually
     runtimeEnv: {
         LOGTAIL_SOURCE_TOKEN: process.env.LOGTAIL_SOURCE_TOKEN,
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
@@ -30,10 +25,5 @@ export const Env = createEnv({
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
         API_BASE_URL: process.env.API_BASE_URL,
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        NEXT_PUBLIC_GITHUB_CLIENT_ID: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
-        NEXT_PUBLIC_MICROSOFT_CLIENT_ID:
-            process.env.NEXT_PUBLIC_MICROSOFT_CLIENT_ID,
-        NEXT_PUBLIC_REDIRECT_URI: process.env.NEXT_PUBLIC_REDIRECT_URI,
     },
 });

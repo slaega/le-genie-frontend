@@ -75,6 +75,7 @@ export interface PostTag {
 
 export interface Post {
     id: string;
+    slug: string | null;
     title: string;
     content: Record<string, unknown> | null;
     imagePath: string | null;

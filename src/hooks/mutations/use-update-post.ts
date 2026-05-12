@@ -13,9 +13,7 @@ export function useUpdatePost() {
     const qc = useQueryClient();
     return useMutation({
         mutationFn: ({ id, payload, cover }: UpdatePostVars) =>
-            cover
-                ? postsApi.updateWithCover(id, payload, cover)
-                : postsApi.update(id, payload),
+            postsApi.update(id, payload, cover),
         onSuccess: (post: Post) => {
             qc.setQueryData(postKeys.detail(post.id), post);
             qc.invalidateQueries({ queryKey: postKeys.lists() });

@@ -15,6 +15,7 @@ import { postsApi } from '@/lib/api';
 
 const mockPost: Post = {
     id: 'post-1',
+    slug: 'test-post',
     title: 'Test Post',
     content: null,
     imagePath: null,

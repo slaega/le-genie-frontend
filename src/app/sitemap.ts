@@ -37,7 +37,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
 ];
 
 async function fetchPublishedPosts(): Promise<
-    Array<{ id: string; updatedAt: string }>
+    Array<{ id: string; slug: string | null; updatedAt: string }>
 > {
     try {
         const apiUrl = process.env.API_INTERNAL_URL ?? 'http://localhost:3030';
@@ -45,7 +45,7 @@ async function fetchPublishedPosts(): Promise<
             next: { revalidate: 3600 },
         });
         if (!res.ok) return [];
-        const data: { items?: Array<{ id: string; updatedAt: string }> } =
+        const data: { items?: Array<{ id: string; slug: string | null; updatedAt: string }> } =
             await res.json();
         return data.items ?? [];
     } catch {
@@ -77,7 +77,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-        url: `${base}/post/${post.id}`,
+        url: `${base}/post/${post.slug ?? post.id}`,
         lastModified: new Date(post.updatedAt),
         changeFrequency: 'weekly' as const,
         priority: 0.7,

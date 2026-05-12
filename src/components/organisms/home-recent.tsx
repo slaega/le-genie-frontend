@@ -2,6 +2,7 @@
 
 import { PostCard, PostCardSkeleton } from '@/components/molecules/post-card';
 import { usePosts } from '@/hooks/queries/use-posts';
+import { postUrl } from '@/lib/post-url';
 
 interface HomeRecentProps {
     tags?: string[];
@@ -39,7 +40,7 @@ export function HomeRecent({ tags }: HomeRecentProps) {
                           <PostCard
                               key={post.id}
                               post={post}
-                              href={`/post/${post.id}`}
+                              href={postUrl(post)}
                               variant="horizontal"
                           />
                       ))}

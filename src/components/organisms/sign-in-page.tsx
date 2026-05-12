@@ -16,48 +16,11 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { sendOtp, verifyOtp } from '@/app/actions/auth';
-import { Env } from '@/libs/Env';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type OAuthProvider = 'GOOGLE' | 'GITHUB' | 'MICROSOFT';
+type OAuthProvider = 'github' | 'google' | 'microsoft';
 type AuthTab = 'oauth' | 'otp-email' | 'otp-code';
-
-// ─── OAuth URL builder ────────────────────────────────────────────────────────
-
-function buildOAuthUrl(provider: OAuthProvider): string {
-    const callbackUri = encodeURIComponent(Env.NEXT_PUBLIC_REDIRECT_URI);
-
-    switch (provider) {
-        case 'GOOGLE':
-            return (
-                `https://accounts.google.com/o/oauth2/v2/auth` +
-                `?client_id=${Env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}` +
-                `&redirect_uri=${callbackUri}` +
-                `&response_type=code` +
-                `&scope=${encodeURIComponent('openid email profile')}` +
-                `&state=GOOGLE`
-            );
-        case 'GITHUB':
-            return (
-                `https://github.com/login/oauth/authorize` +
-                `?client_id=${Env.NEXT_PUBLIC_GITHUB_CLIENT_ID}` +
-                `&redirect_uri=${callbackUri}` +
-                `&scope=${encodeURIComponent('user:email')}` +
-                `&state=GITHUB`
-            );
-        case 'MICROSOFT':
-            return (
-                `https://login.microsoftonline.com/common/oauth2/v2.0/authorize` +
-                `?client_id=${Env.NEXT_PUBLIC_MICROSOFT_CLIENT_ID}` +
-                `&redirect_uri=${callbackUri}` +
-                `&response_type=code` +
-                `&scope=${encodeURIComponent('openid email profile')}` +
-                `&state=MICROSOFT` +
-                `&response_mode=query`
-            );
-    }
-}
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -90,14 +53,14 @@ function OAuthButtons({
                 variant="outline"
                 size="lg"
                 disabled={!!loading}
-                onClick={() => onOAuth('GOOGLE')}
+                onClick={() => onOAuth('google')}
             >
-                {loading === 'GOOGLE' ? (
+                {loading === 'google' ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                     <Globe className="h-4 w-4" />
                 )}
-                {loading === 'GOOGLE'
+                {loading === 'google'
                     ? 'Redirection...'
                     : 'Continuer avec Google'}
             </Button>
@@ -107,14 +70,14 @@ function OAuthButtons({
                 variant="outline"
                 size="lg"
                 disabled={!!loading}
-                onClick={() => onOAuth('GITHUB')}
+                onClick={() => onOAuth('github')}
             >
-                {loading === 'GITHUB' ? (
+                {loading === 'github' ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                     <Github className="h-4 w-4" />
                 )}
-                {loading === 'GITHUB'
+                {loading === 'github'
                     ? 'Redirection...'
                     : 'Continuer avec GitHub'}
             </Button>
@@ -124,14 +87,14 @@ function OAuthButtons({
                 variant="outline"
                 size="lg"
                 disabled={!!loading}
-                onClick={() => onOAuth('MICROSOFT')}
+                onClick={() => onOAuth('microsoft')}
             >
-                {loading === 'MICROSOFT' ? (
+                {loading === 'microsoft' ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                     <MicrosoftIcon className="h-4 w-4" />
                 )}
-                {loading === 'MICROSOFT'
+                {loading === 'microsoft'
                     ? 'Redirection...'
                     : 'Continuer avec Microsoft'}
             </Button>
@@ -363,31 +326,59 @@ export function SignInPage() {
     const redirectTo = decodeURIComponent(searchParams.get('redirect') ?? '/');
     const oauthError = searchParams.get('error');
 
-    // Surface OAuth errors forwarded by the callback route
+    // Surface errors forwarded by the NestJS social callback
     useEffect(() => {
         if (oauthError) toast.error('Connexion OAuth échouée. Réessayez.');
     }, [oauthError]);
 
-    // Navigate the current window to the OAuth provider — no popup needed
+    /**
+     * Redirect the current window to NestJS via the Next.js proxy.
+     * NestJS handles the full OAuth dance and sets httpOnly cookies.
+     * The browser never sees port 3030.
+     */
     function startOAuth(provider: OAuthProvider) {
         setOauthLoading(provider);
-        window.location.href = buildOAuthUrl(provider);
+        window.location.href = `/api/auth/${provider}`;
     }
 
     return (
         <div className="min-h-screen flex">
-            {/* Form panel */}
-            <div className="w-full max-w-md flex flex-col justify-center px-10 py-16 bg-background border-r">
-                <div className="space-y-8">
-                    {/* Logo */}
-                    <div className="flex items-center gap-2">
+            {/* Left panel — inverted (dark in light mode, light in dark mode) */}
+            <div className="hidden md:flex w-[45%] shrink-0 flex-col bg-foreground text-background px-12 py-10">
+                {/* Logo */}
+                <div className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    <span className="text-base font-bold">Le Génie</span>
+                </div>
+
+                {/* Tagline — centered */}
+                <div className="flex-1 flex items-center">
+                    <blockquote className="max-w-sm">
+                        <p className="text-3xl font-semibold italic leading-snug opacity-90">
+                            &ldquo;La connaissance prend de la valeur quand
+                            elle circule.&rdquo;
+                        </p>
+                    </blockquote>
+                </div>
+
+                {/* Bottom stats */}
+                <p className="text-xs opacity-40 tracking-wide">
+                    Plateforme collaborative · Accès libre · Sans mot de passe
+                </p>
+            </div>
+
+            {/* Right panel — auth form */}
+            <div className="flex-1 flex flex-col justify-center items-center px-8 py-16 bg-background">
+                <div className="w-full max-w-sm space-y-8">
+                    {/* Mobile logo */}
+                    <div className="flex items-center gap-2 md:hidden">
                         <BookOpen className="h-6 w-6 text-primary" />
                         <span className="text-xl font-bold">Le Génie</span>
                     </div>
 
                     {/* Title */}
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">
+                        <h1 className="text-2xl font-bold tracking-tight text-foreground">
                             Connexion
                         </h1>
                         <p className="text-muted-foreground text-sm mt-1">
@@ -437,19 +428,6 @@ export function SignInPage() {
                         </Link>
                     </p>
                 </div>
-            </div>
-
-            {/* Hero panel */}
-            <div className="hidden lg:flex flex-1 flex-col justify-center items-center px-16 bg-muted/30">
-                <blockquote className="max-w-md space-y-4">
-                    <p className="text-2xl font-semibold leading-relaxed">
-                        &ldquo;Partagez votre expertise avec une communauté de
-                        passionnés.&rdquo;
-                    </p>
-                    <footer className="text-muted-foreground text-sm">
-                        — L&apos;équipe Le Génie
-                    </footer>
-                </blockquote>
             </div>
         </div>
     );

@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { MainLayout } from '@/components/templates/main-layout';
+import { SiteHeader } from '@/components/organisms/site-header';
+import { SiteFooter } from '@/components/templates/site-footer';
 
 export default function ContactPage() {
     const [sending, setSending] = useState(false);
@@ -35,8 +36,10 @@ export default function ContactPage() {
     }
 
     return (
-        <MainLayout>
-            <div className="max-w-lg mx-auto py-16">
+        <div className="min-h-screen flex flex-col">
+            <SiteHeader />
+            <main className="flex-1">
+                <div className="max-w-lg mx-auto px-4 py-16">
                 <div className="text-center mb-10">
                     <h1 className="text-3xl font-bold tracking-tight mb-3">
                         Contactez-nous
@@ -108,7 +111,9 @@ export default function ContactPage() {
                         {sending ? 'Envoi en cours…' : 'Envoyer le message'}
                     </Button>
                 </form>
-            </div>
-        </MainLayout>
+                </div>
+            </main>
+            <SiteFooter />
+        </div>
     );
 }

@@ -36,12 +36,12 @@ export function AdminSidebar({ user }: { user: User }) {
     }
 
     return (
-        <aside className="w-60 shrink-0 flex flex-col bg-gray-900 border-r border-gray-800 min-h-screen">
+        <aside className="w-60 shrink-0 flex flex-col bg-sidebar border-r border-sidebar-border min-h-screen">
             {/* Logo */}
-            <div className="flex items-center gap-2 px-5 py-5 border-b border-gray-800">
-                <BookOpen className="h-5 w-5 text-indigo-400" />
-                <span className="font-bold text-sm">Le Génie</span>
-                <span className="ml-auto text-[10px] bg-indigo-600 text-white px-1.5 py-0.5 rounded font-semibold tracking-wider">
+            <div className="flex items-center gap-2 px-5 py-5 border-b border-sidebar-border">
+                <BookOpen className="h-5 w-5 text-primary" />
+                <span className="font-bold text-sm text-foreground">Le Génie</span>
+                <span className="ml-auto text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded font-semibold tracking-wider">
                     ADMIN
                 </span>
             </div>
@@ -57,19 +57,19 @@ export function AdminSidebar({ user }: { user: User }) {
                             className={cn(
                                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group',
                                 active
-                                    ? 'bg-indigo-600/20 text-indigo-300'
-                                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                    ? 'bg-primary/10 text-primary'
+                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                             )}
                         >
                             <Icon
                                 className={cn(
                                     'h-4 w-4 shrink-0',
-                                    active ? 'text-indigo-400' : ''
+                                    active ? 'text-primary' : ''
                                 )}
                             />
                             <span className="flex-1">{label}</span>
                             {active && (
-                                <ChevronRight className="h-3.5 w-3.5 text-indigo-400" />
+                                <ChevronRight className="h-3.5 w-3.5 text-primary" />
                             )}
                         </Link>
                     );
@@ -77,21 +77,21 @@ export function AdminSidebar({ user }: { user: User }) {
             </nav>
 
             {/* User */}
-            <div className="border-t border-gray-800 p-4 flex items-center gap-3">
+            <div className="border-t border-sidebar-border p-4 flex items-center gap-3">
                 <UserAvatar
                     name={user.name}
                     avatarPath={user.avatarPath}
                     size="sm"
                 />
                 <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{user.name}</p>
-                    <p className="text-[10px] text-gray-500 truncate">
+                    <p className="text-xs font-medium truncate text-foreground">{user.name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">
                         {user.email}
                     </p>
                 </div>
                 <Link
                     href="/"
-                    className="text-gray-500 hover:text-white transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                     title="Retour au site"
                 >
                     <LogOut className="h-4 w-4" />

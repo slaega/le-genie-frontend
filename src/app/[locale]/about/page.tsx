@@ -1,141 +1,136 @@
 import type { Metadata } from 'next';
-import { BookOpen, Users, Zap } from 'lucide-react';
+import { BookOpen, Globe, Lightbulb, Users } from 'lucide-react';
 import { MainLayout } from '@/components/templates/main-layout';
 
 export const metadata: Metadata = {
     title: 'À propos — Le Génie',
     description:
-        'Découvrez Le Génie, la plateforme communautaire dédiée au partage de connaissances techniques.',
+        'Le Génie, une plateforme créée par Seba Gedeon Matsoula Malonga pour partager la connaissance avec tous.',
 };
 
-const TEAM = [
-    {
-        name: 'Sofiane Aïssou',
-        role: 'Co-fondateur & CTO',
-        avatar: 'SA',
-        bio: 'Ingénieur logiciel passionné par les architectures distribuées et le DX.',
-    },
-    {
-        name: 'Lina Ouertatani',
-        role: 'Co-fondatrice & Design Lead',
-        avatar: 'LO',
-        bio: "Designer produit avec 8 ans d'expérience dans les interfaces à forte densité d'information.",
-    },
-    {
-        name: 'Karim Belhadj',
-        role: 'Ingénieur Backend',
-        avatar: 'KB',
-        bio: 'Spécialiste Node.js / NestJS, contributeur open-source et amoureux des API bien designées.',
-    },
-];
-
-const MISSION = [
+const VALUES = [
     {
         icon: BookOpen,
-        title: 'Partager la connaissance',
+        title: 'Partager librement',
         description:
-            'Rendre la connaissance technique accessible à tous, des débutants aux experts, en français.',
+            'La connaissance a plus de valeur quand elle circule. Le Génie est un espace ouvert où chacun peut apprendre et enseigner.',
     },
     {
         icon: Users,
-        title: 'Construire une communauté',
+        title: 'Pour tout le monde',
         description:
-            "Fédérer les développeurs, designers et tech-enthousiastes autour d'un espace bienveillant.",
+            "Développeurs, designers, entrepreneurs, curieux : le blog n'est pas réservé aux techniciens. Si vous avez quelque chose à dire, cet espace est pour vous.",
     },
     {
-        icon: Zap,
-        title: "Accélérer l'apprentissage",
+        icon: Lightbulb,
+        title: 'Qualité avant quantité',
         description:
-            'Proposer des contenus structurés et des discussions de qualité pour progresser plus vite.',
+            'Des articles pensés, bien écrits, utiles. Pas de contenu jetable — chaque publication doit apporter quelque chose de concret.',
+    },
+    {
+        icon: Globe,
+        title: 'Ancré dans la réalité',
+        description:
+            "Les sujets abordés viennent du terrain : des projets réels, des erreurs vécues, des solutions testées. Pas de théorie creuse.",
     },
 ];
 
 export default function AboutPage() {
     return (
         <MainLayout>
-            {/* Hero */}
-            <section className="max-w-3xl mx-auto text-center py-16">
-                <h1 className="text-4xl font-bold tracking-tight mb-4">
-                    À propos de <span className="text-primary">Le Génie</span>
-                </h1>
-                <p className="text-xl text-muted-foreground mb-8">
-                    La plateforme communautaire pour partager et découvrir des
-                    connaissances techniques en français.
-                </p>
-                <div className="prose prose-neutral dark:prose-invert mx-auto text-left space-y-4 text-muted-foreground">
-                    <p>
-                        Le Génie est né d&apos;un constat simple : il manque un
-                        espace de qualité, en français, où les développeurs et
-                        professionnels du numérique peuvent partager leurs
-                        découvertes, leurs retours d&apos;expérience et leurs
-                        tutoriels avec une vraie communauté.
-                    </p>
-                    <p>
-                        Notre plateforme permet à chacun de rédiger des articles
-                        riches — avec du code, des images, des titres structurés
-                        — et de les soumettre à la lecture de milliers de
-                        passionnés. Les lecteurs commentent, likent et
-                        contribuent pour faire évoluer les publications en temps
-                        réel grâce à notre mode collaboratif.
-                    </p>
-                    <p>
-                        Que vous soyez développeur senior souhaitant documenter
-                        un pattern avancé, ou étudiant partageant vos premières
-                        expériences de projet, Le Génie est fait pour vous.
-                    </p>
-                </div>
-            </section>
-
-            {/* Mission */}
-            <section className="max-w-4xl mx-auto py-12 border-t">
-                <h2 className="text-2xl font-bold text-center mb-10">
-                    Notre mission
-                </h2>
-                <div className="grid gap-8 sm:grid-cols-3">
-                    {MISSION.map(({ icon: Icon, title, description }) => (
-                        <div
-                            key={title}
-                            className="flex flex-col items-center text-center gap-3"
-                        >
-                            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Icon className="h-6 w-6 text-primary" />
-                            </div>
-                            <h3 className="font-semibold">{title}</h3>
-                            <p className="text-sm text-muted-foreground">
-                                {description}
+            <div className="max-w-3xl mx-auto space-y-20 py-8">
+                {/* ── Hero ───────────────────────────────────────────────── */}
+                <section className="space-y-8">
+                    <div className="flex items-center gap-6">
+                        {/* Avatar initiales */}
+                        <div className="h-24 w-24 shrink-0 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl font-black text-primary select-none">
+                            SG
+                        </div>
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight">
+                                Seba Gedeon Matsoula Malonga
+                            </h1>
+                            <p className="text-muted-foreground mt-1">
+                                Créateur de Le Génie · Développeur &amp; passionné de partage
                             </p>
                         </div>
-                    ))}
-                </div>
-            </section>
+                    </div>
 
-            {/* Team */}
-            <section className="max-w-4xl mx-auto py-12 border-t">
-                <h2 className="text-2xl font-bold text-center mb-10">
-                    L&apos;équipe
-                </h2>
-                <div className="grid gap-6 sm:grid-cols-3">
-                    {TEAM.map(({ name, role, avatar, bio }) => (
-                        <div
-                            key={name}
-                            className="flex flex-col items-center text-center p-6 rounded-xl border border-border/60 bg-card gap-3"
-                        >
-                            <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center text-xl font-bold text-primary">
-                                {avatar}
+                    <div className="space-y-5 text-muted-foreground leading-relaxed">
+                        <p>
+                            Bonjour, je suis Seba Gedeon — développeur et créateur de{' '}
+                            <strong className="text-foreground">Le Génie</strong>. Cette
+                            plateforme est née d&apos;une idée simple : tout le monde a
+                            quelque chose à apprendre aux autres, et la meilleure façon
+                            de progresser c&apos;est de partager ce qu&apos;on sait.
+                        </p>
+                        <p>
+                            J&apos;ai construit Le Génie parce que je n&apos;avais pas
+                            trouvé l&apos;espace qui correspond à ma vision : un blog
+                            collaboratif, accessible à tous, sans barrière technique.
+                            Un endroit où un développeur peut publier un tutoriel avancé
+                            à côté d&apos;un entrepreneur qui partage son retour
+                            d&apos;expérience sur son premier projet.
+                        </p>
+                        <p>
+                            La plateforme est pensée pour être <em>vivante</em> : vous
+                            pouvez écrire, collaborer en temps réel avec d&apos;autres
+                            auteurs, recevoir des retours de la communauté et faire
+                            évoluer vos publications au fil du temps.
+                        </p>
+                    </div>
+                </section>
+
+                {/* ── Divider ────────────────────────────────────────────── */}
+                <div className="h-px bg-border" />
+
+                {/* ── Values ─────────────────────────────────────────────── */}
+                <section className="space-y-10">
+                    <div>
+                        <h2 className="text-2xl font-bold">Ce en quoi je crois</h2>
+                        <p className="text-muted-foreground mt-2">
+                            Ces valeurs ont guidé chaque décision dans la conception de
+                            Le Génie.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-8 sm:grid-cols-2">
+                        {VALUES.map(({ icon: Icon, title, description }) => (
+                            <div key={title} className="flex gap-4">
+                                <div className="h-10 w-10 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <Icon className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold">{title}</h3>
+                                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                                        {description}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="font-semibold">{name}</p>
-                                <p className="text-xs text-muted-foreground">
-                                    {role}
-                                </p>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                                {bio}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </section>
+                        ))}
+                    </div>
+                </section>
+
+                {/* ── Divider ────────────────────────────────────────────── */}
+                <div className="h-px bg-border" />
+
+                {/* ── CTA ────────────────────────────────────────────────── */}
+                <section className="text-center space-y-4 pb-8">
+                    <h2 className="text-2xl font-bold">
+                        Rejoignez l&apos;aventure
+                    </h2>
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                        Créez un compte, écrivez votre premier article et faites
+                        partie d&apos;une communauté qui valorise le partage réel.
+                    </p>
+                    <a
+                        href="/auth/sign-in"
+                        className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors"
+                    >
+                        Commencer à écrire
+                    </a>
+                </section>
+            </div>
         </MainLayout>
     );
 }
