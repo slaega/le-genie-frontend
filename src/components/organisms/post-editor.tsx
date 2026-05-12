@@ -4,9 +4,8 @@ import { useCallback, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Save, Eye, EyeOff, Archive, CalendarClock, X } from 'lucide-react';
+import { Eye, EyeOff, Archive, CalendarClock, X, ImageIcon, Save } from 'lucide-react';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import {
     BlogEditor,
     type BlogEditorRef,
@@ -57,10 +56,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
         defaultValues: { title: post.title },
     });
 
-    /**
-     * Silent autosave triggered by BlogEditor (debounced 5s after the last edit).
-     * Only persists drafts — never auto-publishes. Skips empty titles.
-     */
     const autosave = useCallback(
         async (json: Record<string, unknown>) => {
             const title = getValues('title')?.trim();
@@ -71,12 +66,11 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     payload: {
                         title,
                         content: json,
-                        // Keep the current status — autosave never changes DRAFT → PUBLISHED
                         status: post.status === 'EMPTY' ? 'DRAFT' : post.status,
                     },
                 });
             } catch {
-                // silent — autosave failures are surfaced by the next manual save
+                // silent autosave
             }
         },
         [getValues, updatePost, post.id, post.status]
@@ -92,9 +86,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         title,
                         content: json ?? undefined,
                         status,
-                        // Pass scheduledAt only when saving a draft (not when publishing directly)
-                        // Pass scheduledAt only when saving as DRAFT with a schedule.
-                        // When publishing, omit it — the backend auto-clears scheduledAt.
                         scheduledAt:
                             status === 'DRAFT' && scheduledAt
                                 ? new Date(scheduledAt).toISOString()
@@ -106,7 +97,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     status === 'PUBLISHED'
                         ? 'Publication publiée !'
                         : scheduledAt && status === 'DRAFT'
-                          ? `Publication programmée pour le ${new Date(scheduledAt).toLocaleString('fr-FR')}`
+                          ? `Programmée pour le ${new Date(scheduledAt).toLocaleString('fr-FR')}`
                           : 'Brouillon enregistré'
                 );
             } catch {
@@ -132,39 +123,40 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
         setCoverPreview(URL.createObjectURL(file));
     }
 
+    const isPublished = post.status === 'PUBLISHED';
+
     return (
         <div className="flex flex-col h-full bg-background">
-            {/* ── Toolbar ──────────────────────────────────────────────── */}
-            <div className="sticky top-14 z-10 flex items-center gap-2 border-b border-border bg-background/95 backdrop-blur-sm px-4 py-2.5">
+
+            {/* ── Top action bar ──────────────────────────────────────── */}
+            <div className="sticky top-14 z-10 flex items-center gap-2 border-b border-border/60 bg-background/90 backdrop-blur-sm px-4 py-2">
                 <StatusBadge status={post.status} />
 
                 <div className="flex items-center gap-1.5 ml-auto">
                     <CollaboratorsPanel postId={post.id} />
 
                     {isOwner && post.status !== 'ARCHIVED' && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="gap-1.5 text-muted-foreground"
+                        <button
+                            type="button"
                             onClick={() => save('ARCHIVED')}
                             disabled={isSaving}
+                            className="h-8 px-2.5 rounded-lg text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
                         >
                             <Archive className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Archiver</span>
-                        </Button>
+                        </button>
                     )}
 
-                    {isOwner && post.status !== 'PUBLISHED' && (
+                    {isOwner && !isPublished && (
                         <button
                             type="button"
                             onClick={() => setShowScheduler((v) => !v)}
                             disabled={isSaving}
-                            title="Programmer la publication"
                             className={cn(
                                 'h-8 px-2.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors',
                                 showScheduler
-                                    ? 'bg-muted text-foreground'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                                    ? 'bg-accent text-foreground'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                             )}
                         >
                             <CalendarClock className="h-3.5 w-3.5" />
@@ -176,41 +168,46 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         </button>
                     )}
 
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1.5"
+                    {/* Save draft */}
+                    <button
+                        type="button"
                         onClick={() => save('DRAFT')}
                         disabled={isSaving || isPublishing}
+                        className="h-8 px-3 rounded-lg text-xs flex items-center gap-1.5 border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-150 disabled:opacity-40"
                     >
                         <Save className="h-3.5 w-3.5" />
                         {isSaving ? 'Sauvegarde…' : 'Brouillon'}
-                    </Button>
+                    </button>
 
+                    {/* Publish / Unpublish */}
                     {isOwner && (
-                        <Button
-                            size="sm"
-                            className="gap-1.5"
-                            onClick={() =>
-                                save(post.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED')
-                            }
+                        <button
+                            type="button"
+                            onClick={() => save(isPublished ? 'DRAFT' : 'PUBLISHED')}
                             disabled={isSaving || isPublishing}
+                            className={cn(
+                                'h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 font-medium',
+                                'transition-all duration-150 disabled:opacity-40',
+                                isPublished
+                                    ? 'bg-muted text-foreground hover:bg-accent border border-border'
+                                    : 'bg-foreground text-background hover:opacity-90',
+                            )}
                         >
-                            {post.status === 'PUBLISHED' ? (
+                            {isPublished ? (
                                 <><EyeOff className="h-3.5 w-3.5" /> Dépublier</>
                             ) : (
                                 <><Eye className="h-3.5 w-3.5" /> Publier</>
                             )}
-                        </Button>
+                        </button>
                     )}
                 </div>
             </div>
 
-            {/* ── Scheduler strip ──────────────────────────────────────── */}
+            {/* ── Scheduler strip ─────────────────────────────────────── */}
             {showScheduler && (
-                <div className="border-b border-border bg-muted/30 px-4 py-2.5 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
-                    <CalendarClock className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="text-sm text-muted-foreground">
+                <div className="border-b border-border/60 bg-muted/20 px-4 py-2 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
+                    <CalendarClock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <span className="text-xs text-muted-foreground">
                         Publier automatiquement le :
                     </span>
                     <input
@@ -218,7 +215,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         value={scheduledAt}
                         min={new Date().toISOString().slice(0, 16)}
                         onChange={(e) => setScheduledAt(e.target.value)}
-                        className="h-8 rounded-lg border border-border bg-background px-2 text-sm focus:border-foreground/30 transition-colors"
+                        className="h-7 rounded-lg border border-border bg-background px-2 text-xs focus:border-foreground/30 transition-colors"
                     />
                     {scheduledAt && (
                         <button
@@ -230,53 +227,46 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             Annuler
                         </button>
                     )}
-                    <span className="text-xs text-muted-foreground ml-auto hidden sm:block">
+                    <span className="text-xs text-muted-foreground/50 ml-auto hidden sm:block">
                         Enregistrez en brouillon pour appliquer.
                     </span>
                 </div>
             )}
 
-            {/* ── Editor body ──────────────────────────────────────────── */}
+            {/* ── Editor canvas ────────────────────────────────────────── */}
             <div className="flex-1 overflow-y-auto">
-                <div className="max-w-2xl mx-auto px-4 py-10 space-y-8">
+                <div className="max-w-2xl mx-auto px-6 pt-10 pb-24 space-y-6">
 
                     {/* Cover image */}
-                    <div
-                        className={cn(
-                            'group relative w-full aspect-video rounded-xl overflow-hidden cursor-pointer',
-                            'border border-dashed border-border hover:border-foreground/30 transition-colors',
-                            'bg-muted/30',
-                            coverPreview && 'border-solid border-transparent'
-                        )}
-                    >
+                    <label className="group relative block cursor-pointer">
                         {coverPreview ? (
-                            <Image
-                                src={coverPreview}
-                                alt="Couverture"
-                                fill
-                                className="object-cover"
-                            />
-                        ) : (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-muted-foreground select-none">
-                                <span className="text-sm font-medium">Image de couverture</span>
-                                <span className="text-xs opacity-60">Cliquer pour choisir</span>
+                            <div className="relative w-full aspect-video rounded-xl overflow-hidden">
+                                <Image
+                                    src={coverPreview}
+                                    alt="Couverture"
+                                    fill
+                                    className="object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                                        <ImageIcon className="h-4 w-4" />
+                                        Changer la couverture
+                                    </span>
+                                </div>
                             </div>
-                        )}
-                        {coverPreview && (
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                                    Changer la couverture
-                                </span>
+                        ) : (
+                            <div className="w-full aspect-video rounded-xl border border-dashed border-border/50 bg-muted/20 flex flex-col items-center justify-center gap-2 text-muted-foreground/40 group-hover:border-border group-hover:text-muted-foreground/60 transition-all duration-200 select-none">
+                                <ImageIcon className="h-6 w-6" />
+                                <span className="text-xs">Ajouter une image de couverture</span>
                             </div>
                         )}
                         <input
-                            id="cover"
                             type="file"
                             accept="image/*"
-                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            className="sr-only"
                             onChange={handleCoverChange}
                         />
-                    </div>
+                    </label>
 
                     {/* Title */}
                     <div>
@@ -284,10 +274,10 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             {...register('title')}
                             placeholder="Titre de la publication…"
                             className={cn(
-                                'w-full bg-transparent text-3xl font-bold text-foreground',
-                                'border-0 border-b border-border focus:border-foreground/30',
-                                'rounded-none px-0 pb-3 transition-colors',
-                                'placeholder:text-muted-foreground/30',
+                                'w-full bg-transparent text-[2rem] sm:text-[2.5rem] font-bold text-foreground',
+                                'border-0 focus:outline-none',
+                                'rounded-none px-0 py-2 leading-tight',
+                                'placeholder:text-muted-foreground/20',
                             )}
                         />
                         {errors.title && (
@@ -310,7 +300,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         onAutoSave={autosave}
                         autoSaveInterval={5_000}
                         editorRef={editorRef}
-                        className="min-h-[500px]"
+                        className="min-h-[400px]"
                     />
                 </div>
             </div>

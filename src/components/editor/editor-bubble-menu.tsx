@@ -11,8 +11,7 @@ import {
     Link2Off,
     Highlighter,
 } from 'lucide-react';
-import { Toggle } from '@/components/ui/toggle';
-import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface EditorBubbleMenuProps {
     editor: Editor;
@@ -30,15 +29,19 @@ function BubbleBtn({
     children: React.ReactNode;
 }) {
     return (
-        <Toggle
-            size="sm"
-            pressed={active}
-            onPressedChange={onClick}
+        <button
+            type="button"
+            onClick={onClick}
             aria-label={label}
-            className="h-7 w-7 p-0 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            aria-pressed={active}
+            className={cn(
+                'h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-100',
+                'text-zinc-400 hover:text-zinc-100 hover:bg-white/10',
+                active && 'text-zinc-50 bg-white/15',
+            )}
         >
             {children}
-        </Toggle>
+        </button>
     );
 }
 
@@ -55,8 +58,8 @@ export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
     return (
         <BubbleMenu
             editor={editor}
-            tippyOptions={{ duration: 100, placement: 'top' }}
-            className="flex items-center gap-0.5 rounded-lg border bg-background/95 backdrop-blur p-1 shadow-lg"
+            tippyOptions={{ duration: 80, placement: 'top' }}
+            className="flex items-center gap-0.5 rounded-xl border border-white/[0.08] bg-zinc-950 backdrop-blur-2xl p-1 shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
         >
             <BubbleBtn
                 label="Gras"
@@ -100,13 +103,11 @@ export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
             >
                 <Highlighter className="h-3.5 w-3.5" />
             </BubbleBtn>
-            <Separator orientation="vertical" className="mx-0.5 h-4" />
+
+            <div className="w-px h-4 bg-white/10 mx-0.5" />
+
             <BubbleBtn
-                label={
-                    editor.isActive('link')
-                        ? 'Retirer le lien'
-                        : 'Ajouter un lien'
-                }
+                label={editor.isActive('link') ? 'Retirer le lien' : 'Ajouter un lien'}
                 active={editor.isActive('link')}
                 onClick={handleLink}
             >

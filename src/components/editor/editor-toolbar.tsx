@@ -28,8 +28,6 @@ import {
     Minus,
     Code,
 } from 'lucide-react';
-import { Toggle } from '@/components/ui/toggle';
-import { Separator } from '@/components/ui/separator';
 import {
     Tooltip,
     TooltipContent,
@@ -60,35 +58,34 @@ function ToolBtn({
     return (
         <Tooltip>
             <TooltipTrigger asChild>
-                <Toggle
-                    size="sm"
-                    pressed={active}
-                    onPressedChange={onClick}
+                <button
+                    type="button"
+                    onClick={onClick}
                     disabled={disabled}
                     aria-label={label}
+                    aria-pressed={active}
                     className={cn(
-                        'h-8 w-8 p-0 rounded-md transition-colors',
-                        'data-[state=on]:bg-primary/10 data-[state=on]:text-primary',
-                        'hover:bg-accent'
+                        'h-7 w-7 flex items-center justify-center rounded-md transition-all duration-100',
+                        'text-muted-foreground hover:text-foreground hover:bg-accent',
+                        active && 'text-foreground bg-accent',
+                        disabled && 'opacity-25 cursor-not-allowed pointer-events-none',
                     )}
                 >
                     {children}
-                </Toggle>
+                </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">
+            <TooltipContent side="bottom" className="text-[11px] px-2 py-1">
                 {label}
                 {shortcut && (
-                    <span className="ml-1.5 text-muted-foreground">
-                        {shortcut}
-                    </span>
+                    <span className="ml-1.5 opacity-40">{shortcut}</span>
                 )}
             </TooltipContent>
         </Tooltip>
     );
 }
 
-function ToolSep() {
-    return <Separator orientation="vertical" className="mx-0.5 h-5" />;
+function Sep() {
+    return <div className="w-px h-4 bg-border/70 mx-0.5 shrink-0" />;
 }
 
 export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
@@ -116,14 +113,15 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
     }
 
     return (
-        <div className="flex flex-wrap items-center gap-0.5 border-b bg-background/80 backdrop-blur px-3 py-1.5 sticky top-0 z-10">
+        <div className="flex flex-wrap items-center gap-0.5 border-b border-border/60 bg-background/70 backdrop-blur-sm px-2.5 py-1.5 sticky top-0 z-10">
+            {/* History */}
             <ToolBtn
                 label="Annuler"
                 onClick={() => editor.chain().focus().undo().run()}
                 disabled={!editor.can().undo()}
                 shortcut="⌘Z"
             >
-                <Undo className="h-3.5 w-3.5" />
+                <Undo className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Refaire"
@@ -131,48 +129,44 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
                 disabled={!editor.can().redo()}
                 shortcut="⌘⇧Z"
             >
-                <Redo className="h-3.5 w-3.5" />
+                <Redo className="h-3 w-3" />
             </ToolBtn>
 
-            <ToolSep />
+            <Sep />
 
+            {/* Headings */}
             <ToolBtn
                 label="Titre 1"
                 active={editor.isActive('heading', { level: 1 })}
-                onClick={() =>
-                    editor.chain().focus().toggleHeading({ level: 1 }).run()
-                }
+                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
             >
-                <Heading1 className="h-3.5 w-3.5" />
+                <Heading1 className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Titre 2"
                 active={editor.isActive('heading', { level: 2 })}
-                onClick={() =>
-                    editor.chain().focus().toggleHeading({ level: 2 }).run()
-                }
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
             >
-                <Heading2 className="h-3.5 w-3.5" />
+                <Heading2 className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Titre 3"
                 active={editor.isActive('heading', { level: 3 })}
-                onClick={() =>
-                    editor.chain().focus().toggleHeading({ level: 3 }).run()
-                }
+                onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
             >
-                <Heading3 className="h-3.5 w-3.5" />
+                <Heading3 className="h-3 w-3" />
             </ToolBtn>
 
-            <ToolSep />
+            <Sep />
 
+            {/* Inline formatting */}
             <ToolBtn
                 label="Gras"
                 active={editor.isActive('bold')}
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 shortcut="⌘B"
             >
-                <Bold className="h-3.5 w-3.5" />
+                <Bold className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Italique"
@@ -180,7 +174,7 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
                 onClick={() => editor.chain().focus().toggleItalic().run()}
                 shortcut="⌘I"
             >
-                <Italic className="h-3.5 w-3.5" />
+                <Italic className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Souligné"
@@ -188,21 +182,21 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
                 shortcut="⌘U"
             >
-                <Underline className="h-3.5 w-3.5" />
+                <Underline className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Barré"
                 active={editor.isActive('strike')}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
             >
-                <Strikethrough className="h-3.5 w-3.5" />
+                <Strikethrough className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Surligné"
                 active={editor.isActive('highlight')}
                 onClick={() => editor.chain().focus().toggleHighlight().run()}
             >
-                <Highlighter className="h-3.5 w-3.5" />
+                <Highlighter className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Code inline"
@@ -210,118 +204,113 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
                 onClick={() => editor.chain().focus().toggleCode().run()}
                 shortcut="⌘E"
             >
-                <Code className="h-3.5 w-3.5" />
+                <Code className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Indice"
                 active={editor.isActive('subscript')}
                 onClick={() => editor.chain().focus().toggleSubscript().run()}
             >
-                <Subscript className="h-3.5 w-3.5" />
+                <Subscript className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Exposant"
                 active={editor.isActive('superscript')}
                 onClick={() => editor.chain().focus().toggleSuperscript().run()}
             >
-                <Superscript className="h-3.5 w-3.5" />
+                <Superscript className="h-3 w-3" />
             </ToolBtn>
 
-            <ToolSep />
+            <Sep />
 
+            {/* Alignment */}
             <ToolBtn
-                label="Aligné à gauche"
+                label="Gauche"
                 active={editor.isActive({ textAlign: 'left' })}
-                onClick={() =>
-                    editor.chain().focus().setTextAlign('left').run()
-                }
+                onClick={() => editor.chain().focus().setTextAlign('left').run()}
             >
-                <AlignLeft className="h-3.5 w-3.5" />
+                <AlignLeft className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Centré"
                 active={editor.isActive({ textAlign: 'center' })}
-                onClick={() =>
-                    editor.chain().focus().setTextAlign('center').run()
-                }
+                onClick={() => editor.chain().focus().setTextAlign('center').run()}
             >
-                <AlignCenter className="h-3.5 w-3.5" />
+                <AlignCenter className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Aligné à droite"
+                label="Droite"
                 active={editor.isActive({ textAlign: 'right' })}
-                onClick={() =>
-                    editor.chain().focus().setTextAlign('right').run()
-                }
+                onClick={() => editor.chain().focus().setTextAlign('right').run()}
             >
-                <AlignRight className="h-3.5 w-3.5" />
+                <AlignRight className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Justifié"
                 active={editor.isActive({ textAlign: 'justify' })}
-                onClick={() =>
-                    editor.chain().focus().setTextAlign('justify').run()
-                }
+                onClick={() => editor.chain().focus().setTextAlign('justify').run()}
             >
-                <AlignJustify className="h-3.5 w-3.5" />
+                <AlignJustify className="h-3 w-3" />
             </ToolBtn>
 
-            <ToolSep />
+            <Sep />
 
+            {/* Blocks */}
             <ToolBtn
                 label="Liste à puces"
                 active={editor.isActive('bulletList')}
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
             >
-                <List className="h-3.5 w-3.5" />
+                <List className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Liste numérotée"
                 active={editor.isActive('orderedList')}
                 onClick={() => editor.chain().focus().toggleOrderedList().run()}
             >
-                <ListOrdered className="h-3.5 w-3.5" />
+                <ListOrdered className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Liste de tâches"
+                label="Tâches"
                 active={editor.isActive('taskList')}
                 onClick={() => editor.chain().focus().toggleTaskList().run()}
             >
-                <CheckSquare className="h-3.5 w-3.5" />
+                <CheckSquare className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Citation"
                 active={editor.isActive('blockquote')}
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
             >
-                <Quote className="h-3.5 w-3.5" />
+                <Quote className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
                 label="Bloc de code"
                 active={editor.isActive('codeBlock')}
                 onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             >
-                <Code2 className="h-3.5 w-3.5" />
+                <Code2 className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Séparateur horizontal"
+                label="Séparateur"
                 onClick={() => editor.chain().focus().setHorizontalRule().run()}
             >
-                <Minus className="h-3.5 w-3.5" />
+                <Minus className="h-3 w-3" />
             </ToolBtn>
 
-            <ToolSep />
+            <Sep />
 
+            {/* Media */}
             <ToolBtn
                 label="Lien"
                 active={editor.isActive('link')}
                 onClick={handleLink}
             >
-                <Link2 className="h-3.5 w-3.5" />
+                <Link2 className="h-3 w-3" />
             </ToolBtn>
             {onImageUpload && (
                 <ToolBtn label="Image" onClick={handleImageInsert}>
-                    <ImageIcon className="h-3.5 w-3.5" />
+                    <ImageIcon className="h-3 w-3" />
                 </ToolBtn>
             )}
         </div>

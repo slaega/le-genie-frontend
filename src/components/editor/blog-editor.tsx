@@ -74,7 +74,7 @@ export function BlogEditor({
         editorProps: {
             attributes: {
                 class: cn(
-                    'outline-none min-h-[500px] px-8 py-6 sm:px-12',
+                    'outline-none min-h-[400px] px-0 py-4',
                     'prose prose-neutral dark:prose-invert max-w-none',
                     // Headings
                     'prose-h1:text-4xl prose-h1:font-bold prose-h1:tracking-tight prose-h1:leading-tight',
@@ -102,7 +102,7 @@ export function BlogEditor({
                     // Highlight
                     '[&_.ProseMirror-focused]:outline-none',
                     // Placeholder
-                    '[&_.is-empty::before]:content-[attr(data-placeholder)] [&_.is-empty::before]:text-muted-foreground/50 [&_.is-empty::before]:float-left [&_.is-empty::before]:pointer-events-none [&_.is-empty::before]:h-0',
+                    '[&_.is-empty::before]:content-[attr(data-placeholder)] [&_.is-empty::before]:text-muted-foreground/30 [&_.is-empty::before]:float-left [&_.is-empty::before]:pointer-events-none [&_.is-empty::before]:h-0',
                     // Task lists
                     '[&_ul[data-type=taskList]]:list-none [&_ul[data-type=taskList]]:pl-0',
                     '[&_li[data-type=taskItem]]:flex [&_li[data-type=taskItem]]:items-start [&_li[data-type=taskItem]]:gap-2',
@@ -127,15 +127,10 @@ export function BlogEditor({
     if (!editor) return null;
 
     return (
-        <div
-            className={cn(
-                'flex flex-col border rounded-xl overflow-hidden bg-background shadow-sm',
-                className
-            )}
-        >
+        <div className={cn('flex flex-col', className)}>
             <EditorToolbar editor={editor} onImageUpload={onImageUpload} />
             <EditorBubbleMenu editor={editor} />
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1">
                 <EditorContent editor={editor} />
             </div>
             <EditorStatsBar

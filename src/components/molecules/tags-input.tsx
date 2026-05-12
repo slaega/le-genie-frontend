@@ -2,8 +2,6 @@
 
 import { KeyboardEvent, useState } from 'react';
 import { X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { api } from '@/lib/api/client';
 
 interface TagsInputProps {
@@ -25,7 +23,7 @@ export function TagsInput({ postId, initialTags }: TagsInputProps) {
             await api.post(`/post/${postId}/post-tags`, { name });
             setTags((prev) => [...prev, name]);
         } catch {
-            // silently ignore — tag already exists server-side or network error
+            // silently ignore
         }
         setInput('');
     }
@@ -51,31 +49,31 @@ export function TagsInput({ postId, initialTags }: TagsInputProps) {
     }
 
     return (
-        <div className="flex flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 min-h-10">
+        <div className="flex flex-wrap items-center gap-1.5">
             {tags.map((tag) => (
-                <Badge
+                <span
                     key={tag}
-                    variant="secondary"
-                    className="flex items-center gap-1 pr-1"
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-muted/60 text-[12px] text-muted-foreground border border-border/50"
                 >
                     {tag}
                     <button
                         type="button"
                         onClick={() => removeTag(tag)}
-                        className="ml-0.5 rounded-sm opacity-60 hover:opacity-100 transition-opacity"
+                        className="opacity-40 hover:opacity-80 transition-opacity ml-0.5"
                         aria-label={`Supprimer le tag ${tag}`}
                     >
-                        <X className="h-3 w-3" />
+                        <X className="h-2.5 w-2.5" />
                     </button>
-                </Badge>
+                </span>
             ))}
-            <Input
+            <input
+                type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onBlur={handleBlur}
-                placeholder="Ajouter un tag…"
-                className="h-8 w-36 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/50 text-sm"
+                placeholder={tags.length === 0 ? 'Ajouter des tags…' : '+'}
+                className="bg-transparent text-[12px] text-muted-foreground border-0 focus:outline-none placeholder:text-muted-foreground/30 w-28 py-0.5"
             />
         </div>
     );

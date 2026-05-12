@@ -26,19 +26,19 @@ export default async function ProfilePage({ params }: Props) {
     return (
         <MainLayout>
             <div className="max-w-2xl mx-auto">
-                <div className="mb-8">
+                <div className="mb-6">
                     <Link
                         href="/me"
-                        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-foreground transition-colors mb-5"
                     >
-                        <ArrowLeft className="h-4 w-4" />
+                        <ArrowLeft className="h-3.5 w-3.5" />
                         Mon profil
                     </Link>
-                    <h1 className="text-2xl font-bold tracking-tight">
+                    <h1 className="text-xl font-semibold tracking-tight">
                         Modifier le profil
                     </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Ces informations sont visibles publiquement sur votre page auteur.
+                    <p className="text-xs text-muted-foreground/50 mt-1">
+                        Informations visibles sur votre page auteur publique.
                     </p>
                 </div>
 
