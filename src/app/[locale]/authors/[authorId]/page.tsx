@@ -109,7 +109,7 @@ export default async function AuthorPage({ params }: Props) {
                 <h2 className="text-lg font-bold mb-6">Publications</h2>
                 {author.posts.length === 0 ? (
                     <p className="text-muted-foreground text-sm">
-                        Aucune publication pour l'instant.
+                        Aucune publication pour l&apos;instant.
                     </p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

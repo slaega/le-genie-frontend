@@ -6,12 +6,12 @@
  * and sets fresh httpOnly cookies — all inside the Node.js runtime
  * (NOT Edge middleware, so env vars and full Node APIs are available).
  */
-import { type NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
 const SECURE = process.env.NODE_ENV === 'production';
 
-export async function POST(_req: NextRequest) {
+export async function POST(): Promise<NextResponse> {
     const jar = await cookies();
     const refreshToken = jar.get('refresh_token')?.value;
 

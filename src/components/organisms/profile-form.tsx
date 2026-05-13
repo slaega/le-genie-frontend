@@ -4,8 +4,13 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
-    Camera, Globe, Github, Twitter, MapPin,
-    Save, User as UserIcon,
+    Camera,
+    Globe,
+    Github,
+    Twitter,
+    MapPin,
+    Save,
+    User as UserIcon,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/atoms/user-avatar';
 import { api } from '@/lib/api/client';
@@ -82,11 +87,15 @@ export function ProfileForm({ user }: ProfileFormProps) {
     const [coverFile, setCoverFile] = useState<File | null>(null);
 
     const [name, setName] = useState(user.name);
-    const [professionalRole, setProfessionalRole] = useState(user.professionalRole ?? '');
+    const [professionalRole, setProfessionalRole] = useState(
+        user.professionalRole ?? ''
+    );
     const [bio, setBio] = useState(user.bio ?? '');
     const [about, setAbout] = useState(user.about ?? '');
     const [website, setWebsite] = useState(user.website ?? '');
-    const [twitterHandle, setTwitterHandle] = useState(user.twitterHandle ?? '');
+    const [twitterHandle, setTwitterHandle] = useState(
+        user.twitterHandle ?? ''
+    );
     const [githubHandle, setGithubHandle] = useState(user.githubHandle ?? '');
     const [location, setLocation] = useState(user.location ?? '');
 
@@ -101,8 +110,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
             return;
         }
         const url = URL.createObjectURL(file);
-        if (type === 'avatar') { setAvatarFile(file); setAvatarPreview(url); }
-        else { setCoverFile(file); setCoverPreview(url); }
+        if (type === 'avatar') {
+            setAvatarFile(file);
+            setAvatarPreview(url);
+        } else {
+            setCoverFile(file);
+            setCoverPreview(url);
+        }
     }
 
     async function handleSave() {
@@ -143,7 +157,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     return (
         <div className="space-y-6">
-
             {/* ── Photo section ───────────────────────────────────────── */}
             <div className="rounded-xl border border-border/60 overflow-hidden">
                 {/* Cover */}
@@ -152,7 +165,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     onClick={() => coverInputRef.current?.click()}
                 >
                     {coverSrc && (
-                        <Image src={coverSrc} alt="Couverture" fill className="object-cover" />
+                        <Image
+                            src={coverSrc}
+                            alt="Couverture"
+                            fill
+                            className="object-cover"
+                        />
                     )}
                     <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 transition-colors">
                         <Camera className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -210,7 +228,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <SectionCard title="Identité">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                        <FieldLabel text="Nom complet" icon={UserIcon} required />
+                        <FieldLabel
+                            text="Nom complet"
+                            icon={UserIcon}
+                            required
+                        />
                         <input
                             type="text"
                             value={name}
@@ -261,7 +283,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         placeholder="Une ligne qui vous décrit — apparaît sous votre nom."
                         maxLength={280}
                         rows={2}
-                        className={cn(fieldClass, 'resize-none leading-relaxed')}
+                        className={cn(
+                            fieldClass,
+                            'resize-none leading-relaxed'
+                        )}
                     />
                 </div>
 
@@ -270,7 +295,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         <div>
                             <FieldLabel text="À propos" />
                             <p className="text-[11px] text-muted-foreground/45 -mt-1">
-                                Partagez votre parcours, vos centres d&apos;intérêt, ce qui vous anime.
+                                Partagez votre parcours, vos centres
+                                d&apos;intérêt, ce qui vous anime.
                             </p>
                         </div>
                         <span className="text-[10px] text-muted-foreground/35 tabular-nums shrink-0 mt-0.5">
@@ -283,7 +309,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         placeholder="Bonjour, je suis… partagez votre histoire et vos passions."
                         maxLength={5000}
                         rows={6}
-                        className={cn(fieldClass, 'resize-y leading-relaxed text-sm mt-2')}
+                        className={cn(
+                            fieldClass,
+                            'resize-y leading-relaxed text-sm mt-2'
+                        )}
                     />
                 </div>
             </SectionCard>
@@ -307,11 +336,17 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     <div>
                         <FieldLabel text="Twitter / X" icon={Twitter} />
                         <div className="flex items-baseline gap-1 border-b border-border focus-within:border-foreground/40 transition-colors duration-150">
-                            <span className="text-muted-foreground/40 text-sm pb-2">@</span>
+                            <span className="text-muted-foreground/40 text-sm pb-2">
+                                @
+                            </span>
                             <input
                                 type="text"
                                 value={twitterHandle}
-                                onChange={(e) => setTwitterHandle(e.target.value.replace(/^@/, ''))}
+                                onChange={(e) =>
+                                    setTwitterHandle(
+                                        e.target.value.replace(/^@/, '')
+                                    )
+                                }
                                 placeholder="monpseudo"
                                 maxLength={100}
                                 className="flex-1 bg-transparent text-sm text-foreground border-0 focus:outline-none rounded-none px-0 py-2 placeholder:text-muted-foreground/25"
@@ -323,11 +358,17 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     <div>
                         <FieldLabel text="GitHub" icon={Github} />
                         <div className="flex items-baseline gap-1 border-b border-border focus-within:border-foreground/40 transition-colors duration-150">
-                            <span className="text-muted-foreground/40 text-sm pb-2">@</span>
+                            <span className="text-muted-foreground/40 text-sm pb-2">
+                                @
+                            </span>
                             <input
                                 type="text"
                                 value={githubHandle}
-                                onChange={(e) => setGithubHandle(e.target.value.replace(/^@/, ''))}
+                                onChange={(e) =>
+                                    setGithubHandle(
+                                        e.target.value.replace(/^@/, '')
+                                    )
+                                }
                                 placeholder="monpseudo"
                                 maxLength={100}
                                 className="flex-1 bg-transparent text-sm text-foreground border-0 focus:outline-none rounded-none px-0 py-2 placeholder:text-muted-foreground/25"
@@ -347,7 +388,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         'inline-flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium',
                         'bg-foreground text-background transition-all duration-150',
                         'hover:opacity-90 active:scale-[0.98]',
-                        'disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100',
+                        'disabled:opacity-40 disabled:cursor-not-allowed disabled:scale-100'
                     )}
                 >
                     <Save className="h-3.5 w-3.5" />

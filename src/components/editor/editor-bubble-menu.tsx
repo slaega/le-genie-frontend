@@ -41,7 +41,7 @@ function FmtBtn({
             className={cn(
                 'h-7 w-7 flex items-center justify-center rounded-md transition-all duration-100',
                 'text-zinc-400 hover:text-zinc-100 hover:bg-white/10',
-                active && 'text-zinc-50 bg-white/[0.15]',
+                active && 'text-zinc-50 bg-white/[0.15]'
             )}
         >
             {children}
@@ -69,7 +69,7 @@ function ActionBtn({
             className={cn(
                 'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all duration-100',
                 'text-zinc-400 hover:text-zinc-100 hover:bg-white/10',
-                active && 'text-zinc-50 bg-white/[0.15]',
+                active && 'text-zinc-50 bg-white/[0.15]'
             )}
         >
             {Icon && <Icon className="h-3 w-3 shrink-0" />}

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BookOpen, Globe, Lightbulb, Users } from 'lucide-react';
 import { MainLayout } from '@/components/templates/main-layout';
 
@@ -123,12 +124,12 @@ export default function AboutPage() {
                         Créez un compte, écrivez votre premier article et faites
                         partie d&apos;une communauté qui valorise le partage réel.
                     </p>
-                    <a
+                    <Link
                         href="/auth/sign-in"
                         className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-6 py-2.5 text-sm font-semibold hover:bg-primary/90 transition-colors"
                     >
                         Commencer à écrire
-                    </a>
+                    </Link>
                 </section>
             </div>
         </MainLayout>

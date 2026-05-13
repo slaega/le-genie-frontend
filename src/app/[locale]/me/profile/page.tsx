@@ -34,7 +34,9 @@ export default async function ProfilePage({ params }: Props) {
                         <ArrowLeft className="h-3.5 w-3.5" />
                         Mon profil
                     </Link>
-                    <h1 className="text-lg font-bold tracking-tight">Modifier le profil</h1>
+                    <h1 className="text-lg font-bold tracking-tight">
+                        Modifier le profil
+                    </h1>
                     <p className="text-[12px] text-muted-foreground/50 mt-0.5">
                         Ces informations sont visibles sur votre page publique.
                     </p>

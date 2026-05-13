@@ -5,8 +5,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-    Eye, EyeOff, Archive, CalendarClock, X, ImageIcon, Save,
-    PanelRight, FileText, Clock, Hash,
+    Eye,
+    EyeOff,
+    Archive,
+    CalendarClock,
+    X,
+    ImageIcon,
+    Save,
+    PanelRight,
+    FileText,
+    Clock,
+    Hash,
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -40,7 +49,6 @@ function StatsPanel({ post }: { post: Post }) {
     return (
         <aside className="w-64 shrink-0 border-l border-border/50 bg-background/60 overflow-y-auto">
             <div className="p-5 space-y-6">
-
                 {/* Publication info */}
                 <div>
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 mb-3">
@@ -48,20 +56,28 @@ function StatsPanel({ post }: { post: Post }) {
                     </p>
                     <div className="space-y-2.5">
                         <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-muted-foreground/60">Statut</span>
+                            <span className="text-muted-foreground/60">
+                                Statut
+                            </span>
                             <StatusBadge status={post.status} />
                         </div>
                         <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-muted-foreground/60">Créé le</span>
+                            <span className="text-muted-foreground/60">
+                                Créé le
+                            </span>
                             <span className="text-foreground/80">
                                 {formatDate(post.createdAt)}
                             </span>
                         </div>
                         {post.scheduledAt && (
                             <div className="flex items-center justify-between text-[12px]">
-                                <span className="text-muted-foreground/60">Programmé</span>
+                                <span className="text-muted-foreground/60">
+                                    Programmé
+                                </span>
                                 <span className="text-amber-500/80 text-[11px]">
-                                    {new Date(post.scheduledAt).toLocaleDateString('fr-FR')}
+                                    {new Date(
+                                        post.scheduledAt
+                                    ).toLocaleDateString('fr-FR')}
                                 </span>
                             </div>
                         )}
@@ -82,9 +98,13 @@ function StatsPanel({ post }: { post: Post }) {
                             </div>
                             <div>
                                 <p className="text-[13px] font-semibold text-foreground">
-                                    {post.readingTime > 0 ? `${post.readingTime} min` : '—'}
+                                    {post.readingTime > 0
+                                        ? `${post.readingTime} min`
+                                        : '—'}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground/50">Lecture estimée</p>
+                                <p className="text-[10px] text-muted-foreground/50">
+                                    Lecture estimée
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2.5">
@@ -96,7 +116,9 @@ function StatsPanel({ post }: { post: Post }) {
                                     {post.postTags.length}
                                 </p>
                                 <p className="text-[10px] text-muted-foreground/50">
-                                    {post.postTags.length === 1 ? 'Tag' : 'Tags'}
+                                    {post.postTags.length === 1
+                                        ? 'Tag'
+                                        : 'Tags'}
                                 </p>
                             </div>
                         </div>
@@ -108,7 +130,9 @@ function StatsPanel({ post }: { post: Post }) {
                                 <p className="text-[13px] font-semibold text-foreground">
                                     {post.commentsCount}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground/50">Commentaires</p>
+                                <p className="text-[10px] text-muted-foreground/50">
+                                    Commentaires
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -144,7 +168,9 @@ function StatsPanel({ post }: { post: Post }) {
 
 export function PostEditor({ post, isOwner }: PostEditorProps) {
     const editorRef = useRef<BlogEditorRef>(null);
-    const [coverPreview, setCoverPreview] = useState<string | null>(post.imagePath);
+    const [coverPreview, setCoverPreview] = useState<string | null>(
+        post.imagePath
+    );
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [showScheduler, setShowScheduler] = useState(false);
     const [showPanel, setShowPanel] = useState(false);
@@ -200,7 +226,10 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             try {
                 const json = await editorRef.current?.flushImages(
                     async (file) => {
-                        const { url } = await postsApi.uploadImage(post.id, file);
+                        const { url } = await postsApi.uploadImage(
+                            post.id,
+                            file
+                        );
                         return url;
                     }
                 );
@@ -248,7 +277,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
 
     return (
         <div className="flex flex-col h-full bg-background">
-
             {/* ── Top action bar ──────────────────────────────────────── */}
             <div className="sticky top-14 z-10 flex items-center gap-2 border-b border-border/50 bg-background/90 backdrop-blur-sm px-4 py-2">
                 <StatusBadge status={post.status} />
@@ -298,7 +326,9 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             <CalendarClock className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">
                                 {scheduledAt
-                                    ? new Date(scheduledAt).toLocaleDateString('fr-FR')
+                                    ? new Date(scheduledAt).toLocaleDateString(
+                                          'fr-FR'
+                                      )
                                     : 'Programmer'}
                             </span>
                         </button>
@@ -317,20 +347,26 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     {isOwner && (
                         <button
                             type="button"
-                            onClick={() => save(isPublished ? 'DRAFT' : 'PUBLISHED')}
+                            onClick={() =>
+                                save(isPublished ? 'DRAFT' : 'PUBLISHED')
+                            }
                             disabled={isSaving || isPublishing}
                             className={cn(
                                 'h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 font-medium',
                                 'transition-all duration-150 disabled:opacity-40',
                                 isPublished
                                     ? 'bg-muted text-foreground hover:bg-accent border border-border'
-                                    : 'bg-foreground text-background hover:opacity-90',
+                                    : 'bg-foreground text-background hover:opacity-90'
                             )}
                         >
                             {isPublished ? (
-                                <><EyeOff className="h-3.5 w-3.5" /> Dépublier</>
+                                <>
+                                    <EyeOff className="h-3.5 w-3.5" /> Dépublier
+                                </>
                             ) : (
-                                <><Eye className="h-3.5 w-3.5" /> Publier</>
+                                <>
+                                    <Eye className="h-3.5 w-3.5" /> Publier
+                                </>
                             )}
                         </button>
                     )}
@@ -369,11 +405,9 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
 
             {/* ── Editor + optional side panel ────────────────────────── */}
             <div className="flex flex-1 overflow-hidden">
-
                 {/* Editor canvas */}
                 <div className="flex-1 overflow-y-auto">
                     <div className="max-w-2xl mx-auto px-6 pt-10 pb-24 space-y-6">
-
                         {/* Cover image */}
                         <label className="group relative block cursor-pointer">
                             {coverPreview ? (
@@ -394,7 +428,9 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             ) : (
                                 <div className="w-full aspect-video rounded-xl border border-dashed border-border/40 bg-muted/10 flex flex-col items-center justify-center gap-2 text-muted-foreground/30 group-hover:border-border/60 group-hover:text-muted-foreground/50 transition-all duration-200 select-none">
                                     <ImageIcon className="h-5 w-5" />
-                                    <span className="text-xs">Ajouter une image de couverture</span>
+                                    <span className="text-xs">
+                                        Ajouter une image de couverture
+                                    </span>
                                 </div>
                             )}
                             <input
@@ -414,7 +450,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                                     'w-full bg-transparent text-[2rem] sm:text-[2.5rem] font-bold text-foreground',
                                     'border-0 focus:outline-none',
                                     'rounded-none px-0 py-2 leading-tight',
-                                    'placeholder:text-muted-foreground/15',
+                                    'placeholder:text-muted-foreground/15'
                                 )}
                             />
                             {errors.title && (

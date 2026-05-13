@@ -13,7 +13,6 @@ import {
     List,
     ListOrdered,
     CheckSquare,
-    Quote,
     AlignLeft,
     AlignCenter,
     AlignRight,
@@ -68,7 +67,8 @@ function ToolBtn({
                         'h-7 w-7 flex items-center justify-center rounded-md transition-all duration-100',
                         'text-muted-foreground hover:text-foreground hover:bg-accent',
                         active && 'text-foreground bg-accent',
-                        disabled && 'opacity-25 cursor-not-allowed pointer-events-none',
+                        disabled &&
+                            'opacity-25 cursor-not-allowed pointer-events-none'
                     )}
                 >
                     {children}
@@ -140,7 +140,8 @@ const BLOCK_TYPES = [
 function ParagraphTypeDropdown({ editor }: { editor: Editor }) {
     const [open, setOpen] = useState(false);
 
-    const active = BLOCK_TYPES.find((t) => t.isActive(editor)) ?? BLOCK_TYPES[0];
+    const active =
+        BLOCK_TYPES.find((t) => t.isActive(editor)) ?? BLOCK_TYPES[0];
 
     return (
         <div className="relative">
@@ -150,7 +151,7 @@ function ParagraphTypeDropdown({ editor }: { editor: Editor }) {
                 className={cn(
                     'h-7 flex items-center gap-1 px-2 rounded-md transition-all duration-100',
                     'text-xs text-muted-foreground hover:text-foreground hover:bg-accent',
-                    open && 'bg-accent text-foreground',
+                    open && 'bg-accent text-foreground'
                 )}
             >
                 <Type className="h-3 w-3 shrink-0" />
@@ -161,7 +162,10 @@ function ParagraphTypeDropdown({ editor }: { editor: Editor }) {
             {open && (
                 <>
                     {/* Backdrop */}
-                    <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
+                    <div
+                        className="fixed inset-0 z-20"
+                        onClick={() => setOpen(false)}
+                    />
                     {/* Menu */}
                     <div className="absolute top-full left-0 z-30 mt-1 min-w-[144px] rounded-xl border border-border bg-background shadow-lg shadow-black/[0.08] py-1 overflow-hidden">
                         {BLOCK_TYPES.map((t) => (
@@ -178,7 +182,7 @@ function ParagraphTypeDropdown({ editor }: { editor: Editor }) {
                                     t.isActive(editor)
                                         ? 'text-foreground bg-accent/50'
                                         : 'text-muted-foreground',
-                                    'className' in t ? t.className : '',
+                                    'className' in t ? t.className : ''
                                 )}
                             >
                                 {t.label}
@@ -218,7 +222,7 @@ function AlignDropdown({ editor }: { editor: Editor }) {
                         className={cn(
                             'h-7 flex items-center gap-0.5 px-1.5 rounded-md transition-all duration-100',
                             'text-muted-foreground hover:text-foreground hover:bg-accent',
-                            open && 'bg-accent text-foreground',
+                            open && 'bg-accent text-foreground'
                         )}
                     >
                         <ActiveIcon className="h-3 w-3" />
@@ -232,14 +236,21 @@ function AlignDropdown({ editor }: { editor: Editor }) {
 
             {open && (
                 <>
-                    <div className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
+                    <div
+                        className="fixed inset-0 z-20"
+                        onClick={() => setOpen(false)}
+                    />
                     <div className="absolute top-full left-0 z-30 mt-1 w-36 rounded-xl border border-border bg-background shadow-lg shadow-black/[0.08] py-1 overflow-hidden">
                         {ALIGNMENTS.map(({ label, value, Icon }) => (
                             <button
                                 key={value}
                                 type="button"
                                 onClick={() => {
-                                    editor.chain().focus().setTextAlign(value).run();
+                                    editor
+                                        .chain()
+                                        .focus()
+                                        .setTextAlign(value)
+                                        .run();
                                     setOpen(false);
                                 }}
                                 className={cn(
@@ -247,7 +258,7 @@ function AlignDropdown({ editor }: { editor: Editor }) {
                                     'hover:bg-accent',
                                     editor.isActive({ textAlign: value })
                                         ? 'text-foreground bg-accent/50'
-                                        : 'text-muted-foreground',
+                                        : 'text-muted-foreground'
                                 )}
                             >
                                 <Icon className="h-3 w-3 shrink-0" />
@@ -289,17 +300,18 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
 
     return (
         <div className="flex flex-wrap items-center gap-0.5 border-b border-border/50 bg-background/80 backdrop-blur-md px-3 py-1.5 sticky top-0 z-10">
-
             {/* ── History ──────────────────────────────────────────── */}
             <ToolBtn
-                label="Annuler" shortcut="⌘Z"
+                label="Annuler"
+                shortcut="⌘Z"
                 onClick={() => editor.chain().focus().undo().run()}
                 disabled={!editor.can().undo()}
             >
                 <Undo className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Refaire" shortcut="⌘⇧Z"
+                label="Refaire"
+                shortcut="⌘⇧Z"
                 onClick={() => editor.chain().focus().redo().run()}
                 disabled={!editor.can().redo()}
             >
@@ -315,21 +327,24 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
 
             {/* ── Inline formatting ─────────────────────────────────── */}
             <ToolBtn
-                label="Gras" shortcut="⌘B"
+                label="Gras"
+                shortcut="⌘B"
                 active={editor.isActive('bold')}
                 onClick={() => editor.chain().focus().toggleBold().run()}
             >
                 <Bold className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Italique" shortcut="⌘I"
+                label="Italique"
+                shortcut="⌘I"
                 active={editor.isActive('italic')}
                 onClick={() => editor.chain().focus().toggleItalic().run()}
             >
                 <Italic className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Souligné" shortcut="⌘U"
+                label="Souligné"
+                shortcut="⌘U"
                 active={editor.isActive('underline')}
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
             >
@@ -350,7 +365,8 @@ export function EditorToolbar({ editor, onImageUpload }: EditorToolbarProps) {
                 <Highlighter className="h-3 w-3" />
             </ToolBtn>
             <ToolBtn
-                label="Code inline" shortcut="⌘E"
+                label="Code inline"
+                shortcut="⌘E"
                 active={editor.isActive('code')}
                 onClick={() => editor.chain().focus().toggleCode().run()}
             >

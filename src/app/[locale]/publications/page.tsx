@@ -26,7 +26,6 @@ export default async function PublicationsPage() {
             <SiteHeader />
             <main className="flex-1">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-24">
-
                     {/* Page heading */}
                     <div className="mb-10">
                         <p className="text-[11px] font-semibold uppercase tracking-widest text-primary mb-2">
@@ -36,7 +35,8 @@ export default async function PublicationsPage() {
                             Parcourir les articles
                         </h1>
                         <p className="text-sm text-muted-foreground mt-2 max-w-md">
-                            Articles, tutoriels et ressources rédigés par notre communauté.
+                            Articles, tutoriels et ressources rédigés par notre
+                            communauté.
                         </p>
                     </div>
 

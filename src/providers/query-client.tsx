@@ -36,7 +36,9 @@ function DevtoolsLazy() {
         if (loadedRef.current || process.env.NODE_ENV !== 'development') return;
         loadedRef.current = true;
         import('@tanstack/react-query-devtools').then((m) => {
-            setDevtools(() => () => <m.ReactQueryDevtools initialIsOpen={false} />);
+            const Rqdt = () => <m.ReactQueryDevtools initialIsOpen={false} />;
+            Rqdt.displayName = 'ReactQueryDevtools';
+            setDevtools(() => Rqdt);
         });
     }, []);
 

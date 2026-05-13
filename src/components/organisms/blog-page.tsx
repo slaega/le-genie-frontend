@@ -4,7 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useMemo } from 'react';
 import {
-    Search, ArrowUpRight, Loader2, ChevronDown, SlidersHorizontal,
+    Search,
+    ArrowUpRight,
+    Loader2,
+    ChevronDown,
+    SlidersHorizontal,
 } from 'lucide-react';
 import { useInfinitePosts } from '@/hooks/queries/use-posts';
 import { cn, extractExcerpt } from '@/lib/utils';
@@ -250,10 +254,8 @@ export function BlogPage({ allTags }: BlogPageProps) {
 
     return (
         <div className="flex gap-8 xl:gap-10 items-start">
-
             {/* ── Left sidebar ─────────────────────────────────────────── */}
             <aside className="w-52 shrink-0 hidden lg:flex flex-col gap-7 sticky top-28">
-
                 {/* Search */}
                 <div>
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2.5">
@@ -280,7 +282,9 @@ export function BlogPage({ allTags }: BlogPageProps) {
                         <SlidersHorizontal className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
                         <select
                             value={sort}
-                            onChange={(e) => setSort(e.target.value as SortOption)}
+                            onChange={(e) =>
+                                setSort(e.target.value as SortOption)
+                            }
                             className="w-full h-9 pl-8 pr-7 rounded-lg border border-border bg-muted/30 text-[12px] text-foreground focus:outline-none focus:border-foreground/25 transition-colors appearance-none cursor-pointer"
                         >
                             {SORT_OPTIONS.map((o) => (
@@ -300,23 +304,27 @@ export function BlogPage({ allTags }: BlogPageProps) {
                             Catégories
                         </p>
                         <nav className="flex flex-col gap-0.5">
-                            {[{ name: null, label: 'Tous les articles' }, ...allTags.map((t) => ({ name: t.name, label: t.name }))].map(
-                                ({ name, label }) => (
-                                    <button
-                                        key={label}
-                                        type="button"
-                                        onClick={() => setActiveTag(name)}
-                                        className={cn(
-                                            'flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-left transition-all duration-100 border-l-2',
-                                            activeTag === name
-                                                ? 'border-l-foreground text-foreground font-medium bg-muted/50'
-                                                : 'border-l-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
-                                        )}
-                                    >
-                                        {label}
-                                    </button>
-                                )
-                            )}
+                            {[
+                                { name: null, label: 'Tous les articles' },
+                                ...allTags.map((t) => ({
+                                    name: t.name,
+                                    label: t.name,
+                                })),
+                            ].map(({ name, label }) => (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    onClick={() => setActiveTag(name)}
+                                    className={cn(
+                                        'flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-left transition-all duration-100 border-l-2',
+                                        activeTag === name
+                                            ? 'border-l-foreground text-foreground font-medium bg-muted/50'
+                                            : 'border-l-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                                    )}
+                                >
+                                    {label}
+                                </button>
+                            ))}
                         </nav>
                     </div>
                 )}
@@ -324,27 +332,30 @@ export function BlogPage({ allTags }: BlogPageProps) {
 
             {/* ── Main content ─────────────────────────────────────────── */}
             <div className="flex-1 min-w-0">
-
                 {/* Mobile: horizontal category pills */}
                 {allTags.length > 0 && (
                     <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-4 px-4 pb-4 mb-2 lg:hidden">
-                        {[{ name: null, label: 'Tout' }, ...allTags.map((t) => ({ name: t.name, label: t.name }))].map(
-                            ({ name, label }) => (
-                                <button
-                                    key={label}
-                                    type="button"
-                                    onClick={() => setActiveTag(name)}
-                                    className={cn(
-                                        'px-3.5 py-1.5 rounded-full text-[12px] whitespace-nowrap shrink-0 transition-all duration-150 border',
-                                        activeTag === name
-                                            ? 'bg-foreground text-background border-foreground font-medium'
-                                            : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
-                                    )}
-                                >
-                                    {label}
-                                </button>
-                            )
-                        )}
+                        {[
+                            { name: null, label: 'Tout' },
+                            ...allTags.map((t) => ({
+                                name: t.name,
+                                label: t.name,
+                            })),
+                        ].map(({ name, label }) => (
+                            <button
+                                key={label}
+                                type="button"
+                                onClick={() => setActiveTag(name)}
+                                className={cn(
+                                    'px-3.5 py-1.5 rounded-full text-[12px] whitespace-nowrap shrink-0 transition-all duration-150 border',
+                                    activeTag === name
+                                        ? 'bg-foreground text-background border-foreground font-medium'
+                                        : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+                                )}
+                            >
+                                {label}
+                            </button>
+                        ))}
                     </div>
                 )}
 
@@ -364,7 +375,10 @@ export function BlogPage({ allTags }: BlogPageProps) {
                             Aucun article trouvé.
                         </p>
                         <button
-                            onClick={() => { setActiveTag(null); setSearch(''); }}
+                            onClick={() => {
+                                setActiveTag(null);
+                                setSearch('');
+                            }}
                             className="text-xs text-primary hover:underline underline-offset-4"
                         >
                             Réinitialiser les filtres

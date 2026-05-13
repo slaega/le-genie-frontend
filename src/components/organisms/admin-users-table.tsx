@@ -34,7 +34,9 @@ export function AdminUsersTable({
         const params = new URLSearchParams();
         if (search) params.set('search', search);
         params.set('page', '1');
-        router.push(`?${params.toString()}`);
+        startTransition(() => {
+            router.push(`?${params.toString()}`);
+        });
     }
 
     async function toggleRole(user: AdminUser) {
@@ -88,6 +90,7 @@ export function AdminUsersTable({
                     type="submit"
                     variant="outline"
                     size="icon"
+                    disabled={isPending}
                     className="border-gray-700 text-gray-400 hover:text-white"
                 >
                     <Search className="h-4 w-4" />

@@ -57,15 +57,20 @@ export async function BlogSidebar() {
 
     return (
         <aside className="flex flex-col gap-8 pt-1">
-
             {/* ── Top Writers ──────────────────────────────────────────── */}
             {authors.length > 0 && (
                 <section>
                     <SidebarHeading label="Auteurs populaires" />
                     <div className="flex flex-col gap-4">
                         {authors.map((author) => (
-                            <div key={author.id} className="flex items-center gap-3">
-                                <Link href={`/authors/${author.id}`} className="shrink-0">
+                            <div
+                                key={author.id}
+                                className="flex items-center gap-3"
+                            >
+                                <Link
+                                    href={`/authors/${author.id}`}
+                                    className="shrink-0"
+                                >
                                     <UserAvatar
                                         name={author.name}
                                         avatarPath={author.avatarPath}
@@ -120,9 +125,7 @@ export async function BlogSidebar() {
             )}
 
             {/* ── Divider ──────────────────────────────────────────────── */}
-            {trendingPosts.length > 0 && (
-                <div className="h-px bg-border/50" />
-            )}
+            {trendingPosts.length > 0 && <div className="h-px bg-border/50" />}
 
             {/* ── Trending ─────────────────────────────────────────────── */}
             {trendingPosts.length > 0 && (
@@ -130,7 +133,9 @@ export async function BlogSidebar() {
                     <SidebarHeading label="En ce moment" />
                     <div className="flex flex-col gap-4">
                         {trendingPosts.map((post, i) => {
-                            const owner = post.contributors.find((c) => c.owner);
+                            const owner = post.contributors.find(
+                                (c) => c.owner
+                            );
                             const excerpt = extractExcerpt(post.content, 80);
                             return (
                                 <Link
@@ -187,11 +192,11 @@ export async function BlogSidebar() {
             <section>
                 <SidebarHeading label="Newsletter" />
                 <p className="text-[12px] text-muted-foreground leading-relaxed mb-4">
-                    Recevez les meilleurs articles directement dans votre boîte mail.
+                    Recevez les meilleurs articles directement dans votre boîte
+                    mail.
                 </p>
                 <NewsletterForm />
             </section>
-
         </aside>
     );
 }
