@@ -26,9 +26,11 @@
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.14 0.018 264);
 
-    /* Brand accent — muted khaki / olive, ~#7A7142 */
-    --primary: oklch(0.55 0.08 100);
-    --primary-foreground: oklch(0.99 0 0);
+    /* Brand accent — fresh yellow-leaning khaki, ~#A8983A
+     * Brighter and more yellow than the previous brown-olive, but still
+     * muted enough (low chroma) to read as editorial, not "look at me". */
+    --primary: oklch(0.68 0.13 100);
+    --primary-foreground: oklch(0.14 0.018 264);
 
     --secondary: oklch(0.97 0.004 265);
     --secondary-foreground: oklch(0.14 0.018 264);
@@ -40,17 +42,17 @@
     --destructive-foreground: oklch(1 0 0);
     --border: oklch(0.92 0.005 265);
     --input: oklch(0.92 0.005 265);
-    --ring: oklch(0.55 0.08 100);
+    --ring: oklch(0.68 0.13 100);
     --radius: 0.75rem;
 
     --sidebar: oklch(0.99 0.003 265);
     --sidebar-foreground: oklch(0.14 0.018 264);
     --sidebar-border: oklch(0.92 0.005 265);
-    --sidebar-primary: oklch(0.55 0.08 100);
-    --sidebar-primary-foreground: oklch(0.99 0 0);
+    --sidebar-primary: oklch(0.68 0.13 100);
+    --sidebar-primary-foreground: oklch(0.14 0.018 264);
     --sidebar-accent: oklch(0.96 0.012 100);
     --sidebar-accent-foreground: oklch(0.14 0.018 264);
-    --sidebar-ring: oklch(0.55 0.08 100);
+    --sidebar-ring: oklch(0.68 0.13 100);
 
     /* Elevation tokens — used by .surface utility */
     --shadow-sm:
@@ -71,7 +73,7 @@
     --card-foreground: oklch(0.97 0.003 265);
     --popover: oklch(0.13 0.008 265);
     --popover-foreground: oklch(0.97 0.003 265);
-    --primary: oklch(0.7 0.09 100); /* slightly brighter khaki in dark */
+    --primary: oklch(0.75 0.13 100); /* even brighter yellow khaki in dark */
     --primary-foreground: oklch(0.14 0.018 264);
     --secondary: oklch(0.16 0.009 265);
     --secondary-foreground: oklch(0.97 0.003 265);
@@ -83,15 +85,15 @@
     --destructive-foreground: oklch(0.97 0.003 265);
     --border: oklch(1 0 0 / 8%);
     --input: oklch(1 0 0 / 8%);
-    --ring: oklch(0.7 0.09 100);
+    --ring: oklch(0.75 0.13 100);
     --sidebar: oklch(0.1 0.007 265);
     --sidebar-foreground: oklch(0.97 0.003 265);
     --sidebar-border: oklch(1 0 0 / 6%);
-    --sidebar-primary: oklch(0.7 0.09 100);
+    --sidebar-primary: oklch(0.75 0.13 100);
     --sidebar-primary-foreground: oklch(0.14 0.018 264);
     --sidebar-accent: oklch(1 0 0 / 5%);
     --sidebar-accent-foreground: oklch(0.97 0.003 265);
-    --sidebar-ring: oklch(0.7 0.09 100);
+    --sidebar-ring: oklch(0.75 0.13 100);
 }
 
 @theme inline {
@@ -208,4 +210,63 @@ article {
 /* ─── Editorial blockquote — orange left rule (UInugget signature) ──────── */
 .prose blockquote {
     border-left-color: var(--primary);
+}
+
+/* ─── Reveal-on-scroll utility ────────────────────────────────────────────
+ * Add `.reveal` to any block; on viewport entry, JS toggles `.is-visible`
+ * (handled by IntersectionObserver in <ScrollReveal>). Falls back to
+ * visible state if JS is disabled or `prefers-reduced-motion`.
+ */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal.is-visible,
+.no-js .reveal {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ─── Marquee animation (for testimonial / brand strip) ──────────────────── */
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+.animate-marquee {
+    animation: marquee 40s linear infinite;
+}
+.animate-marquee:hover {
+    animation-play-state: paused;
+}
+
+/* ─── Floating gradient blob (hero decoration) ───────────────────────────── */
+@keyframes float-blob {
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(30px, -20px) scale(1.05);
+    }
+    66% {
+        transform: translate(-20px, 25px) scale(0.95);
+    }
+}
+.animate-blob {
+    animation: float-blob 18s ease-in-out infinite;
 }

@@ -92,8 +92,8 @@ export function SiteFooter() {
                         </ul>
                         <p className="text-xs text-muted-foreground leading-relaxed">
                             Créé par{' '}
-                            <span className="text-foreground font-medium">
-                                Seba Gedeon Matsoula Malonga
+                            <span className="text-foreground font-semibold">
+                                Le Génie
                             </span>
                             . Ouvert à la communauté.
                         </p>
