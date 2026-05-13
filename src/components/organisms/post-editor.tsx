@@ -90,7 +90,10 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             try {
                 // Upload pending images first; no-op if nothing is pending.
                 const json = await editorRef.current?.flushImages(
-                    (file) => postsApi.uploadImage(post.id, file)
+                    async (file) => {
+                        const { url } = await postsApi.uploadImage(post.id, file);
+                        return url;
+                    }
                 );
 
                 await updatePost({

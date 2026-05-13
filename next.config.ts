@@ -35,6 +35,17 @@ const nextConfig = bundleAnalyzer(
                 process.env.API_BASE_URL ?? 'http://localhost:3030/api/'
             ).replace(/\/$/, '');
             return {
+                /**
+                 * beforeFiles — run before filesystem routing, after middleware.
+                 * Maps /@username/slug → /p/username/slug (internal route) while
+                 * keeping the browser URL unchanged (transparent rewrite).
+                 * Duplicate entries for each locale prefix (fr is default / no prefix).
+                 */
+                beforeFiles: [
+                    { source: '/@:username/:slug*', destination: '/p/:username/:slug*' },
+                    { source: '/en/@:username/:slug*', destination: '/en/p/:username/:slug*' },
+                    { source: '/fr/@:username/:slug*', destination: '/fr/p/:username/:slug*' },
+                ],
                 afterFiles: [
                     {
                         source: '/api/:path*',
