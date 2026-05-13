@@ -129,7 +129,7 @@ export function PostCard({
                 {/* Text */}
                 <div className="flex-1 min-w-0">
                     {category && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-[0.12em] bg-primary/10 text-primary">
+                        <span className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-primary">
                             {category}
                         </span>
                     )}
@@ -251,39 +251,38 @@ export function PostCard({
                 </div>
             </Link>
 
-            <div className="flex-1 p-4">
-                <div className="flex items-center gap-2 mb-2">
+            <div className="flex-1 p-6 flex flex-col gap-3">
+                {/* Plain-text status + tag labels — no chip backgrounds */}
+                <div className="flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.16em]">
                     {showStatus && <StatusBadge status={post.status} />}
-                    {post.postTags.slice(0, 2).map((tag) => (
-                        <span
-                            key={tag.id}
-                            className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
-                        >
-                            {tag.name}
+                    {post.postTags[0] && (
+                        <span className="text-primary">
+                            {post.postTags[0].name}
                         </span>
-                    ))}
+                    )}
                 </div>
                 <Link href={href} className="block">
-                    <h3 className="font-semibold text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-[16.5px] leading-snug line-clamp-2 group-hover:text-primary transition-colors">
                         {post.title || 'Sans titre'}
                     </h3>
                 </Link>
             </div>
 
-            <div className="p-4 pt-0 flex items-center justify-between">
+            <div className="px-6 pb-6 flex items-center justify-between gap-3">
                 {owner && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
                         <UserAvatar
                             name={owner.user.name}
                             avatarPath={owner.user.avatarPath}
                             size="sm"
+                            className="h-7 w-7 text-[10px] shrink-0"
                         />
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[12px] text-muted-foreground truncate">
                             {owner.user.name}
                         </span>
                     </div>
                 )}
-                <div className="flex items-center gap-3 text-xs text-muted-foreground ml-auto">
+                <div className="flex items-center gap-3 text-[11px] text-muted-foreground ml-auto shrink-0">
                     {post.contributors.length > 1 && (
                         <span className="flex items-center gap-1">
                             <Users className="h-3 w-3" />
@@ -302,7 +301,6 @@ export function PostCard({
                             {post.commentsCount}
                         </span>
                     )}
-                    <span>{timeAgo}</span>
                 </div>
             </div>
         </div>

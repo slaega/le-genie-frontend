@@ -140,11 +140,18 @@
 
     body {
         @apply bg-background text-foreground;
+        /* Inter: enable contextual alternates + opentype features for crisp text */
         font-feature-settings:
-            'rlig' 1,
-            'calt' 1;
+            'cv11' 1,
+            'ss01' 1,
+            'ss03' 1,
+            'cv02' 1,
+            'cv03' 1,
+            'cv04' 1;
+        font-optical-sizing: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
 
     ::-webkit-scrollbar {

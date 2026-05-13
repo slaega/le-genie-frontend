@@ -36,10 +36,10 @@ function FeaturedCard({ post }: { post: Post }) {
     return (
         <Link
             href={postUrl(post)}
-            className="group surface surface-hover flex flex-col sm:flex-row overflow-hidden mb-8"
+            className="group surface surface-hover flex flex-col sm:flex-row overflow-hidden mb-10"
         >
             {/* Image */}
-            <div className="relative sm:w-[52%] aspect-[4/3] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
+            <div className="relative sm:w-[48%] aspect-[4/3] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
                 {post.imagePath ? (
                     <Image
                         src={post.imagePath}
@@ -54,14 +54,14 @@ function FeaturedCard({ post }: { post: Post }) {
                 )}
             </div>
 
-            {/* Content */}
-            <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center gap-3 min-w-0">
+            {/* Content — generous padding, plain-text category */}
+            <div className="flex-1 p-7 sm:p-10 flex flex-col justify-center gap-4 min-w-0">
                 {category && (
-                    <span className="inline-flex items-center self-start px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-[0.12em] bg-primary/10 text-primary">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
                         {category}
                     </span>
                 )}
-                <h2 className="text-[22px] sm:text-[28px] font-bold leading-[1.15] tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-3">
+                <h2 className="text-[22px] sm:text-[28px] font-bold leading-[1.2] tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-3">
                     {post.title || 'Sans titre'}
                 </h2>
                 {excerpt && (
@@ -121,33 +121,33 @@ function GridCard({ post }: { post: Post }) {
                 )}
             </div>
 
-            {/* Content */}
-            <div className="p-5 flex flex-col gap-2.5 flex-1">
+            {/* Content — extra padding, plain-text category */}
+            <div className="p-6 flex flex-col gap-3 flex-1">
                 {category && (
-                    <span className="inline-flex items-center self-start px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-[0.12em] bg-primary/10 text-primary">
+                    <span className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-primary">
                         {category}
                     </span>
                 )}
-                <h3 className="text-[16px] font-bold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="text-[16.5px] font-bold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                     {post.title || 'Sans titre'}
                 </h3>
                 {excerpt && (
-                    <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-2">
+                    <p className="text-[13px] text-muted-foreground leading-relaxed line-clamp-2">
                         {excerpt}
                     </p>
                 )}
 
-                {/* Footer */}
-                <div className="flex items-center gap-2 mt-auto pt-3 border-t border-border/40">
+                {/* Footer — no border, more breathing room */}
+                <div className="flex items-center gap-2.5 mt-3">
                     {owner && (
                         <>
                             <UserAvatar
                                 name={owner.user.name}
                                 avatarPath={owner.user.avatarPath}
                                 size="sm"
-                                className="h-6 w-6 text-[9px] shrink-0"
+                                className="h-7 w-7 text-[10px] shrink-0"
                             />
-                            <span className="text-[11px] text-muted-foreground truncate flex-1">
+                            <span className="text-[12px] text-muted-foreground truncate flex-1">
                                 {owner.user.name}
                                 {post.readingTime > 0 && (
                                     <span className="ml-1 text-muted-foreground/50">
@@ -157,7 +157,7 @@ function GridCard({ post }: { post: Post }) {
                             </span>
                         </>
                     )}
-                    <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-foreground transition-colors shrink-0 ml-auto" />
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0 ml-auto" />
                 </div>
             </div>
         </Link>

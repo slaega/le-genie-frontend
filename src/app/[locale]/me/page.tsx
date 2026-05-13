@@ -152,7 +152,7 @@ export default async function MePage({ params }: Props) {
                         <MeActions isAdmin={me.role === 'ADMIN'} />
                         <Link
                             href="/me/profile"
-                            className="h-9 px-3.5 rounded-lg text-[13px] font-medium border border-border text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+                            className="h-9 px-4 rounded-full text-[12.5px] font-semibold border border-border bg-background text-foreground hover:bg-muted hover:border-foreground/25 transition-colors flex items-center gap-1.5"
                         >
                             <Settings className="h-3.5 w-3.5" />
                             Modifier le profil

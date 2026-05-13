@@ -26,12 +26,12 @@ export default async function PublicationsPage() {
             <SiteHeader />
             <main className="flex-1">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-14 pb-24">
-                    {/* Page heading — Slothui style: centered eyebrow + bold title + subtitle */}
+                    {/* Page heading — Slothui style: centered, plain-text eyebrow */}
                     <div className="text-center mb-14">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-[0.14em] bg-primary/10 text-primary mb-5">
-                            Read Our Blog
-                        </span>
-                        <h1 className="text-[36px] sm:text-[46px] font-bold tracking-tight leading-[1.05] text-foreground">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary mb-5">
+                            Le Blog
+                        </p>
+                        <h1 className="text-[38px] sm:text-[48px] font-bold tracking-tight leading-[1.05] text-foreground">
                             Parcourir les ressources
                         </h1>
                         <p className="text-[14.5px] text-muted-foreground mt-4 max-w-md mx-auto leading-relaxed">

@@ -444,15 +444,15 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     )}
                 </div>
 
-                {/* Right: actions */}
-                <div className="flex items-center gap-1.5 ml-auto">
+                {/* Right: actions — Hashnode-style rounded pills */}
+                <div className="flex items-center gap-2 ml-auto">
                     <CollaboratorsPanel postId={post.id} />
 
                     <button
                         type="button"
                         onClick={() => setShowPanel((v) => !v)}
                         className={cn(
-                            'h-8 px-2.5 rounded-lg text-[12px] flex items-center gap-1.5 transition-colors',
+                            'h-9 px-3 rounded-full text-[12.5px] font-medium flex items-center gap-1.5 transition-colors',
                             showPanel
                                 ? 'bg-accent text-foreground'
                                 : 'text-muted-foreground hover:text-foreground hover:bg-accent'
@@ -461,7 +461,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     >
                         <PanelRight className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">
-                            {showPanel ? 'Masquer infos' : 'Infos'}
+                            {showPanel ? 'Masquer' : 'Infos'}
                         </span>
                     </button>
 
@@ -478,13 +478,11 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         />
                     )}
 
-                    <div className="h-5 w-px bg-border mx-1" />
-
                     <button
                         type="button"
                         onClick={() => save('DRAFT')}
                         disabled={isSaving || isPublishing}
-                        className="h-8 px-3 rounded-lg text-[12px] flex items-center gap-1.5 border border-border text-foreground/80 hover:text-foreground hover:bg-accent transition-all duration-150 disabled:opacity-40"
+                        className="h-9 px-4 rounded-full text-[12.5px] font-semibold flex items-center gap-1.5 border border-border bg-background text-foreground hover:bg-muted hover:border-foreground/25 transition-all duration-150 disabled:opacity-40"
                     >
                         <Save className="h-3.5 w-3.5" />
                         {isSaving ? 'Sauvegarde…' : 'Brouillon'}
@@ -498,11 +496,10 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             }
                             disabled={isSaving || isPublishing}
                             className={cn(
-                                'h-8 px-3.5 rounded-lg text-[12px] flex items-center gap-1.5 font-semibold',
-                                'transition-all duration-150 disabled:opacity-40',
+                                'h-9 px-5 rounded-full text-[12.5px] font-semibold flex items-center gap-1.5 transition-all duration-150 disabled:opacity-40 shadow-sm hover:shadow-md',
                                 isPublished
                                     ? 'bg-muted text-foreground hover:bg-accent border border-border'
-                                    : 'bg-foreground text-background hover:opacity-90 shadow-sm'
+                                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
                             )}
                         >
                             {isPublished ? (

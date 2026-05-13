@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Noto_Sans, Noto_Sans_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import '@/styles/globals.css';
 import { routing } from '@/libs/i18nNavigation';
 import { NextIntlClientProvider } from 'next-intl';
@@ -8,13 +8,17 @@ import { notFound } from 'next/navigation';
 import { Providers } from '@/providers/providers';
 import { PostHogProvider } from '@/components/analytics/PostHogProvider';
 
-const notoSans = Noto_Sans({
+/* Inter — clean geometric sans, the editorial / SaaS standard */
+const inter = Inter({
     variable: '--font-noto-sans',
     subsets: ['latin'],
+    display: 'swap',
 });
-const notoSansMono = Noto_Sans_Mono({
+/* JetBrains Mono — sharp monospace for inline + block code */
+const jetbrainsMono = JetBrains_Mono({
     variable: '--font-noto-sans-mono',
     subsets: ['latin'],
+    display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -59,7 +63,7 @@ export default async function RootLayout(
         <html lang={locale} suppressHydrationWarning>
             <body
                 suppressHydrationWarning
-                className={`${notoSans.variable} ${notoSansMono.variable} antialiased`}
+                className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
             >
                 <PostHogProvider>
                     <NextIntlClientProvider locale={locale} messages={messages}>

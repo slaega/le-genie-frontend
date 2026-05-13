@@ -213,7 +213,7 @@ export function PostView({ post }: PostViewProps) {
                     {category && (
                         <Link
                             href={`/publications?tag=${encodeURIComponent(category)}`}
-                            className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-[0.14em] bg-primary/10 text-primary hover:bg-primary/15 transition-colors"
+                            className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary hover:opacity-80 transition-opacity"
                         >
                             {category}
                         </Link>
