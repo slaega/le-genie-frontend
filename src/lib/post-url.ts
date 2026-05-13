@@ -1,4 +1,4 @@
-import type { Post, Contributor, User } from '@/lib/api/types';
+import type { Post, Contributor } from '@/lib/api/types';
 
 /**
  * URL-safe handle from a display name. e.g. "Seba Gedeon" → "seba-gedeon".
@@ -14,6 +14,18 @@ function slugifyName(name: string): string {
 }
 
 /**
+ * Minimum shape needed to derive a handle. `username` and `email` are
+ * accepted as optional/nullable so partial author payloads from the API
+ * (sidebar lists, follow lists, etc.) work without casting.
+ */
+export type UserLike = {
+    id: string;
+    name?: string;
+    username?: string | null;
+    email?: string | null;
+};
+
+/**
  * Resolves a user's public handle, used in URLs as `/@handle`.
  *
  * Precedence:
@@ -25,9 +37,7 @@ function slugifyName(name: string): string {
  * The result is always lowercase, URL-safe, and unique-by-construction at the
  * top level (`username` is enforced unique by the backend).
  */
-export function userHandle(
-    user: Pick<User, 'id' | 'username' | 'name' | 'email'> | null | undefined
-): string {
+export function userHandle(user: UserLike | null | undefined): string {
     if (!user) return '';
     if (user.username) return user.username;
     if (user.name) {
@@ -42,9 +52,7 @@ export function userHandle(
 }
 
 /** Public profile URL for a user — `/@handle`. */
-export function userUrl(
-    user: Pick<User, 'id' | 'username' | 'name' | 'email'>
-): string {
+export function userUrl(user: UserLike): string {
     const handle = userHandle(user);
     return handle ? `/@${handle}` : `/authors/${user.id}`;
 }

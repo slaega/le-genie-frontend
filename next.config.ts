@@ -14,7 +14,10 @@ const securityHeaders = [
     { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
     { key: 'X-Content-Type-Options', value: 'nosniff' },
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-    { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+    {
+        key: 'Permissions-Policy',
+        value: 'camera=(), microphone=(), geolocation=()',
+    },
     {
         key: 'Strict-Transport-Security',
         value: 'max-age=63072000; includeSubDomains; preload',
@@ -37,14 +40,37 @@ const nextConfig = bundleAnalyzer(
             return {
                 /**
                  * beforeFiles — run before filesystem routing, after middleware.
-                 * Maps /@username/slug → /p/username/slug (internal route) while
-                 * keeping the browser URL unchanged (transparent rewrite).
-                 * Duplicate entries for each locale prefix (fr is default / no prefix).
+                 *
+                 *   /@username        → /p/username       (public author profile)
+                 *   /@username/slug   → /p/username/slug  (post detail, slug is what counts)
+                 *
+                 * Browser URL stays as `/@username[/slug]` (transparent rewrite).
+                 * Duplicate per locale prefix (fr is default / no prefix).
                  */
                 beforeFiles: [
-                    { source: '/@:username/:slug*', destination: '/p/:username/:slug*' },
-                    { source: '/en/@:username/:slug*', destination: '/en/p/:username/:slug*' },
-                    { source: '/fr/@:username/:slug*', destination: '/fr/p/:username/:slug*' },
+                    // Order matters: more specific (with slug) MUST come first so
+                    // the slug-less variant doesn't capture it.
+                    {
+                        source: '/@:username/:slug*',
+                        destination: '/p/:username/:slug*',
+                    },
+                    {
+                        source: '/en/@:username/:slug*',
+                        destination: '/en/p/:username/:slug*',
+                    },
+                    {
+                        source: '/fr/@:username/:slug*',
+                        destination: '/fr/p/:username/:slug*',
+                    },
+                    { source: '/@:username', destination: '/p/:username' },
+                    {
+                        source: '/en/@:username',
+                        destination: '/en/p/:username',
+                    },
+                    {
+                        source: '/fr/@:username',
+                        destination: '/fr/p/:username',
+                    },
                 ],
                 afterFiles: [
                     {

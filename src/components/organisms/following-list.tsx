@@ -9,10 +9,13 @@ import { FollowButton } from '@/components/molecules/follow-button';
 import { LoadingSpinner } from '@/components/atoms/loading-spinner';
 import { EmptyState } from '@/components/atoms/empty-state';
 import { Users } from 'lucide-react';
+import { userUrl } from '@/lib/post-url';
 
 interface FollowedAuthor {
     id: string;
     name: string;
+    username?: string | null;
+    email?: string;
     avatarPath: string | null;
     professionalRole: string | null;
     followersCount: number;
@@ -63,9 +66,9 @@ export function FollowingList() {
             {authors.map((author) => (
                 <div
                     key={author.id}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:border-border transition-colors"
+                    className="surface surface-hover flex items-center gap-4 p-4"
                 >
-                    <Link href={`/authors/${author.id}`} className="shrink-0">
+                    <Link href={userUrl(author)} className="shrink-0">
                         <UserAvatar
                             name={author.name}
                             avatarPath={author.avatarPath}
@@ -75,7 +78,7 @@ export function FollowingList() {
 
                     <div className="flex-1 min-w-0">
                         <Link
-                            href={`/authors/${author.id}`}
+                            href={userUrl(author)}
                             className="hover:underline"
                         >
                             <p className="font-semibold text-sm leading-tight">

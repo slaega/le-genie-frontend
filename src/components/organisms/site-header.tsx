@@ -53,7 +53,10 @@ export function SiteHeader() {
 
     return (
         <>
-            <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+            <SearchOverlay
+                open={searchOpen}
+                onClose={() => setSearchOpen(false)}
+            />
 
             <header
                 className={cn(
@@ -72,21 +75,30 @@ export function SiteHeader() {
                     </Link>
 
                     {/* Desktop nav */}
-                    <nav className="hidden md:flex items-center gap-1 flex-1">
-                        {NAV_LINKS.map(({ href, label }) => (
-                            <Link
-                                key={href}
-                                href={href}
-                                className={cn(
-                                    'px-3 py-1.5 rounded-md text-sm transition-colors duration-150',
-                                    pathname === href
-                                        ? 'text-foreground font-medium'
-                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                                )}
-                            >
-                                {label}
-                            </Link>
-                        ))}
+                    <nav className="hidden md:flex items-center gap-0.5 flex-1">
+                        {NAV_LINKS.map(({ href, label }) => {
+                            const isActive = pathname === href;
+                            return (
+                                <Link
+                                    key={href}
+                                    href={href}
+                                    className={cn(
+                                        'relative px-3 py-1.5 rounded-md text-[13px] transition-colors duration-150',
+                                        isActive
+                                            ? 'text-primary font-semibold'
+                                            : 'text-muted-foreground hover:text-foreground'
+                                    )}
+                                >
+                                    {label}
+                                    {isActive && (
+                                        <span
+                                            aria-hidden
+                                            className="absolute left-3 right-3 -bottom-px h-[2px] bg-primary rounded-full"
+                                        />
+                                    )}
+                                </Link>
+                            );
+                        })}
                     </nav>
 
                     {/* Right actions */}

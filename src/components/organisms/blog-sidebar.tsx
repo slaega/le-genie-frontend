@@ -4,7 +4,7 @@ import { serverApi } from '@/lib/api/server';
 import { UserAvatar } from '@/components/atoms/user-avatar';
 import { FollowButton } from '@/components/molecules/follow-button';
 import { NewsletterForm } from '@/components/molecules/newsletter-form';
-import { postUrl } from '@/lib/post-url';
+import { postUrl, userUrl } from '@/lib/post-url';
 import { extractExcerpt } from '@/lib/utils';
 import type { Post } from '@/lib/api/types';
 
@@ -16,6 +16,8 @@ interface CmsTag {
 interface CmsAuthor {
     id: string;
     name: string;
+    username?: string | null;
+    email?: string;
     avatarPath: string | null;
     professionalRole: string | null;
     postCount: number;
@@ -68,7 +70,7 @@ export async function BlogSidebar() {
                                 className="flex items-center gap-3"
                             >
                                 <Link
-                                    href={`/authors/${author.id}`}
+                                    href={userUrl(author)}
                                     className="shrink-0"
                                 >
                                     <UserAvatar
@@ -80,7 +82,7 @@ export async function BlogSidebar() {
                                 </Link>
                                 <div className="flex-1 min-w-0">
                                     <Link
-                                        href={`/authors/${author.id}`}
+                                        href={userUrl(author)}
                                         className="text-[13px] font-medium leading-tight hover:text-primary transition-colors truncate block"
                                     >
                                         {author.name}
