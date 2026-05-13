@@ -10,8 +10,6 @@ import {
     Twitter,
     Github,
     MapPin,
-    BookOpen,
-    FileText,
     AtSign,
     ExternalLink,
 } from 'lucide-react';
@@ -87,8 +85,8 @@ export default async function MePage({ params }: Props) {
     return (
         <MainLayout>
             <div className="max-w-4xl mx-auto">
-                {/* ── Cover banner ────────────────────────────────────── */}
-                <div className="relative h-48 sm:h-60 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 shadow-sm">
+                {/* ── Cover ──────────────────────────────────────────── */}
+                <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden bg-muted">
                     {me.coverPath && (
                         <Image
                             src={me.coverPath}
@@ -98,59 +96,52 @@ export default async function MePage({ params }: Props) {
                             priority
                         />
                     )}
-                    {/* Subtle bottom gradient for legibility under the avatar */}
-                    {!me.coverPath && (
-                        <div
-                            aria-hidden
-                            className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.18),transparent_60%)]"
-                        />
-                    )}
                 </div>
 
                 {/* ── Identity header ─────────────────────────────────── */}
-                <div className="px-2 sm:px-6 -mt-14 mb-8">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-5">
+                <div className="px-2 sm:px-6 -mt-12 mb-10">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5">
                         <UserAvatar
                             name={me.name}
                             avatarPath={me.avatarPath}
                             size="xl"
-                            className="h-28 w-28 text-3xl ring-4 ring-background shadow-lg shrink-0"
+                            className="h-24 w-24 text-2xl ring-4 ring-background shrink-0"
                         />
 
                         <div className="flex-1 min-w-0 sm:pb-1">
                             <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight leading-tight text-foreground">
+                                <h1 className="text-[28px] sm:text-[32px] font-bold tracking-tight leading-[1.1] text-foreground">
                                     {me.name}
                                 </h1>
                                 {me.role === 'ADMIN' && (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-foreground text-background">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-foreground/60 border border-border">
                                         Admin
                                     </span>
                                 )}
                             </div>
 
-                            <p className="text-[13px] text-muted-foreground flex items-center gap-1.5 leading-tight">
+                            <p className="text-[13px] text-muted-foreground flex items-center gap-1 leading-tight">
                                 <AtSign className="h-3.5 w-3.5" />
                                 <Link
                                     href={`/@${handle}`}
-                                    className="hover:text-foreground hover:underline underline-offset-4 transition-colors"
+                                    className="hover:text-foreground transition-colors"
                                 >
                                     {handle}
                                 </Link>
-                                <span className="text-muted-foreground/30 mx-1">
+                                <span className="text-muted-foreground/40 mx-1.5">
                                     ·
                                 </span>
-                                <span>{me.email}</span>
+                                <span className="truncate">{me.email}</span>
                             </p>
 
                             {me.professionalRole && (
-                                <p className="text-[14px] font-medium text-foreground/80 mt-1.5">
+                                <p className="text-[14px] text-foreground/70 mt-2">
                                     {me.professionalRole}
                                 </p>
                             )}
 
                             {me.bio && (
-                                <p className="text-[14px] leading-relaxed text-foreground/70 mt-2 max-w-2xl">
+                                <p className="text-[14px] leading-relaxed text-foreground/65 mt-2 max-w-2xl">
                                     {me.bio}
                                 </p>
                             )}
@@ -160,11 +151,11 @@ export default async function MePage({ params }: Props) {
                             <MeActions isAdmin={me.role === 'ADMIN'} />
                             <Link
                                 href="/me/profile"
-                                className="h-9 px-3 rounded-lg text-[12px] font-medium border border-border text-foreground/80 hover:text-foreground hover:bg-accent transition-colors flex items-center gap-1.5"
+                                className="h-9 px-3 rounded-lg text-[12px] font-medium border border-border text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1.5"
                             >
                                 <Settings className="h-3.5 w-3.5" />
                                 <span className="hidden sm:inline">
-                                    Modifier le profil
+                                    Modifier
                                 </span>
                             </Link>
                         </div>
@@ -172,9 +163,9 @@ export default async function MePage({ params }: Props) {
 
                     {/* Socials */}
                     {hasSocials && (
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 ml-0 sm:ml-[8.5rem]">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 ml-0 sm:ml-[7.5rem] text-muted-foreground">
                             {me.location && (
-                                <span className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
+                                <span className="flex items-center gap-1.5 text-[12px]">
                                     <MapPin className="h-3.5 w-3.5" />
                                     {me.location}
                                 </span>
@@ -184,11 +175,11 @@ export default async function MePage({ params }: Props) {
                                     href={me.website}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-[12px] text-foreground/70 hover:text-foreground hover:underline underline-offset-4 transition-colors"
+                                    className="flex items-center gap-1.5 text-[12px] hover:text-foreground transition-colors"
                                 >
                                     <Globe className="h-3.5 w-3.5" />
                                     {me.website.replace(/^https?:\/\//, '')}
-                                    <ExternalLink className="h-2.5 w-2.5 opacity-50" />
+                                    <ExternalLink className="h-2.5 w-2.5 opacity-40" />
                                 </a>
                             )}
                             {me.twitterHandle && (
@@ -196,7 +187,7 @@ export default async function MePage({ params }: Props) {
                                     href={`https://twitter.com/${me.twitterHandle}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-[12px] text-foreground/70 hover:text-foreground transition-colors"
+                                    className="flex items-center gap-1.5 text-[12px] hover:text-foreground transition-colors"
                                 >
                                     <Twitter className="h-3.5 w-3.5" />@
                                     {me.twitterHandle}
@@ -207,7 +198,7 @@ export default async function MePage({ params }: Props) {
                                     href={`https://github.com/${me.githubHandle}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-[12px] text-foreground/70 hover:text-foreground transition-colors"
+                                    className="flex items-center gap-1.5 text-[12px] hover:text-foreground transition-colors"
                                 >
                                     <Github className="h-3.5 w-3.5" />
                                     {me.githubHandle}
@@ -217,36 +208,22 @@ export default async function MePage({ params }: Props) {
                     )}
                 </div>
 
-                {/* ── Stats row ───────────────────────────────────────── */}
-                <div className="grid grid-cols-3 gap-3 px-2 sm:px-6 mb-8">
-                    <StatCard
-                        icon={BookOpen}
-                        value={publishedTotal}
-                        label={
-                            publishedTotal === 1
-                                ? 'Publication'
-                                : 'Publications'
-                        }
-                        accent="text-emerald-600"
-                    />
-                    <StatCard
-                        icon={FileText}
-                        value={draftTotal}
-                        label={draftTotal === 1 ? 'Brouillon' : 'Brouillons'}
-                        accent="text-amber-600"
-                    />
-                    <StatCard
-                        icon={AtSign}
+                {/* ── Inline stats row ────────────────────────────────── */}
+                <div className="flex items-center gap-8 px-2 sm:px-6 py-4 border-y border-border mb-10">
+                    <InlineStat value={publishedTotal} label="publications" />
+                    <span className="h-4 w-px bg-border" />
+                    <InlineStat value={draftTotal} label="brouillons" />
+                    <span className="h-4 w-px bg-border" />
+                    <InlineStat
                         value={`@${handle}`}
-                        label="Identifiant public"
-                        accent="text-indigo-600"
+                        label="identifiant"
                         small
                     />
                 </div>
 
                 {/* ── Tabs ────────────────────────────────────────────── */}
                 <Tabs defaultValue="published" className="px-2 sm:px-6">
-                    <TabsList className="mb-6 bg-transparent p-0 h-auto border-b border-border rounded-none w-full justify-start gap-6">
+                    <TabsList className="mb-8 bg-transparent p-0 h-auto border-b border-border rounded-none w-full justify-start gap-7">
                         <TabTriggerStyled
                             value="published"
                             label="Publications"
@@ -304,41 +281,34 @@ export default async function MePage({ params }: Props) {
     );
 }
 
-/* ── Stat card ───────────────────────────────────────────────────────────── */
+/* ── Inline stat (no card, no color) ─────────────────────────────────────── */
 
-function StatCard({
-    icon: Icon,
+function InlineStat({
     value,
     label,
-    accent,
     small,
 }: {
-    icon: React.ComponentType<{ className?: string }>;
     value: number | string;
     label: string;
-    accent: string;
     small?: boolean;
 }) {
     return (
-        <div className="rounded-xl border border-border bg-background px-4 py-3.5 hover:border-foreground/20 transition-colors">
-            <div className="flex items-center gap-2 mb-1.5">
-                <Icon className={`h-3.5 w-3.5 ${accent}`} />
-                <p className="text-[10px] uppercase tracking-[0.14em] font-bold text-muted-foreground">
-                    {label}
-                </p>
-            </div>
-            <p
-                className={`font-bold text-foreground tabular-nums truncate ${
-                    small ? 'text-[15px]' : 'text-[22px]'
-                }`}
+        <div className="flex items-baseline gap-2">
+            <span
+                className={
+                    small
+                        ? 'text-[14px] font-semibold text-foreground tabular-nums truncate max-w-[180px]'
+                        : 'text-[20px] font-bold text-foreground tabular-nums'
+                }
             >
                 {value}
-            </p>
+            </span>
+            <span className="text-[12px] text-muted-foreground">{label}</span>
         </div>
     );
 }
 
-/* ── Tab trigger (underline style) ───────────────────────────────────────── */
+/* ── Tab trigger — underline only, no color ──────────────────────────────── */
 
 function TabTriggerStyled({
     value,
@@ -356,7 +326,7 @@ function TabTriggerStyled({
         >
             {label}
             {typeof count === 'number' && count > 0 && (
-                <span className="ml-1.5 text-[10px] tabular-nums text-muted-foreground/70">
+                <span className="ml-1.5 text-[10px] tabular-nums text-muted-foreground/60">
                     {count}
                 </span>
             )}

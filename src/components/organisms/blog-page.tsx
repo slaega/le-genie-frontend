@@ -57,7 +57,7 @@ function FeaturedCard({ post }: { post: Post }) {
             {/* Content */}
             <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center gap-3 min-w-0">
                 {category && (
-                    <span className="inline-flex text-[11px] font-semibold text-primary uppercase tracking-wider">
+                    <span className="inline-flex text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
                         {category}
                     </span>
                 )}
@@ -124,7 +124,7 @@ function GridCard({ post }: { post: Post }) {
             {/* Content */}
             <div className="p-4 flex flex-col gap-2 flex-1">
                 {category && (
-                    <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">
+                    <span className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
                         {category}
                     </span>
                 )}

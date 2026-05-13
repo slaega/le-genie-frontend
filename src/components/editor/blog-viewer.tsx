@@ -83,8 +83,8 @@ export function BlogViewer({
                 'prose-code:text-[0.875em] prose-code:bg-muted prose-code:text-foreground prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none',
                 // Code blocks.
                 'prose-pre:bg-zinc-950 prose-pre:text-zinc-100 prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl prose-pre:shadow-sm prose-pre:overflow-x-auto',
-                // Blockquote — left orange-ish accent like the reference (using primary).
-                'prose-blockquote:not-italic prose-blockquote:border-l-[3px] prose-blockquote:border-orange-500 prose-blockquote:bg-transparent prose-blockquote:py-0 prose-blockquote:pl-6 prose-blockquote:text-foreground/75 prose-blockquote:font-normal',
+                // Blockquote — neutral left rule, no chromatic accent.
+                'prose-blockquote:not-italic prose-blockquote:border-l-[3px] prose-blockquote:border-foreground/30 prose-blockquote:bg-transparent prose-blockquote:py-0 prose-blockquote:pl-6 prose-blockquote:text-foreground/75 prose-blockquote:font-normal',
                 // Images.
                 'prose-img:rounded-xl prose-img:shadow-sm prose-img:mx-auto prose-img:my-6',
                 // Lists.

@@ -83,7 +83,7 @@ export function NotificationBell() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="relative text-gray-400 hover:text-white hover:bg-gray-800"
+                    className="relative text-muted-foreground hover:text-foreground hover:bg-accent"
                     aria-label={
                         hasUnread
                             ? `${unreadCount} notifications non lues`

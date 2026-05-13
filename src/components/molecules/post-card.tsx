@@ -57,7 +57,7 @@ export function PostCard({
                             sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-700 to-violet-900" />
+                        <div className="absolute inset-0 bg-muted" />
                     )}
                 </div>
 
@@ -118,7 +118,7 @@ export function PostCard({
                             sizes="80px"
                         />
                     ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500/20 to-violet-500/20">
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
                             <span className="text-xl font-bold text-primary/40">
                                 {post.title.charAt(0).toUpperCase()}
                             </span>

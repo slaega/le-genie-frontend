@@ -79,7 +79,7 @@ function FieldLabel({
         <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.14em] font-bold text-foreground/60 mb-2 select-none">
             {Icon && <Icon className="h-3 w-3" />}
             {text}
-            {required && <span className="text-red-500 ml-0.5">*</span>}
+            {required && <span className="text-destructive ml-0.5">*</span>}
         </label>
     );
 }
@@ -219,7 +219,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="rounded-2xl border border-border bg-background overflow-hidden">
                 {/* Cover */}
                 <div
-                    className="relative h-44 bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500 cursor-pointer group"
+                    className="relative h-44 bg-muted cursor-pointer group"
                     onClick={() => coverInputRef.current?.click()}
                 >
                     {coverSrc && (
@@ -348,14 +348,14 @@ export function ProfileForm({ user }: ProfileFormProps) {
                             className="flex-1 bg-transparent text-[14px] text-foreground border-0 focus:outline-none rounded-none px-0 py-2 placeholder:text-muted-foreground/40 font-mono"
                         />
                         {!usernameError && username.trim().length >= 3 && (
-                            <Check className="h-3.5 w-3.5 text-emerald-500 mr-1 mb-2 shrink-0" />
+                            <Check className="h-3.5 w-3.5 text-foreground/60 mr-1 mb-2 shrink-0" />
                         )}
                     </div>
                     <p
                         className={cn(
                             'text-[11px] mt-1.5',
                             usernameError
-                                ? 'text-red-500'
+                                ? 'text-destructive'
                                 : 'text-muted-foreground'
                         )}
                     >

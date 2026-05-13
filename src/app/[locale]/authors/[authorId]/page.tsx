@@ -56,7 +56,7 @@ export default async function AuthorPage({ params }: Props) {
             {/* Hero header */}
             <div className="relative -mx-4 -mt-8 mb-10">
                 {/* Cover */}
-                <div className="relative h-52 w-full overflow-hidden bg-gradient-to-br from-blue-700 to-violet-900">
+                <div className="relative h-52 w-full overflow-hidden bg-muted">
                     {author.coverPath && (
                         <Image
                             src={author.coverPath}

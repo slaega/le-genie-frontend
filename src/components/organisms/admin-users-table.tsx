@@ -152,7 +152,7 @@ export function AdminUsersTable({
                                         }
                                         className={
                                             user.role === 'ADMIN'
-                                                ? 'bg-indigo-600 hover:bg-indigo-600'
+                                                ? 'bg-foreground text-background hover:bg-foreground'
                                                 : ''
                                         }
                                     >

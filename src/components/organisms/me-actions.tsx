@@ -44,7 +44,7 @@ export function MeActions({ isAdmin }: MeActionsProps) {
             </Button>
 
             {isAdmin && (
-                <Button asChild size="sm" variant="outline" className="gap-1.5 text-indigo-500 border-indigo-500/30 hover:text-indigo-500">
+                <Button asChild size="sm" variant="outline" className="gap-1.5">
                     <Link href="/admin">
                         <LayoutDashboard className="h-3.5 w-3.5" />
                         Admin

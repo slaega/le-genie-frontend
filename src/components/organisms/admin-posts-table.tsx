@@ -165,8 +165,8 @@ export function AdminPostsTable({
                             onClick={() => handleStatusChange(opt.value)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                 status === opt.value
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                                    ? 'bg-foreground text-background'
+                                    : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-accent'
                             }`}
                         >
                             {opt.label}

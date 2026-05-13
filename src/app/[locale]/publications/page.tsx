@@ -28,7 +28,7 @@ export default async function PublicationsPage() {
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-24">
                     {/* Page heading */}
                     <div className="mb-10">
-                        <p className="text-[11px] font-semibold uppercase tracking-widest text-primary mb-2">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50 mb-2">
                             Le Blog
                         </p>
                         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">

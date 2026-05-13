@@ -22,10 +22,7 @@ function PopularCard({ post }: { post: Post }) {
     });
 
     return (
-        <Link
-            href={postUrl(post)}
-            className="group flex gap-3 items-start"
-        >
+        <Link href={postUrl(post)} className="group flex gap-3 items-start">
             {/* Thumbnail */}
             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-700">
                 {post.imagePath ? (
@@ -37,8 +34,8 @@ function PopularCard({ post }: { post: Post }) {
                         sizes="64px"
                     />
                 ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-700 to-violet-900">
-                        <span className="text-lg font-bold text-white/40">
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                        <span className="text-lg font-bold text-muted-foreground/50">
                             {post.title.charAt(0).toUpperCase()}
                         </span>
                     </div>
@@ -48,14 +45,14 @@ function PopularCard({ post }: { post: Post }) {
             {/* Text */}
             <div className="flex-1 min-w-0">
                 {category && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         {category}
                     </span>
                 )}
-                <h4 className="text-gray-100 font-semibold text-sm leading-snug line-clamp-2 group-hover:text-blue-300 transition-colors mt-0.5">
+                <h4 className="text-foreground font-semibold text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors mt-0.5">
                     {post.title || 'Sans titre'}
                 </h4>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-400">
+                <div className="flex items-center gap-1.5 mt-1 text-xs text-muted-foreground">
                     {owner && <span>{owner.user.name}</span>}
                     <span>·</span>
                     <span>{timeAgo}</span>

@@ -67,7 +67,7 @@ function InfoPanel({ post, wordCount }: { post: Post; wordCount: number }) {
                 {/* ── Hero card — word count gauge ─────────────────────── */}
                 <section className="rounded-2xl border border-border bg-background p-5">
                     <div className="flex items-center gap-1.5 mb-4">
-                        <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                        <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
                         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                             Statistiques
                         </p>
@@ -81,18 +81,19 @@ function InfoPanel({ post, wordCount }: { post: Post; wordCount: number }) {
                             {wordCount === 1 ? 'mot' : 'mots'}
                         </p>
 
-                        {/* Progress bar */}
-                        <div className="w-full mt-4 h-1.5 rounded-full bg-muted overflow-hidden">
+                        {/* Progress bar — opacity encodes progress (no chromatic colors) */}
+                        <div className="w-full mt-4 h-1 rounded-full bg-muted overflow-hidden">
                             <div
-                                className={cn(
-                                    'h-full rounded-full transition-all duration-300',
-                                    progress < 30
-                                        ? 'bg-rose-400'
-                                        : progress < 70
-                                          ? 'bg-amber-400'
-                                          : 'bg-emerald-500'
-                                )}
-                                style={{ width: `${Math.max(2, progress)}%` }}
+                                className="h-full rounded-full bg-foreground transition-all duration-300"
+                                style={{
+                                    width: `${Math.max(2, progress)}%`,
+                                    opacity:
+                                        progress < 30
+                                            ? 0.35
+                                            : progress < 70
+                                              ? 0.65
+                                              : 1,
+                                }}
                             />
                         </div>
                         <p className="text-[10.5px] text-muted-foreground mt-2">
@@ -147,7 +148,7 @@ function InfoPanel({ post, wordCount }: { post: Post; wordCount: number }) {
                         </Row>
                         {post.scheduledAt && (
                             <Row label="Programmé">
-                                <span className="text-amber-600 font-medium tabular-nums">
+                                <span className="text-foreground font-medium tabular-nums">
                                     {new Date(
                                         post.scheduledAt
                                     ).toLocaleDateString('fr-FR')}
@@ -436,7 +437,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     <StatusBadge status={post.status} />
 
                     {scheduledAt && !isPublished && (
-                        <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] text-amber-600 font-medium px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
+                        <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] text-foreground/70 font-medium px-2 py-1 rounded-md bg-muted/60 border border-border">
                             <CalendarClock className="h-3 w-3" />
                             {new Date(scheduledAt).toLocaleDateString('fr-FR')}
                         </span>
@@ -520,8 +521,8 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
 
             {/* ── Scheduler strip ─────────────────────────────────────── */}
             {showScheduler && (
-                <div className="border-b border-border/60 bg-amber-50/40 dark:bg-amber-950/10 px-4 py-2.5 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
-                    <CalendarClock className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                <div className="border-b border-border/60 bg-muted/40 px-4 py-2.5 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
+                    <CalendarClock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                     <span className="text-[12px] font-medium text-foreground/80">
                         Publier automatiquement le
                     </span>

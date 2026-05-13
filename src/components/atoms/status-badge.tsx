@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import type { PostStatus } from '@/lib/api/types';
 import { cn } from '@/lib/utils';
 
@@ -9,12 +8,12 @@ const STATUS_LABELS: Record<PostStatus, string> = {
     ARCHIVED: 'Archivé',
 };
 
-const STATUS_VARIANTS: Record<PostStatus, string> = {
-    EMPTY: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
-    DRAFT: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    PUBLISHED:
-        'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-    ARCHIVED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+/** Dot opacity encodes state without leaving the neutral palette. */
+const STATUS_DOT: Record<PostStatus, string> = {
+    EMPTY: 'bg-muted-foreground/30',
+    DRAFT: 'bg-muted-foreground/60',
+    PUBLISHED: 'bg-foreground',
+    ARCHIVED: 'bg-muted-foreground/40',
 };
 
 interface StatusBadgeProps {
@@ -22,17 +21,25 @@ interface StatusBadgeProps {
     className?: string;
 }
 
+/**
+ * Monochrome status pill — a small dot whose opacity encodes state, paired
+ * with the label in plain text. No chromatic backgrounds.
+ */
 export function StatusBadge({ status, className }: StatusBadgeProps) {
     return (
-        <Badge
-            variant="secondary"
+        <span
             className={cn(
-                'text-xs font-medium border-0 rounded-full',
-                STATUS_VARIANTS[status],
+                'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium text-foreground/80 bg-muted/60 border border-border/60',
+                status === 'ARCHIVED' &&
+                    'line-through decoration-foreground/30',
                 className
             )}
         >
+            <span
+                className={cn('h-1.5 w-1.5 rounded-full', STATUS_DOT[status])}
+                aria-hidden
+            />
             {STATUS_LABELS[status]}
-        </Badge>
+        </span>
     );
 }

@@ -38,8 +38,8 @@ export function OnlineCounter() {
     if (count === null) return null;
 
     return (
-        <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <Circle className="h-2 w-2 fill-green-500 text-green-500 animate-pulse" />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Circle className="h-2 w-2 fill-foreground text-foreground animate-pulse" />
             <span>
                 {count.toLocaleString('fr-FR')} visiteur{count !== 1 ? 's' : ''}{' '}
                 en ligne
