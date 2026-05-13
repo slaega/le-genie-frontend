@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -11,11 +11,11 @@ import {
     ImageIcon,
     Save,
     PanelRight,
-    FileText,
-    Clock,
-    Hash,
     ArrowLeft,
     Send,
+    Sparkles,
+    BookOpen,
+    MoreHorizontal,
 } from 'lucide-react';
 import {
     BlogEditor,
@@ -37,128 +37,263 @@ interface PostEditorProps {
     isOwner: boolean;
 }
 
+/* ── Word-count helper ───────────────────────────────────────────────────── */
+
+type AnyNode = {
+    type?: string;
+    text?: string;
+    content?: AnyNode[];
+};
+
+function countWords(node: AnyNode | null | undefined): number {
+    if (!node) return 0;
+    if (node.type === 'text' && typeof node.text === 'string') {
+        return node.text.trim().split(/\s+/).filter(Boolean).length;
+    }
+    if (!Array.isArray(node.content)) return 0;
+    return node.content.reduce((sum, child) => sum + countWords(child), 0);
+}
+
 /* ── Right info panel ────────────────────────────────────────────────────── */
 
-function InfoPanel({ post }: { post: Post }) {
+function InfoPanel({ post, wordCount }: { post: Post; wordCount: number }) {
+    const readingMinutes = Math.max(1, Math.ceil(wordCount / 200));
+    const target = 800; // ~4 min read — feels "substantial"
+    const progress = Math.min(100, Math.round((wordCount / target) * 100));
+
     return (
-        <aside className="w-72 shrink-0 border-l border-border/60 bg-muted/[0.15] overflow-y-auto">
-            <div className="p-6 space-y-7">
-                {/* Publication */}
-                <section>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
+        <aside className="w-72 shrink-0 border-l border-border/60 bg-muted/[0.18] overflow-y-auto">
+            <div className="p-5 space-y-5">
+                {/* ── Hero card — word count gauge ─────────────────────── */}
+                <section className="rounded-2xl border border-border bg-background p-5">
+                    <div className="flex items-center gap-1.5 mb-4">
+                        <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                            Statistiques
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col items-center text-center">
+                        <p className="text-[44px] font-bold leading-none tabular-nums text-foreground">
+                            {wordCount}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                            {wordCount === 1 ? 'mot' : 'mots'}
+                        </p>
+
+                        {/* Progress bar */}
+                        <div className="w-full mt-4 h-1.5 rounded-full bg-muted overflow-hidden">
+                            <div
+                                className={cn(
+                                    'h-full rounded-full transition-all duration-300',
+                                    progress < 30
+                                        ? 'bg-rose-400'
+                                        : progress < 70
+                                          ? 'bg-amber-400'
+                                          : 'bg-emerald-500'
+                                )}
+                                style={{ width: `${Math.max(2, progress)}%` }}
+                            />
+                        </div>
+                        <p className="text-[10.5px] text-muted-foreground mt-2">
+                            {progress < 30
+                                ? 'Article court'
+                                : progress < 70
+                                  ? 'Bonne longueur'
+                                  : 'Article complet'}
+                        </p>
+                    </div>
+
+                    <div className="h-px bg-border/60 my-4" />
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="text-center">
+                            <p className="text-[15px] font-bold tabular-nums text-foreground">
+                                {readingMinutes}m
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                                Lecture
+                            </p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-[15px] font-bold tabular-nums text-foreground">
+                                {post.postTags.length}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                                {post.postTags.length === 1 ? 'Tag' : 'Tags'}
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ── Publication info ─────────────────────────────────── */}
+                <section className="rounded-2xl border border-border bg-background p-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-3">
                         Publication
                     </p>
                     <dl className="space-y-2.5 text-[12.5px]">
-                        <div className="flex items-center justify-between gap-3">
-                            <dt className="text-muted-foreground">Statut</dt>
-                            <dd>
-                                <StatusBadge status={post.status} />
-                            </dd>
-                        </div>
-                        <div className="flex items-center justify-between gap-3">
-                            <dt className="text-muted-foreground">Créé le</dt>
-                            <dd className="text-foreground/80 tabular-nums">
+                        <Row label="Statut">
+                            <StatusBadge status={post.status} />
+                        </Row>
+                        <Row label="Créé">
+                            <span className="text-foreground/80 tabular-nums">
                                 {formatDate(post.createdAt)}
-                            </dd>
-                        </div>
-                        <div className="flex items-center justify-between gap-3">
-                            <dt className="text-muted-foreground">Modifié</dt>
-                            <dd className="text-foreground/80 tabular-nums">
+                            </span>
+                        </Row>
+                        <Row label="Modifié">
+                            <span className="text-foreground/80 tabular-nums">
                                 {formatDate(post.updatedAt)}
-                            </dd>
-                        </div>
+                            </span>
+                        </Row>
                         {post.scheduledAt && (
-                            <div className="flex items-center justify-between gap-3">
-                                <dt className="text-muted-foreground">
-                                    Programmé
-                                </dt>
-                                <dd className="text-amber-600 font-medium tabular-nums">
+                            <Row label="Programmé">
+                                <span className="text-amber-600 font-medium tabular-nums">
                                     {new Date(
                                         post.scheduledAt
                                     ).toLocaleDateString('fr-FR')}
-                                </dd>
-                            </div>
+                                </span>
+                            </Row>
                         )}
                     </dl>
                 </section>
 
-                <div className="h-px bg-border/60" />
-
-                {/* Rédaction stats */}
-                <section>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
-                        Rédaction
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                        <StatTile
-                            icon={Clock}
-                            value={
-                                post.readingTime > 0
-                                    ? `${post.readingTime}m`
-                                    : '—'
-                            }
-                            label="Lecture"
-                        />
-                        <StatTile
-                            icon={Hash}
-                            value={post.postTags.length}
-                            label={post.postTags.length === 1 ? 'Tag' : 'Tags'}
-                        />
-                        <StatTile
-                            icon={FileText}
-                            value={post.commentsCount}
-                            label={
-                                post.commentsCount === 1
-                                    ? 'Commentaire'
-                                    : 'Commentaires'
-                            }
-                        />
-                    </div>
-                </section>
-
+                {/* ── Tags ──────────────────────────────────────────────── */}
                 {post.postTags.length > 0 && (
-                    <>
-                        <div className="h-px bg-border/60" />
-                        <section>
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
-                                Tags
-                            </p>
-                            <div className="flex flex-wrap gap-1.5">
-                                {post.postTags.map((tag) => (
-                                    <span
-                                        key={tag.id}
-                                        className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] bg-background border border-border text-foreground/70"
-                                    >
-                                        {tag.name}
-                                    </span>
-                                ))}
-                            </div>
-                        </section>
-                    </>
+                    <section className="rounded-2xl border border-border bg-background p-5">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-3">
+                            Tags
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                            {post.postTags.map((tag) => (
+                                <span
+                                    key={tag.id}
+                                    className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/60 border border-border/60 text-foreground/80"
+                                >
+                                    {tag.name}
+                                </span>
+                            ))}
+                        </div>
+                    </section>
                 )}
+
+                {/* ── Quick actions ────────────────────────────────────── */}
+                <section className="rounded-2xl border border-border bg-background p-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-3">
+                        Aperçu public
+                    </p>
+                    <p className="text-[11.5px] text-muted-foreground leading-relaxed mb-3">
+                        L&apos;article s&apos;ouvrira dans un nouvel onglet à
+                        son URL publique.
+                    </p>
+                    <Link
+                        href={
+                            post.slug
+                                ? `/post/${post.slug}`
+                                : `/post/${post.id}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-primary hover:underline underline-offset-4"
+                    >
+                        <BookOpen className="h-3 w-3" />
+                        Voir la publication
+                    </Link>
+                </section>
             </div>
         </aside>
     );
 }
 
-function StatTile({
-    icon: Icon,
-    value,
+function Row({
     label,
+    children,
 }: {
-    icon: React.ComponentType<{ className?: string }>;
-    value: string | number;
     label: string;
+    children: React.ReactNode;
 }) {
     return (
-        <div className="rounded-xl border border-border/60 bg-background px-3 py-2.5">
-            <Icon className="h-3.5 w-3.5 text-muted-foreground mb-1.5" />
-            <p className="text-[15px] font-bold text-foreground leading-none tabular-nums">
-                {value}
-            </p>
-            <p className="text-[10px] text-muted-foreground mt-1 truncate">
-                {label}
-            </p>
+        <div className="flex items-center justify-between gap-3">
+            <dt className="text-muted-foreground">{label}</dt>
+            <dd className="text-right">{children}</dd>
+        </div>
+    );
+}
+
+/* ── More-actions dropdown (Archive / Schedule) ──────────────────────────── */
+
+function MoreActionsMenu({
+    canArchive,
+    canSchedule,
+    scheduledAt,
+    isSaving,
+    onArchive,
+    onToggleScheduler,
+}: {
+    canArchive: boolean;
+    canSchedule: boolean;
+    scheduledAt: string;
+    isSaving: boolean;
+    onArchive: () => void;
+    onToggleScheduler: () => void;
+}) {
+    const [open, setOpen] = useState(false);
+    if (!canArchive && !canSchedule) return null;
+
+    return (
+        <div className="relative">
+            <button
+                type="button"
+                onClick={() => setOpen((v) => !v)}
+                className={cn(
+                    'h-8 w-8 flex items-center justify-center rounded-lg transition-colors',
+                    open
+                        ? 'bg-accent text-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                )}
+                aria-label="Plus d'actions"
+            >
+                <MoreHorizontal className="h-4 w-4" />
+            </button>
+
+            {open && (
+                <>
+                    <div
+                        className="fixed inset-0 z-20"
+                        onClick={() => setOpen(false)}
+                    />
+                    <div className="absolute top-full right-0 z-30 mt-1.5 w-48 rounded-xl border border-border bg-background shadow-lg shadow-black/[0.08] py-1 overflow-hidden">
+                        {canSchedule && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onToggleScheduler();
+                                    setOpen(false);
+                                }}
+                                className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-[12px] text-foreground/80 hover:text-foreground hover:bg-accent transition-colors"
+                            >
+                                <CalendarClock className="h-3.5 w-3.5" />
+                                {scheduledAt
+                                    ? 'Modifier la planification'
+                                    : 'Programmer la publication'}
+                            </button>
+                        )}
+                        {canArchive && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onArchive();
+                                    setOpen(false);
+                                }}
+                                disabled={isSaving}
+                                className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-[12px] text-foreground/80 hover:text-foreground hover:bg-accent transition-colors disabled:opacity-40"
+                            >
+                                <Archive className="h-3.5 w-3.5" />
+                                Archiver
+                            </button>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
     );
 }
@@ -183,7 +318,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
 
     /**
      * Initial editor content: legacy posts may have a title stored separately
-     * but no H1 in `content`. We prepend the title as H1 so the editor can
+     * but no H1 in `content`. Prepend the title as H1 so the editor can
      * surface it inline — and on save we read it back from there.
      */
     const initialContent = useMemo(
@@ -191,11 +326,25 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
         [post.content, post.title]
     );
 
+    /* Live word count for the info panel — polls every 1.5s while editor is mounted. */
+    const [wordCount, setWordCount] = useState(() =>
+        countWords(initialContent as AnyNode)
+    );
+    useEffect(() => {
+        if (!showPanel) return;
+        const tick = () => {
+            const json = editorRef.current?.getJSON();
+            if (json) setWordCount(countWords(json as AnyNode));
+        };
+        tick();
+        const id = setInterval(tick, 1500);
+        return () => clearInterval(id);
+    }, [showPanel]);
+
     /** Silent autosave — title is extracted from the first H1 of the content. */
     const autosave = useCallback(
         async (json: Record<string, unknown>) => {
             const title = (editorRef.current?.getTitle() ?? '').trim();
-            // Refuse to autosave an empty title — would clobber the post header.
             if (!title) return;
             try {
                 await updatePost({
@@ -213,12 +362,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
         [updatePost, post.id, post.status]
     );
 
-    /**
-     * Manual save:
-     *   1. Flush any pending blob images → uploads to S3, replaces src in editor.
-     *   2. Pull the title from the first H1.
-     *   3. Persist the resolved content + metadata.
-     */
     async function save(status: PostStatus) {
         const title = (editorRef.current?.getTitle() ?? '').trim();
         if (!title) {
@@ -277,17 +420,30 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
     return (
         <div className="flex flex-col h-full bg-background">
             {/* ── Top action bar ──────────────────────────────────────── */}
-            <div className="sticky top-0 z-20 flex items-center gap-2 border-b border-border/60 bg-background/85 backdrop-blur-md px-4 py-2.5">
-                <Link
-                    href="/me"
-                    aria-label="Retour"
-                    className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                </Link>
+            <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-border/60 bg-background/85 backdrop-blur-md px-4 py-2.5">
+                {/* Left: close + status pill */}
+                <div className="flex items-center gap-2">
+                    <Link
+                        href="/me"
+                        aria-label="Retour à mon espace"
+                        className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
 
-                <StatusBadge status={post.status} />
+                    <div className="h-5 w-px bg-border" />
 
+                    <StatusBadge status={post.status} />
+
+                    {scheduledAt && !isPublished && (
+                        <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] text-amber-600 font-medium px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
+                            <CalendarClock className="h-3 w-3" />
+                            {new Date(scheduledAt).toLocaleDateString('fr-FR')}
+                        </span>
+                    )}
+                </div>
+
+                {/* Right: actions */}
                 <div className="flex items-center gap-1.5 ml-auto">
                     <CollaboratorsPanel postId={post.id} />
 
@@ -295,56 +451,39 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         type="button"
                         onClick={() => setShowPanel((v) => !v)}
                         className={cn(
-                            'h-8 px-2.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors',
+                            'h-8 px-2.5 rounded-lg text-[12px] flex items-center gap-1.5 transition-colors',
                             showPanel
                                 ? 'bg-accent text-foreground'
                                 : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                         )}
+                        aria-pressed={showPanel}
                     >
                         <PanelRight className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Infos</span>
+                        <span className="hidden sm:inline">
+                            {showPanel ? 'Masquer infos' : 'Infos'}
+                        </span>
                     </button>
 
-                    {isOwner && post.status !== 'ARCHIVED' && (
-                        <button
-                            type="button"
-                            onClick={() => save('ARCHIVED')}
-                            disabled={isSaving}
-                            className="h-8 px-2.5 rounded-lg text-xs flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                        >
-                            <Archive className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">Archiver</span>
-                        </button>
+                    {isOwner && (
+                        <MoreActionsMenu
+                            canArchive={post.status !== 'ARCHIVED'}
+                            canSchedule={!isPublished}
+                            scheduledAt={scheduledAt}
+                            isSaving={isSaving}
+                            onArchive={() => save('ARCHIVED')}
+                            onToggleScheduler={() =>
+                                setShowScheduler((v) => !v)
+                            }
+                        />
                     )}
 
-                    {isOwner && !isPublished && (
-                        <button
-                            type="button"
-                            onClick={() => setShowScheduler((v) => !v)}
-                            disabled={isSaving}
-                            className={cn(
-                                'h-8 px-2.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors',
-                                showScheduler
-                                    ? 'bg-accent text-foreground'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                            )}
-                        >
-                            <CalendarClock className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">
-                                {scheduledAt
-                                    ? new Date(scheduledAt).toLocaleDateString(
-                                          'fr-FR'
-                                      )
-                                    : 'Programmer'}
-                            </span>
-                        </button>
-                    )}
+                    <div className="h-5 w-px bg-border mx-1" />
 
                     <button
                         type="button"
                         onClick={() => save('DRAFT')}
                         disabled={isSaving || isPublishing}
-                        className="h-8 px-3 rounded-lg text-xs flex items-center gap-1.5 border border-border text-foreground/80 hover:text-foreground hover:bg-accent transition-all duration-150 disabled:opacity-40"
+                        className="h-8 px-3 rounded-lg text-[12px] flex items-center gap-1.5 border border-border text-foreground/80 hover:text-foreground hover:bg-accent transition-all duration-150 disabled:opacity-40"
                     >
                         <Save className="h-3.5 w-3.5" />
                         {isSaving ? 'Sauvegarde…' : 'Brouillon'}
@@ -358,7 +497,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             }
                             disabled={isSaving || isPublishing}
                             className={cn(
-                                'h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 font-semibold',
+                                'h-8 px-3.5 rounded-lg text-[12px] flex items-center gap-1.5 font-semibold',
                                 'transition-all duration-150 disabled:opacity-40',
                                 isPublished
                                     ? 'bg-muted text-foreground hover:bg-accent border border-border'
@@ -377,34 +516,34 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         </button>
                     )}
                 </div>
-            </div>
+            </header>
 
             {/* ── Scheduler strip ─────────────────────────────────────── */}
             {showScheduler && (
-                <div className="border-b border-border/60 bg-muted/20 px-4 py-2.5 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
-                    <CalendarClock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                    <span className="text-xs text-muted-foreground">
-                        Publier automatiquement le :
+                <div className="border-b border-border/60 bg-amber-50/40 dark:bg-amber-950/10 px-4 py-2.5 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
+                    <CalendarClock className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                    <span className="text-[12px] font-medium text-foreground/80">
+                        Publier automatiquement le
                     </span>
                     <input
                         type="datetime-local"
                         value={scheduledAt}
                         min={new Date().toISOString().slice(0, 16)}
                         onChange={(e) => setScheduledAt(e.target.value)}
-                        className="h-7 rounded-lg border border-border bg-background px-2 text-xs focus:border-foreground/40 transition-colors"
+                        className="h-8 rounded-lg border border-border bg-background px-2.5 text-[12px] focus:border-foreground/40 transition-colors"
                     />
                     {scheduledAt && (
                         <button
                             type="button"
                             onClick={() => setScheduledAt('')}
-                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+                            className="flex items-center gap-1 text-[12px] text-muted-foreground hover:text-destructive transition-colors"
                         >
                             <X className="h-3.5 w-3.5" />
                             Annuler
                         </button>
                     )}
-                    <span className="text-xs text-muted-foreground/60 ml-auto hidden sm:block">
-                        Enregistrez en brouillon pour appliquer.
+                    <span className="text-[11px] text-muted-foreground ml-auto hidden sm:block">
+                        Enregistre en brouillon pour appliquer.
                     </span>
                 </div>
             )}
@@ -412,30 +551,33 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             {/* ── Editor + optional side panel ────────────────────────── */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Editor canvas */}
-                <div className="flex-1 overflow-y-auto">
-                    <div className="max-w-[720px] mx-auto px-6 pt-8 pb-32 space-y-5">
+                <div className="flex-1 overflow-y-auto bg-background">
+                    <div className="max-w-[760px] mx-auto px-6 sm:px-10 pt-10 pb-32 space-y-6">
                         {/* Cover image */}
                         <label className="group relative block cursor-pointer">
                             {coverPreview ? (
-                                <div className="relative w-full aspect-[2.4/1] rounded-2xl overflow-hidden bg-muted">
+                                <div className="relative w-full aspect-[2.4/1] rounded-2xl overflow-hidden bg-muted shadow-sm">
                                     <Image
                                         src={coverPreview}
                                         alt="Couverture"
                                         fill
                                         className="object-cover"
                                     />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                        <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors flex items-center justify-center">
+                                        <span className="text-white text-[12.5px] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-black/55 px-3.5 py-1.5 rounded-full backdrop-blur-sm">
                                             <ImageIcon className="h-3.5 w-3.5" />
                                             Changer la couverture
                                         </span>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full aspect-[2.4/1] rounded-2xl border border-dashed border-border bg-muted/30 flex flex-col items-center justify-center gap-2 text-muted-foreground/60 group-hover:border-foreground/30 group-hover:text-foreground/70 transition-all duration-200 select-none">
-                                    <ImageIcon className="h-5 w-5" />
-                                    <span className="text-xs font-medium">
+                                <div className="w-full aspect-[2.4/1] rounded-2xl border-2 border-dashed border-border bg-muted/20 flex flex-col items-center justify-center gap-2 text-muted-foreground/60 group-hover:border-foreground/30 group-hover:text-foreground/70 group-hover:bg-muted/40 transition-all duration-200 select-none">
+                                    <ImageIcon className="h-6 w-6" />
+                                    <span className="text-[12px] font-medium">
                                         Ajouter une image de couverture
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground/50">
+                                        JPG, PNG, WebP · format recommandé 12:5
                                     </span>
                                 </div>
                             )}
@@ -459,13 +601,13 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             onAutoSave={autosave}
                             autoSaveInterval={5_000}
                             editorRef={editorRef}
-                            className="min-h-[480px]"
+                            className="min-h-[520px]"
                         />
                     </div>
                 </div>
 
                 {/* Right info panel */}
-                {showPanel && <InfoPanel post={post} />}
+                {showPanel && <InfoPanel post={post} wordCount={wordCount} />}
             </div>
         </div>
     );
