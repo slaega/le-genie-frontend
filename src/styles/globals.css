@@ -5,44 +5,55 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ─── Linear-inspired design system — light default, dark class ───────────── */
+/* ─── Le Génie design system ─────────────────────────────────────────────────
+ *
+ * Editorial blog aesthetic, inspired by the UInugget reference:
+ *   pure white canvas + near-black typography + ONE warm orange accent.
+ *
+ * Orange (#D97706 family) was chosen DELIBERATELY — the references the
+ * product owner shared the most (UInugget article detail) use a warm
+ * orange left rule on blockquotes and accent buttons. It carries an
+ * editorial / warm feel that blue/purple tech palettes don't.
+ *
+ * The accent is used for: blockquote rule, category pills, primary CTAs,
+ * link emphasis, active nav indicator. Everything else is monochrome.
+ * ────────────────────────────────────────────────────────────────────────── */
 
 :root {
-    /* Light mode (default)
-   * One bold indigo accent (#5B5BD6 area), pure white surfaces,
-   * very subtle slate borders. Primary is used DELIBERATELY for
-   * categories, CTAs and links — not buried.
-   */
-    --background: oklch(1 0 0);
+    --background: oklch(1 0 0); /* pure white */
     --foreground: oklch(0.14 0.018 264); /* near-black */
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.14 0.018 264);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.14 0.018 264);
-    --primary: oklch(0.55 0.21 268); /* Vibrant indigo ~#5B5BD6 */
+
+    /* Brand accent — warm editorial orange, ~#E26B0F */
+    --primary: oklch(0.66 0.18 49);
     --primary-foreground: oklch(0.99 0 0);
+
     --secondary: oklch(0.97 0.004 265);
     --secondary-foreground: oklch(0.14 0.018 264);
-    --muted: oklch(0.97 0.004 265); /* slate-50ish surface */
-    --muted-foreground: oklch(0.5 0.02 265); /* slate-500ish text */
-    --accent: oklch(0.96 0.005 268);
+    --muted: oklch(0.97 0.004 265);
+    --muted-foreground: oklch(0.5 0.02 265);
+    --accent: oklch(0.96 0.012 49); /* faint orange-tinted hover surface */
     --accent-foreground: oklch(0.14 0.018 264);
     --destructive: oklch(0.58 0.22 27);
     --destructive-foreground: oklch(1 0 0);
-    --border: oklch(0.92 0.005 265); /* very subtle */
+    --border: oklch(0.92 0.005 265);
     --input: oklch(0.92 0.005 265);
-    --ring: oklch(0.55 0.21 268);
-    --radius: 0.75rem; /* rounded-xl by default */
+    --ring: oklch(0.66 0.18 49);
+    --radius: 0.75rem;
+
     --sidebar: oklch(0.99 0.003 265);
     --sidebar-foreground: oklch(0.14 0.018 264);
     --sidebar-border: oklch(0.92 0.005 265);
-    --sidebar-primary: oklch(0.55 0.21 268);
+    --sidebar-primary: oklch(0.66 0.18 49);
     --sidebar-primary-foreground: oklch(0.99 0 0);
-    --sidebar-accent: oklch(0.96 0.005 268);
+    --sidebar-accent: oklch(0.96 0.012 49);
     --sidebar-accent-foreground: oklch(0.14 0.018 264);
-    --sidebar-ring: oklch(0.55 0.21 268);
+    --sidebar-ring: oklch(0.66 0.18 49);
 
-    /* Elevation tokens — used by .surface utility (replaces bordered cards) */
+    /* Elevation tokens — used by .surface utility */
     --shadow-sm:
         0 1px 2px 0 rgb(15 15 25 / 0.04), 0 1px 3px 0 rgb(15 15 25 / 0.05);
     --shadow-md:
@@ -53,35 +64,35 @@
         0 4px 12px -4px rgb(15 15 25 / 0.06);
 }
 
-/* Dark mode — applied by next-themes via .dark class on <html> */
+/* Dark mode — same orange accent, near-black surfaces */
 .dark {
-    --background: oklch(0.09 0.006 265); /* #0E0E10 — near-black */
-    --foreground: oklch(0.97 0.003 265); /* #F7F8F9 — near-white */
-    --card: oklch(0.12 0.007 265); /* #141417 */
+    --background: oklch(0.09 0.006 265);
+    --foreground: oklch(0.97 0.003 265);
+    --card: oklch(0.12 0.007 265);
     --card-foreground: oklch(0.97 0.003 265);
     --popover: oklch(0.13 0.008 265);
     --popover-foreground: oklch(0.97 0.003 265);
-    --primary: oklch(0.54 0.14 267);
-    --primary-foreground: oklch(0.97 0.003 265);
+    --primary: oklch(0.7 0.19 49); /* slightly brighter orange in dark */
+    --primary-foreground: oklch(0.14 0.018 264);
     --secondary: oklch(0.16 0.009 265);
     --secondary-foreground: oklch(0.97 0.003 265);
     --muted: oklch(0.15 0.008 265);
-    --muted-foreground: oklch(0.6 0.028 265); /* #9899AC */
-    --accent: oklch(0.16 0.009 265);
+    --muted-foreground: oklch(0.6 0.028 265);
+    --accent: oklch(0.18 0.02 49);
     --accent-foreground: oklch(0.97 0.003 265);
     --destructive: oklch(0.65 0.22 25);
     --destructive-foreground: oklch(0.97 0.003 265);
     --border: oklch(1 0 0 / 8%);
     --input: oklch(1 0 0 / 8%);
-    --ring: oklch(0.54 0.14 267);
+    --ring: oklch(0.7 0.19 49);
     --sidebar: oklch(0.1 0.007 265);
     --sidebar-foreground: oklch(0.97 0.003 265);
     --sidebar-border: oklch(1 0 0 / 6%);
-    --sidebar-primary: oklch(0.54 0.14 267);
-    --sidebar-primary-foreground: oklch(0.97 0.003 265);
+    --sidebar-primary: oklch(0.7 0.19 49);
+    --sidebar-primary-foreground: oklch(0.14 0.018 264);
     --sidebar-accent: oklch(1 0 0 / 5%);
     --sidebar-accent-foreground: oklch(0.97 0.003 265);
-    --sidebar-ring: oklch(0.54 0.14 267);
+    --sidebar-ring: oklch(0.7 0.19 49);
 }
 
 @theme inline {
@@ -188,61 +199,7 @@ article {
     box-shadow: var(--shadow-md);
 }
 
-/* ─── Gradient utilities ──────────────────────────────────────────────────── */
-.gradient-text {
-    /* Light mode: deep navy → primary purple */
-    background: linear-gradient(
-        135deg,
-        oklch(0.13 0.028 264) 0%,
-        oklch(0.54 0.14 267) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.dark .gradient-text {
-    /* Dark mode: near-white → light purple */
-    background: linear-gradient(
-        135deg,
-        oklch(0.97 0.003 265) 0%,
-        oklch(0.75 0.1 267) 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.gradient-border {
-    position: relative;
-}
-.gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(
-        135deg,
-        oklch(0.54 0.14 267 / 40%),
-        oklch(1 0 0 / 8%)
-    );
-    -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-}
-
-/* ─── Noise texture overlay (for hero) ───────────────────────────────────── */
-.noise::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
+/* ─── Editorial blockquote — orange left rule (UInugget signature) ──────── */
+.prose blockquote {
+    border-left-color: var(--primary);
 }
