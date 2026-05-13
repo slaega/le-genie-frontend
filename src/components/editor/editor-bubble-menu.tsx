@@ -10,6 +10,7 @@ import {
     Link2,
     Link2Off,
     Highlighter,
+    Quote,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -17,7 +18,9 @@ interface EditorBubbleMenuProps {
     editor: Editor;
 }
 
-function BubbleBtn({
+/* ── Format icon button ──────────────────────────────────────────────────── */
+
+function FmtBtn({
     label,
     active,
     onClick,
@@ -31,19 +34,57 @@ function BubbleBtn({
     return (
         <button
             type="button"
+            title={label}
             onClick={onClick}
             aria-label={label}
             aria-pressed={active}
             className={cn(
-                'h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-100',
+                'h-7 w-7 flex items-center justify-center rounded-md transition-all duration-100',
                 'text-zinc-400 hover:text-zinc-100 hover:bg-white/10',
-                active && 'text-zinc-50 bg-white/15',
+                active && 'text-zinc-50 bg-white/[0.15]',
             )}
         >
             {children}
         </button>
     );
 }
+
+/* ── Text action button ──────────────────────────────────────────────────── */
+
+function ActionBtn({
+    label,
+    active,
+    onClick,
+    icon: Icon,
+}: {
+    label: string;
+    active?: boolean;
+    onClick: () => void;
+    icon?: React.ComponentType<{ className?: string }>;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={cn(
+                'flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-all duration-100',
+                'text-zinc-400 hover:text-zinc-100 hover:bg-white/10',
+                active && 'text-zinc-50 bg-white/[0.15]',
+            )}
+        >
+            {Icon && <Icon className="h-3 w-3 shrink-0" />}
+            {label}
+        </button>
+    );
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+
+function BubbleSep() {
+    return <div className="w-px h-4 bg-white/[0.10] mx-0.5 shrink-0" />;
+}
+
+/* ── EditorBubbleMenu ────────────────────────────────────────────────────── */
 
 export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
     function handleLink() {
@@ -61,62 +102,67 @@ export function EditorBubbleMenu({ editor }: EditorBubbleMenuProps) {
             tippyOptions={{ duration: 80, placement: 'top' }}
             className="flex items-center gap-0.5 rounded-xl border border-white/[0.08] bg-zinc-950 backdrop-blur-2xl p-1 shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
         >
-            <BubbleBtn
-                label="Gras"
+            {/* Inline formatting */}
+            <FmtBtn
+                label="Gras (⌘B)"
                 active={editor.isActive('bold')}
                 onClick={() => editor.chain().focus().toggleBold().run()}
             >
                 <Bold className="h-3.5 w-3.5" />
-            </BubbleBtn>
-            <BubbleBtn
-                label="Italique"
+            </FmtBtn>
+            <FmtBtn
+                label="Italique (⌘I)"
                 active={editor.isActive('italic')}
                 onClick={() => editor.chain().focus().toggleItalic().run()}
             >
                 <Italic className="h-3.5 w-3.5" />
-            </BubbleBtn>
-            <BubbleBtn
-                label="Souligné"
+            </FmtBtn>
+            <FmtBtn
+                label="Souligné (⌘U)"
                 active={editor.isActive('underline')}
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
             >
                 <Underline className="h-3.5 w-3.5" />
-            </BubbleBtn>
-            <BubbleBtn
+            </FmtBtn>
+            <FmtBtn
                 label="Barré"
                 active={editor.isActive('strike')}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
             >
                 <Strikethrough className="h-3.5 w-3.5" />
-            </BubbleBtn>
-            <BubbleBtn
+            </FmtBtn>
+            <FmtBtn
                 label="Code"
                 active={editor.isActive('code')}
                 onClick={() => editor.chain().focus().toggleCode().run()}
             >
                 <Code className="h-3.5 w-3.5" />
-            </BubbleBtn>
-            <BubbleBtn
-                label="Surligné"
+            </FmtBtn>
+
+            <BubbleSep />
+
+            {/* Named actions */}
+            <ActionBtn
+                label="Surligner"
                 active={editor.isActive('highlight')}
                 onClick={() => editor.chain().focus().toggleHighlight().run()}
-            >
-                <Highlighter className="h-3.5 w-3.5" />
-            </BubbleBtn>
+                icon={Highlighter}
+            />
+            <ActionBtn
+                label="Citation"
+                active={editor.isActive('blockquote')}
+                onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                icon={Quote}
+            />
 
-            <div className="w-px h-4 bg-white/10 mx-0.5" />
+            <BubbleSep />
 
-            <BubbleBtn
-                label={editor.isActive('link') ? 'Retirer le lien' : 'Ajouter un lien'}
+            <ActionBtn
+                label={editor.isActive('link') ? 'Retirer' : 'Lien'}
                 active={editor.isActive('link')}
                 onClick={handleLink}
-            >
-                {editor.isActive('link') ? (
-                    <Link2Off className="h-3.5 w-3.5" />
-                ) : (
-                    <Link2 className="h-3.5 w-3.5" />
-                )}
-            </BubbleBtn>
+                icon={editor.isActive('link') ? Link2Off : Link2}
+            />
         </BubbleMenu>
     );
 }

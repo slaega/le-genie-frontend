@@ -3,271 +3,409 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useMemo } from 'react';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+    Search, ArrowUpRight, Loader2, ChevronDown, SlidersHorizontal,
+} from 'lucide-react';
 import { useInfinitePosts } from '@/hooks/queries/use-posts';
-import { cn, extractExcerpt, formatDate } from '@/lib/utils';
+import { cn, extractExcerpt } from '@/lib/utils';
+import { UserAvatar } from '@/components/atoms/user-avatar';
 import type { Post } from '@/lib/api/types';
 import { postUrl } from '@/lib/post-url';
 
-// ─── How many articles appear in the grid vs the simple list ─────────────────
-const GRID_COUNT = 6;
+/* ── Sort options ────────────────────────────────────────────────────────── */
 
-// ─── Filter tabs — Linear-style flat underline ────────────────────────────────
+const SORT_OPTIONS = [
+    { label: 'Plus récents', value: 'recent' },
+    { label: 'Lecture rapide', value: 'short' },
+    { label: 'Plus anciens', value: 'oldest' },
+] as const;
 
-function FilterTabs({
-    tags,
-    active,
-    onChange,
-}: {
-    tags: string[];
-    active: string | null;
-    onChange: (tag: string | null) => void;
-}) {
-    const items = [
-        { label: 'Tout', value: null as string | null },
-        ...tags.map((t) => ({ label: t, value: t })),
-    ];
-    return (
-        <div className="flex items-center border-b border-border overflow-x-auto scrollbar-none -mx-4 px-4 md:mx-0 md:px-0">
-            {items.map(({ label, value }) => {
-                const isActive = active === value;
-                return (
-                    <button
-                        key={label}
-                        onClick={() => onChange(value)}
-                        className={cn(
-                            'relative px-4 py-2.5 text-sm whitespace-nowrap shrink-0 transition-colors duration-150',
-                            isActive
-                                ? 'text-foreground font-medium'
-                                : 'text-muted-foreground hover:text-foreground'
-                        )}
-                    >
-                        {label}
-                        {isActive && (
-                            <span className="absolute bottom-0 left-0 right-0 h-px bg-foreground" />
-                        )}
-                    </button>
-                );
-            })}
-        </div>
-    );
-}
+type SortOption = (typeof SORT_OPTIONS)[number]['value'];
 
-// ─── Grid card (recent articles) ─────────────────────────────────────────────
+/* ── Featured card ───────────────────────────────────────────────────────── */
 
-function GridCard({ post }: { post: Post }) {
+function FeaturedCard({ post }: { post: Post }) {
     const excerpt = extractExcerpt(post.content, 120);
     const category = post.postTags[0]?.name;
     const owner = post.contributors.find((c) => c.owner);
 
     return (
-        <Link href={postUrl(post)} className="group flex flex-col gap-3">
-            {/* Cover */}
-            <div className="relative w-full overflow-hidden rounded-xl bg-muted" style={{ aspectRatio: '16/10' }}>
+        <Link
+            href={postUrl(post)}
+            className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden border border-border/60 hover:shadow-md hover:border-border transition-all duration-200 mb-7 bg-background"
+        >
+            {/* Image */}
+            <div className="relative sm:w-[52%] aspect-[4/3] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
                 {post.imagePath ? (
                     <Image
                         src={post.imagePath}
                         alt={post.title}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(min-width: 640px) 50vw, 100vw"
+                        priority
                     />
                 ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/8 to-muted">
-                        <span className="text-5xl font-black text-primary/10 select-none">
-                            {post.title.charAt(0).toUpperCase()}
-                        </span>
-                    </div>
+                    <div className="w-full h-full bg-gradient-to-br from-primary/10 via-muted to-muted/60" />
                 )}
             </div>
 
-            {/* Meta above title */}
-            <p className="text-xs text-muted-foreground">
+            {/* Content */}
+            <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center gap-3 min-w-0">
                 {category && (
-                    <span className="font-medium text-foreground/70">{category}</span>
+                    <span className="inline-flex text-[11px] font-semibold text-primary uppercase tracking-wider">
+                        {category}
+                    </span>
                 )}
-                {category && <span className="mx-1">·</span>}
-                {formatDate(post.createdAt)}
-            </p>
-
-            {/* Title */}
-            <h2 className="-mt-1 text-base font-semibold leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                {post.title || 'Sans titre'}
-            </h2>
-
-            {/* Excerpt */}
-            {excerpt && (
-                <p className="-mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                    {excerpt}
-                </p>
-            )}
-
-            {/* Author */}
-            {owner && (
-                <p className="text-xs text-muted-foreground">
-                    {owner.user.name}
-                    {post.readingTime > 0 && (
-                        <><span className="mx-1">·</span>{post.readingTime} min</>
-                    )}
-                </p>
-            )}
+                <h2 className="text-[22px] sm:text-[26px] font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-3">
+                    {post.title || 'Sans titre'}
+                </h2>
+                {excerpt && (
+                    <p className="text-[13px] sm:text-[14px] text-muted-foreground leading-relaxed line-clamp-2">
+                        {excerpt}
+                    </p>
+                )}
+                {owner && (
+                    <div className="flex items-center gap-2.5 mt-2">
+                        <UserAvatar
+                            name={owner.user.name}
+                            avatarPath={owner.user.avatarPath}
+                            size="sm"
+                            className="h-7 w-7 text-[11px] shrink-0"
+                        />
+                        <div>
+                            <p className="text-[12px] font-medium text-foreground leading-none">
+                                {owner.user.name}
+                            </p>
+                            {post.readingTime > 0 && (
+                                <p className="text-[11px] text-muted-foreground/60 mt-0.5">
+                                    {post.readingTime} min de lecture
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
         </Link>
     );
 }
 
-// ─── List row (older articles) ────────────────────────────────────────────────
+/* ── Grid card ───────────────────────────────────────────────────────────── */
 
-function ListRow({ post }: { post: Post }) {
+function GridCard({ post }: { post: Post }) {
+    const excerpt = extractExcerpt(post.content, 100);
+    const category = post.postTags[0]?.name;
     const owner = post.contributors.find((c) => c.owner);
 
     return (
         <Link
             href={postUrl(post)}
-            className="group flex items-baseline justify-between gap-4 py-3.5 border-t border-border/60 hover:border-border transition-colors"
+            className="group flex flex-col rounded-xl overflow-hidden border border-border/60 hover:shadow-md hover:border-border bg-background transition-all duration-200"
         >
-            <span className="text-sm text-foreground/90 group-hover:text-foreground transition-colors line-clamp-1 flex-1 min-w-0">
-                {post.title || 'Sans titre'}
-            </span>
-            <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap">
-                {owner && <>{owner.user.name}<span className="mx-1.5">·</span></>}
-                {formatDate(post.createdAt)}
-            </span>
+            {/* Cover */}
+            <div className="relative aspect-[16/10] bg-muted overflow-hidden">
+                {post.imagePath ? (
+                    <Image
+                        src={post.imagePath}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                        sizes="(min-width: 768px) 33vw, 50vw"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/10 via-muted to-muted/60" />
+                )}
+            </div>
+
+            {/* Content */}
+            <div className="p-4 flex flex-col gap-2 flex-1">
+                {category && (
+                    <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">
+                        {category}
+                    </span>
+                )}
+                <h3 className="text-[15px] font-bold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                    {post.title || 'Sans titre'}
+                </h3>
+                {excerpt && (
+                    <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-2">
+                        {excerpt}
+                    </p>
+                )}
+
+                {/* Footer */}
+                <div className="flex items-center gap-2 mt-auto pt-3 border-t border-border/40">
+                    {owner && (
+                        <>
+                            <UserAvatar
+                                name={owner.user.name}
+                                avatarPath={owner.user.avatarPath}
+                                size="sm"
+                                className="h-6 w-6 text-[9px] shrink-0"
+                            />
+                            <span className="text-[11px] text-muted-foreground truncate flex-1">
+                                {owner.user.name}
+                                {post.readingTime > 0 && (
+                                    <span className="ml-1 text-muted-foreground/50">
+                                        · {post.readingTime} min
+                                    </span>
+                                )}
+                            </span>
+                        </>
+                    )}
+                    <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-foreground transition-colors shrink-0 ml-auto" />
+                </div>
+            </div>
         </Link>
     );
 }
 
-// ─── Skeleton card ────────────────────────────────────────────────────────────
+/* ── Skeletons ───────────────────────────────────────────────────────────── */
+
+function SkeletonFeatured() {
+    return (
+        <div className="flex rounded-2xl overflow-hidden border border-border/40 mb-7 animate-pulse">
+            <div className="w-[52%] aspect-[4/3] bg-muted shrink-0" />
+            <div className="flex-1 p-8 space-y-4">
+                <div className="h-2.5 w-16 bg-muted rounded-full" />
+                <div className="h-7 w-full bg-muted rounded" />
+                <div className="h-7 w-3/4 bg-muted rounded" />
+                <div className="h-4 w-full bg-muted rounded" />
+                <div className="h-4 w-2/3 bg-muted rounded" />
+                <div className="flex items-center gap-2 mt-4">
+                    <div className="h-7 w-7 rounded-full bg-muted" />
+                    <div className="h-3 w-28 bg-muted rounded" />
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function SkeletonCard() {
     return (
-        <div className="flex flex-col gap-3 animate-pulse">
-            <div className="w-full rounded-xl bg-muted" style={{ aspectRatio: '16/10' }} />
-            <div className="h-3 w-32 bg-muted rounded" />
-            <div className="space-y-1.5">
+        <div className="rounded-xl border border-border/40 overflow-hidden animate-pulse">
+            <div className="aspect-[16/10] bg-muted" />
+            <div className="p-4 space-y-2.5">
+                <div className="h-2.5 w-14 bg-muted rounded-full" />
                 <div className="h-4 w-full bg-muted rounded" />
                 <div className="h-4 w-3/4 bg-muted rounded" />
-            </div>
-            <div className="space-y-1.5">
                 <div className="h-3 w-full bg-muted rounded" />
                 <div className="h-3 w-2/3 bg-muted rounded" />
             </div>
-            <div className="h-3 w-24 bg-muted rounded" />
         </div>
     );
 }
 
-function SkeletonRow() {
-    return (
-        <div className="flex items-center justify-between gap-4 py-3.5 border-t border-border/60 animate-pulse">
-            <div className="h-3.5 w-1/2 bg-muted rounded" />
-            <div className="h-3 w-28 bg-muted rounded" />
-        </div>
-    );
+/* ── BlogPage ─────────────────────────────────────────────────────────────── */
+
+export interface CmsTag {
+    name: string;
+    count: number;
 }
 
-// ─── Main BlogPage component ──────────────────────────────────────────────────
+interface BlogPageProps {
+    allTags: CmsTag[];
+}
 
-export function BlogPage() {
+export function BlogPage({ allTags }: BlogPageProps) {
+    const [search, setSearch] = useState('');
     const [activeTag, setActiveTag] = useState<string | null>(null);
+    const [sort, setSort] = useState<SortOption>('recent');
 
+    /* Server-side tag filter — correct pagination per category */
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
-        useInfinitePosts({ status: 'PUBLISHED', limit: 12 });
+        useInfinitePosts({
+            status: 'PUBLISHED',
+            limit: 12,
+            tags: activeTag ? [activeTag] : undefined,
+        });
 
     const allPosts = useMemo(
         () => data?.pages.flatMap((p) => p.items) ?? [],
         [data]
     );
 
-    const allTags = useMemo(() => {
-        const seen = new Set<string>();
-        allPosts.forEach((p) => p.postTags.forEach((t) => seen.add(t.name)));
-        return Array.from(seen).slice(0, 10);
-    }, [allPosts]);
-
+    /* Client-side: text search + sort */
     const filtered = useMemo(() => {
-        if (!activeTag) return allPosts;
-        return allPosts.filter((p) =>
-            p.postTags.some((t) => t.name === activeTag)
-        );
-    }, [allPosts, activeTag]);
+        let posts = allPosts;
 
-    const gridPosts = filtered.slice(0, GRID_COUNT);
-    const listPosts = filtered.slice(GRID_COUNT);
+        if (search.trim()) {
+            const q = search.toLowerCase();
+            posts = posts.filter((p) => p.title.toLowerCase().includes(q));
+        }
+
+        switch (sort) {
+            case 'oldest':
+                return [...posts].reverse();
+            case 'short':
+                return [...posts].sort(
+                    (a, b) => (a.readingTime || 99) - (b.readingTime || 99)
+                );
+            default:
+                return posts;
+        }
+    }, [allPosts, search, sort]);
+
+    const [featured, ...rest] = filtered;
 
     return (
-        <div className="max-w-5xl mx-auto px-4 pt-16 pb-24">
-            {/* Page header */}
-            <div className="mb-10">
-                <h1 className="text-4xl font-bold tracking-tight text-foreground mb-2">
-                    Publications
-                </h1>
-                <p className="text-base text-muted-foreground">
-                    Articles, tutoriels et ressources pour apprendre et progresser ensemble.
-                </p>
-            </div>
+        <div className="flex gap-8 xl:gap-10 items-start">
 
-            {/* Filter tabs */}
-            <FilterTabs tags={allTags} active={activeTag} onChange={setActiveTag} />
+            {/* ── Left sidebar ─────────────────────────────────────────── */}
+            <aside className="w-52 shrink-0 hidden lg:flex flex-col gap-7 sticky top-28">
 
-            {/* ── Grid — recent articles ── */}
-            {isLoading ? (
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-7 gap-y-10">
-                    {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-                </div>
-            ) : gridPosts.length > 0 ? (
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-7 gap-y-10">
-                    {gridPosts.map((post) => <GridCard key={post.id} post={post} />)}
-                </div>
-            ) : !isLoading && filtered.length === 0 ? (
-                <div className="text-center py-24 space-y-2">
-                    <p className="text-muted-foreground">
-                        Aucune publication dans cette catégorie pour l&apos;instant.
+                {/* Search */}
+                <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2.5">
+                        Rechercher
                     </p>
-                    <button
-                        onClick={() => setActiveTag(null)}
-                        className="text-xs text-primary/80 hover:text-primary underline underline-offset-4 transition-colors"
-                    >
-                        Voir toutes les publications
-                    </button>
+                    <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Titre d'article…"
+                            className="w-full h-9 pl-8 pr-3 rounded-lg border border-border bg-muted/30 text-[12px] text-foreground placeholder:text-muted-foreground/35 focus:outline-none focus:border-foreground/25 transition-colors"
+                        />
+                    </div>
                 </div>
-            ) : null}
 
-            {/* ── List — older articles ── */}
-            {isLoading ? (
-                <div className="mt-12">
-                    {Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)}
-                </div>
-            ) : listPosts.length > 0 ? (
-                <div className="mt-12">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60 mb-3">
-                        Archives
+                {/* Sort */}
+                <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2.5">
+                        Trier
                     </p>
-                    {listPosts.map((post) => <ListRow key={post.id} post={post} />)}
+                    <div className="relative">
+                        <SlidersHorizontal className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
+                        <select
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value as SortOption)}
+                            className="w-full h-9 pl-8 pr-7 rounded-lg border border-border bg-muted/30 text-[12px] text-foreground focus:outline-none focus:border-foreground/25 transition-colors appearance-none cursor-pointer"
+                        >
+                            {SORT_OPTIONS.map((o) => (
+                                <option key={o.value} value={o.value}>
+                                    {o.label}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40 pointer-events-none" />
+                    </div>
                 </div>
-            ) : null}
 
-            {/* Load more */}
-            {hasNextPage && (
-                <div className="flex justify-center mt-14">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fetchNextPage()}
-                        disabled={isFetchingNextPage}
-                        className="min-w-36 rounded-full"
-                    >
-                        {isFetchingNextPage ? (
-                            <>
-                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                Chargement…
-                            </>
-                        ) : (
-                            'Charger plus'
+                {/* Categories */}
+                {allTags.length > 0 && (
+                    <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2.5">
+                            Catégories
+                        </p>
+                        <nav className="flex flex-col gap-0.5">
+                            {[{ name: null, label: 'Tous les articles' }, ...allTags.map((t) => ({ name: t.name, label: t.name }))].map(
+                                ({ name, label }) => (
+                                    <button
+                                        key={label}
+                                        type="button"
+                                        onClick={() => setActiveTag(name)}
+                                        className={cn(
+                                            'flex items-center gap-2 px-2.5 py-2 rounded-lg text-[13px] text-left transition-all duration-100 border-l-2',
+                                            activeTag === name
+                                                ? 'border-l-foreground text-foreground font-medium bg-muted/50'
+                                                : 'border-l-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                                        )}
+                                    >
+                                        {label}
+                                    </button>
+                                )
+                            )}
+                        </nav>
+                    </div>
+                )}
+            </aside>
+
+            {/* ── Main content ─────────────────────────────────────────── */}
+            <div className="flex-1 min-w-0">
+
+                {/* Mobile: horizontal category pills */}
+                {allTags.length > 0 && (
+                    <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none -mx-4 px-4 pb-4 mb-2 lg:hidden">
+                        {[{ name: null, label: 'Tout' }, ...allTags.map((t) => ({ name: t.name, label: t.name }))].map(
+                            ({ name, label }) => (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    onClick={() => setActiveTag(name)}
+                                    className={cn(
+                                        'px-3.5 py-1.5 rounded-full text-[12px] whitespace-nowrap shrink-0 transition-all duration-150 border',
+                                        activeTag === name
+                                            ? 'bg-foreground text-background border-foreground font-medium'
+                                            : 'border-border text-muted-foreground hover:text-foreground hover:border-foreground/30'
+                                    )}
+                                >
+                                    {label}
+                                </button>
+                            )
                         )}
-                    </Button>
-                </div>
-            )}
+                    </div>
+                )}
+
+                {/* Content */}
+                {isLoading ? (
+                    <>
+                        <SkeletonFeatured />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {Array.from({ length: 4 }).map((_, i) => (
+                                <SkeletonCard key={i} />
+                            ))}
+                        </div>
+                    </>
+                ) : filtered.length === 0 ? (
+                    <div className="text-center py-24 space-y-3">
+                        <p className="text-muted-foreground text-sm">
+                            Aucun article trouvé.
+                        </p>
+                        <button
+                            onClick={() => { setActiveTag(null); setSearch(''); }}
+                            className="text-xs text-primary hover:underline underline-offset-4"
+                        >
+                            Réinitialiser les filtres
+                        </button>
+                    </div>
+                ) : (
+                    <>
+                        {/* Featured post */}
+                        {featured && <FeaturedCard post={featured} />}
+
+                        {/* Grid */}
+                        {rest.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                {rest.map((post) => (
+                                    <GridCard key={post.id} post={post} />
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Load more */}
+                        {hasNextPage && (
+                            <div className="flex justify-center pt-10">
+                                <button
+                                    onClick={() => fetchNextPage()}
+                                    disabled={isFetchingNextPage}
+                                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-border text-sm text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all duration-150 disabled:opacity-40"
+                                >
+                                    {isFetchingNextPage ? (
+                                        <>
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                            Chargement…
+                                        </>
+                                    ) : (
+                                        "Voir plus d'articles"
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 }

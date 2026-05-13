@@ -17,6 +17,59 @@ interface ProfileFormProps {
     user: User;
 }
 
+/* ── Design tokens ────────────────────────────────────────────────────────── */
+
+const fieldClass = [
+    'w-full bg-transparent text-sm text-foreground',
+    'border-0 border-b border-border',
+    'focus:border-foreground/40 focus:outline-none',
+    'rounded-none px-0 py-2 transition-colors duration-150',
+    'placeholder:text-muted-foreground/25',
+].join(' ');
+
+/* ── Section card ─────────────────────────────────────────────────────────── */
+
+function SectionCard({
+    title,
+    children,
+}: {
+    title: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="rounded-xl border border-border/60 overflow-hidden">
+            <div className="px-5 py-3 border-b border-border/40 bg-muted/20">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+                    {title}
+                </p>
+            </div>
+            <div className="p-5 space-y-5">{children}</div>
+        </div>
+    );
+}
+
+/* ── Field label ──────────────────────────────────────────────────────────── */
+
+function FieldLabel({
+    text,
+    icon: Icon,
+    required,
+}: {
+    text: string;
+    icon?: React.ComponentType<{ className?: string }>;
+    required?: boolean;
+}) {
+    return (
+        <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/50 mb-1.5 select-none">
+            {Icon && <Icon className="h-3 w-3" />}
+            {text}
+            {required && <span className="text-red-400 ml-0.5">*</span>}
+        </label>
+    );
+}
+
+/* ── ProfileForm ──────────────────────────────────────────────────────────── */
+
 export function ProfileForm({ user }: ProfileFormProps) {
     const router = useRouter();
     const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -85,30 +138,26 @@ export function ProfileForm({ user }: ProfileFormProps) {
         }
     }
 
+    const coverSrc = coverPreview ?? user.coverPath;
+    const avatarSrc = avatarPreview ?? user.avatarPath;
+
     return (
-        <div className="space-y-10">
+        <div className="space-y-6">
 
-            {/* ── Cover + Avatar ──────────────────────────── */}
-            <section className="space-y-5">
-                <FieldLabel text="Photo de couverture" />
-
+            {/* ── Photo section ───────────────────────────────────────── */}
+            <div className="rounded-xl border border-border/60 overflow-hidden">
                 {/* Cover */}
                 <div
-                    className="relative h-36 w-full rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 to-muted cursor-pointer group"
+                    className="relative h-40 bg-gradient-to-br from-primary/15 via-muted to-muted cursor-pointer group"
                     onClick={() => coverInputRef.current?.click()}
                 >
-                    {(coverPreview ?? user.coverPath) && (
-                        <Image
-                            src={coverPreview ?? user.coverPath!}
-                            alt="Couverture"
-                            fill
-                            className="object-cover"
-                        />
+                    {coverSrc && (
+                        <Image src={coverSrc} alt="Couverture" fill className="object-cover" />
                     )}
                     <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 group-hover:bg-black/40 transition-colors">
-                        <Camera className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <span className="text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity font-medium">
-                            Modifier
+                        <Camera className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="text-xs text-white font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                            Modifier la couverture
                         </span>
                     </div>
                     <input
@@ -120,157 +169,176 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     />
                 </div>
 
-                {/* Avatar */}
-                <div className="flex items-center gap-4">
+                {/* Avatar + name strip */}
+                <div className="flex items-end gap-4 px-5 pb-4 -mt-9 relative z-10">
                     <div
                         className="relative group cursor-pointer shrink-0"
                         onClick={() => avatarInputRef.current?.click()}
                     >
                         <UserAvatar
                             name={name || user.name}
-                            avatarPath={avatarPreview ?? user.avatarPath}
+                            avatarPath={avatarSrc}
                             size="lg"
-                            className="h-16 w-16 text-xl ring-4 ring-background"
+                            className="h-[72px] w-[72px] text-2xl ring-[3px] ring-background shadow-sm"
                         />
                         <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <Camera className="h-4 w-4 text-white" />
                         </div>
+                        <input
+                            ref={avatarInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => handleImageFile(e, 'avatar')}
+                        />
                     </div>
-                    <div className="space-y-0.5">
-                        <p className="text-sm font-medium">Photo de profil</p>
-                        <button
-                            type="button"
-                            onClick={() => avatarInputRef.current?.click()}
-                            className="text-xs text-primary hover:underline underline-offset-2"
-                        >
-                            Changer
-                        </button>
-                        <p className="text-[11px] text-muted-foreground/50 block">
-                            JPG, PNG ou WebP · 5 Mo max
+                    <div className="flex-1 min-w-0 pt-10">
+                        <p className="font-bold text-[15px] leading-tight truncate">
+                            {name || user.name}
+                        </p>
+                        <p className="text-[12px] text-muted-foreground/60 truncate">
+                            {professionalRole || 'Rôle professionnel'}
                         </p>
                     </div>
-                    <input
-                        ref={avatarInputRef}
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        className="hidden"
-                        onChange={(e) => handleImageFile(e, 'avatar')}
-                    />
+                    <p className="text-[10px] text-muted-foreground/35 shrink-0 pb-1">
+                        JPG, PNG · 5 Mo max
+                    </p>
                 </div>
-            </section>
+            </div>
 
-            {/* ── Informations ─────────────────────────────── */}
-            <section className="space-y-5">
-                <FieldLabel text="Informations" />
-
+            {/* ── Identité ────────────────────────────────────────────── */}
+            <SectionCard title="Identité">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <LineField
-                        label="Nom complet"
-                        icon={UserIcon}
-                        required
-                        value={name}
-                        onChange={(v) => setName(v)}
-                        placeholder="Votre nom"
-                        maxLength={100}
-                    />
-                    <LineField
-                        label="Localisation"
-                        icon={MapPin}
-                        value={location}
-                        onChange={(v) => setLocation(v)}
-                        placeholder="Paris, France"
-                        maxLength={150}
-                    />
+                    <div>
+                        <FieldLabel text="Nom complet" icon={UserIcon} required />
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Votre nom"
+                            maxLength={100}
+                            className={fieldClass}
+                        />
+                    </div>
+                    <div>
+                        <FieldLabel text="Localisation" icon={MapPin} />
+                        <input
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="Paris, France"
+                            maxLength={150}
+                            className={fieldClass}
+                        />
+                    </div>
                 </div>
 
-                <LineField
-                    label="Titre · Rôle professionnel"
-                    value={professionalRole}
-                    onChange={(v) => setProfessionalRole(v)}
-                    placeholder="ex. Développeur full-stack, Designer produit…"
-                    maxLength={150}
-                />
+                <div>
+                    <FieldLabel text="Titre · Rôle professionnel" />
+                    <input
+                        type="text"
+                        value={professionalRole}
+                        onChange={(e) => setProfessionalRole(e.target.value)}
+                        placeholder="ex. Développeur full-stack, Designer produit…"
+                        maxLength={150}
+                        className={fieldClass}
+                    />
+                </div>
+            </SectionCard>
 
-                <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
+            {/* ── Bio ─────────────────────────────────────────────────── */}
+            <SectionCard title="Bio">
+                <div>
+                    <div className="flex items-center justify-between mb-1.5">
                         <FieldLabel text="Bio courte" />
-                        <span className="text-[10px] text-muted-foreground/40 tabular-nums">
+                        <span className="text-[10px] text-muted-foreground/35 tabular-nums">
                             {bio.length}/280
                         </span>
                     </div>
                     <textarea
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        placeholder="Une ligne qui vous décrit — apparaît sous votre nom sur votre page publique."
+                        placeholder="Une ligne qui vous décrit — apparaît sous votre nom."
                         maxLength={280}
                         rows={2}
-                        className={cn(lineInputClass, 'resize-none w-full leading-relaxed')}
+                        className={cn(fieldClass, 'resize-none leading-relaxed')}
                     />
                 </div>
-            </section>
 
-            {/* ── À propos ────────────────────────────────── */}
-            <section className="space-y-3">
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <FieldLabel text="À propos" />
-                        <p className="text-[11px] text-muted-foreground/50 mt-0.5">
-                            Présentez-vous librement — votre parcours, vos centres d&apos;intérêt,
-                            ce qui vous anime. Affiché sur votre page publique.
-                        </p>
+                <div>
+                    <div className="flex items-start justify-between mb-1.5">
+                        <div>
+                            <FieldLabel text="À propos" />
+                            <p className="text-[11px] text-muted-foreground/45 -mt-1">
+                                Partagez votre parcours, vos centres d&apos;intérêt, ce qui vous anime.
+                            </p>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground/35 tabular-nums shrink-0 mt-0.5">
+                            {about.length}/5000
+                        </span>
                     </div>
-                    <span className="text-[10px] text-muted-foreground/40 tabular-nums shrink-0 mt-0.5">
-                        {about.length}/5000
-                    </span>
+                    <textarea
+                        value={about}
+                        onChange={(e) => setAbout(e.target.value)}
+                        placeholder="Bonjour, je suis… partagez votre histoire et vos passions."
+                        maxLength={5000}
+                        rows={6}
+                        className={cn(fieldClass, 'resize-y leading-relaxed text-sm mt-2')}
+                    />
                 </div>
-                <textarea
-                    value={about}
-                    onChange={(e) => setAbout(e.target.value)}
-                    placeholder="Bonjour, je suis… partagez votre histoire, vos passions, ce que vous créez sur cette plateforme."
-                    maxLength={5000}
-                    rows={8}
-                    className={cn(lineInputClass, 'resize-y w-full leading-relaxed text-sm')}
-                />
-            </section>
+            </SectionCard>
 
-            {/* ── Présence en ligne ────────────────────────── */}
-            <section className="space-y-5">
-                <FieldLabel text="Présence en ligne" />
-
-                <LineField
-                    label="Site web"
-                    icon={Globe}
-                    value={website}
-                    onChange={(v) => setWebsite(v)}
-                    placeholder="https://monsite.dev"
-                    type="url"
-                    maxLength={2048}
-                />
+            {/* ── Présence en ligne ────────────────────────────────────── */}
+            <SectionCard title="Présence en ligne">
+                <div>
+                    <FieldLabel text="Site web" icon={Globe} />
+                    <input
+                        type="url"
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        placeholder="https://monsite.dev"
+                        maxLength={2048}
+                        className={fieldClass}
+                    />
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <PrefixField
-                        label="Twitter / X"
-                        icon={Twitter}
-                        prefix="@"
-                        value={twitterHandle}
-                        onChange={(v) => setTwitterHandle(v.replace(/^@/, ''))}
-                        placeholder="monpseudo"
-                        maxLength={100}
-                    />
-                    <PrefixField
-                        label="GitHub"
-                        icon={Github}
-                        prefix="@"
-                        value={githubHandle}
-                        onChange={(v) => setGithubHandle(v.replace(/^@/, ''))}
-                        placeholder="monpseudo"
-                        maxLength={100}
-                    />
-                </div>
-            </section>
+                    {/* Twitter */}
+                    <div>
+                        <FieldLabel text="Twitter / X" icon={Twitter} />
+                        <div className="flex items-baseline gap-1 border-b border-border focus-within:border-foreground/40 transition-colors duration-150">
+                            <span className="text-muted-foreground/40 text-sm pb-2">@</span>
+                            <input
+                                type="text"
+                                value={twitterHandle}
+                                onChange={(e) => setTwitterHandle(e.target.value.replace(/^@/, ''))}
+                                placeholder="monpseudo"
+                                maxLength={100}
+                                className="flex-1 bg-transparent text-sm text-foreground border-0 focus:outline-none rounded-none px-0 py-2 placeholder:text-muted-foreground/25"
+                            />
+                        </div>
+                    </div>
 
-            {/* ── Actions ─────────────────────────────────── */}
-            <div className="flex items-center justify-end gap-3 py-4 border-t border-border sticky bottom-0 bg-background/95 backdrop-blur-sm">
+                    {/* GitHub */}
+                    <div>
+                        <FieldLabel text="GitHub" icon={Github} />
+                        <div className="flex items-baseline gap-1 border-b border-border focus-within:border-foreground/40 transition-colors duration-150">
+                            <span className="text-muted-foreground/40 text-sm pb-2">@</span>
+                            <input
+                                type="text"
+                                value={githubHandle}
+                                onChange={(e) => setGithubHandle(e.target.value.replace(/^@/, ''))}
+                                placeholder="monpseudo"
+                                maxLength={100}
+                                className="flex-1 bg-transparent text-sm text-foreground border-0 focus:outline-none rounded-none px-0 py-2 placeholder:text-muted-foreground/25"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </SectionCard>
+
+            {/* ── Save bar ─────────────────────────────────────────────── */}
+            <div className="flex items-center justify-end gap-3 py-4 border-t border-border/50 sticky bottom-0 bg-background/95 backdrop-blur-sm">
                 <button
                     type="button"
                     onClick={handleSave}
@@ -285,102 +353,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     <Save className="h-3.5 w-3.5" />
                     {isPending ? 'Enregistrement…' : 'Sauvegarder'}
                 </button>
-            </div>
-        </div>
-    );
-}
-
-/* ── Design tokens ────────────────────────────────────────────────────────── */
-
-const lineInputClass = [
-    'bg-transparent text-sm text-foreground',
-    'border-0 border-b border-border',
-    'focus:border-foreground/40 focus:outline-none',
-    'rounded-none px-0 py-2 transition-colors duration-150',
-    'placeholder:text-muted-foreground/30',
-].join(' ');
-
-/* ── Sub-components ───────────────────────────────────────────────────────── */
-
-function FieldLabel({ text }: { text: string }) {
-    return (
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/50">
-            {text}
-        </p>
-    );
-}
-
-function LineField({
-    label,
-    icon: Icon,
-    required,
-    value,
-    onChange,
-    placeholder,
-    maxLength,
-    type = 'text',
-}: {
-    label: string;
-    icon?: React.ComponentType<{ className?: string }>;
-    required?: boolean;
-    value: string;
-    onChange: (v: string) => void;
-    placeholder?: string;
-    maxLength?: number;
-    type?: string;
-}) {
-    return (
-        <div className="space-y-1">
-            <label className="flex items-center gap-1 text-[10px] uppercase tracking-widest font-medium text-muted-foreground/50">
-                {Icon && <Icon className="h-3 w-3" />}
-                {label}
-                {required && <span className="text-red-500 ml-0.5">*</span>}
-            </label>
-            <input
-                type={type}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                maxLength={maxLength}
-                className={cn(lineInputClass, 'w-full')}
-            />
-        </div>
-    );
-}
-
-function PrefixField({
-    label,
-    icon: Icon,
-    prefix,
-    value,
-    onChange,
-    placeholder,
-    maxLength,
-}: {
-    label: string;
-    icon?: React.ComponentType<{ className?: string }>;
-    prefix: string;
-    value: string;
-    onChange: (v: string) => void;
-    placeholder?: string;
-    maxLength?: number;
-}) {
-    return (
-        <div className="space-y-1">
-            <label className="flex items-center gap-1 text-[10px] uppercase tracking-widest font-medium text-muted-foreground/50">
-                {Icon && <Icon className="h-3 w-3" />}
-                {label}
-            </label>
-            <div className="flex items-baseline gap-1 border-b border-border focus-within:border-foreground/40 transition-colors duration-150">
-                <span className="text-muted-foreground/50 text-sm pb-2">{prefix}</span>
-                <input
-                    type="text"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    placeholder={placeholder}
-                    maxLength={maxLength}
-                    className="flex-1 bg-transparent text-sm text-foreground border-0 focus:outline-none rounded-none px-0 py-2 placeholder:text-muted-foreground/30"
-                />
             </div>
         </div>
     );
