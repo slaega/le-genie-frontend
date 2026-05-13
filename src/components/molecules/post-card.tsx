@@ -129,7 +129,7 @@ export function PostCard({
                 {/* Text */}
                 <div className="flex-1 min-w-0">
                     {category && (
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-[0.12em] bg-primary/10 text-primary">
                             {category}
                         </span>
                     )}
@@ -227,7 +227,7 @@ export function PostCard({
     return (
         <div
             className={cn(
-                'group overflow-hidden rounded-xl border border-border/50 hover:border-border transition-colors h-full flex flex-col bg-card',
+                'group surface surface-hover overflow-hidden h-full flex flex-col',
                 className
             )}
         >
@@ -358,7 +358,7 @@ export function PostCardSkeleton({
     }
 
     return (
-        <div className="overflow-hidden rounded-xl border border-border/50 h-full flex flex-col">
+        <div className="surface overflow-hidden h-full flex flex-col">
             <div className="aspect-video bg-muted animate-pulse" />
             <div className="p-4 flex-1 space-y-2">
                 <div className="h-3 w-20 bg-muted rounded animate-pulse" />

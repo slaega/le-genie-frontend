@@ -28,13 +28,13 @@ function AuthorCard({
     const profileUrl = userUrl(author);
 
     return (
-        <div className="rounded-2xl border border-border bg-background p-6 text-center">
+        <div className="surface p-6 text-center">
             <Link href={profileUrl} className="inline-block">
                 <UserAvatar
                     name={author.name}
                     avatarPath={author.avatarPath}
                     size="xl"
-                    className="h-20 w-20 mx-auto shadow-sm"
+                    className="h-20 w-20 mx-auto"
                 />
             </Link>
             <Link
@@ -213,7 +213,7 @@ export function PostView({ post }: PostViewProps) {
                     {category && (
                         <Link
                             href={`/publications?tag=${encodeURIComponent(category)}`}
-                            className="text-[11px] font-bold uppercase tracking-[0.16em] text-foreground/60 hover:text-foreground transition-colors"
+                            className="inline-flex items-center px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-[0.14em] bg-primary/10 text-primary hover:bg-primary/15 transition-colors"
                         >
                             {category}
                         </Link>

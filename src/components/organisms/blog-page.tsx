@@ -36,7 +36,7 @@ function FeaturedCard({ post }: { post: Post }) {
     return (
         <Link
             href={postUrl(post)}
-            className="group flex flex-col sm:flex-row rounded-2xl overflow-hidden border border-border/60 hover:shadow-md hover:border-border transition-all duration-200 mb-7 bg-background"
+            className="group surface surface-hover flex flex-col sm:flex-row overflow-hidden mb-8"
         >
             {/* Image */}
             <div className="relative sm:w-[52%] aspect-[4/3] sm:aspect-auto bg-muted shrink-0 overflow-hidden">
@@ -50,18 +50,18 @@ function FeaturedCard({ post }: { post: Post }) {
                         priority
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/10 via-muted to-muted/60" />
+                    <div className="w-full h-full bg-muted" />
                 )}
             </div>
 
             {/* Content */}
             <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center gap-3 min-w-0">
                 {category && (
-                    <span className="inline-flex text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                    <span className="inline-flex items-center self-start px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-[0.12em] bg-primary/10 text-primary">
                         {category}
                     </span>
                 )}
-                <h2 className="text-[22px] sm:text-[26px] font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-3">
+                <h2 className="text-[22px] sm:text-[28px] font-bold leading-[1.15] tracking-tight text-foreground group-hover:text-primary transition-colors line-clamp-3">
                     {post.title || 'Sans titre'}
                 </h2>
                 {excerpt && (
@@ -104,7 +104,7 @@ function GridCard({ post }: { post: Post }) {
     return (
         <Link
             href={postUrl(post)}
-            className="group flex flex-col rounded-xl overflow-hidden border border-border/60 hover:shadow-md hover:border-border bg-background transition-all duration-200"
+            className="group surface surface-hover flex flex-col overflow-hidden"
         >
             {/* Cover */}
             <div className="relative aspect-[16/10] bg-muted overflow-hidden">
@@ -117,18 +117,18 @@ function GridCard({ post }: { post: Post }) {
                         sizes="(min-width: 768px) 33vw, 50vw"
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/10 via-muted to-muted/60" />
+                    <div className="w-full h-full bg-muted" />
                 )}
             </div>
 
             {/* Content */}
-            <div className="p-4 flex flex-col gap-2 flex-1">
+            <div className="p-5 flex flex-col gap-2.5 flex-1">
                 {category && (
-                    <span className="text-[11px] font-bold text-foreground/60 uppercase tracking-wider">
+                    <span className="inline-flex items-center self-start px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-[0.12em] bg-primary/10 text-primary">
                         {category}
                     </span>
                 )}
-                <h3 className="text-[15px] font-bold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                <h3 className="text-[16px] font-bold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                     {post.title || 'Sans titre'}
                 </h3>
                 {excerpt && (

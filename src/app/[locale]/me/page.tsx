@@ -86,7 +86,7 @@ export default async function MePage({ params }: Props) {
         <MainLayout>
             <div className="max-w-3xl mx-auto">
                 {/* ── Cover ─────────────────────────────────────────────── */}
-                <div className="relative h-32 sm:h-40 rounded-2xl overflow-hidden bg-muted">
+                <div className="relative h-36 sm:h-44 rounded-2xl overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-muted">
                     {me.coverPath && (
                         <Image
                             src={me.coverPath}
@@ -121,10 +121,10 @@ export default async function MePage({ params }: Props) {
                         </div>
 
                         <p className="text-[13px] text-muted-foreground flex items-center gap-1 mt-2 leading-tight">
-                            <AtSign className="h-3.5 w-3.5" />
+                            <AtSign className="h-3.5 w-3.5 text-primary" />
                             <Link
                                 href={`/@${handle}`}
-                                className="hover:text-foreground transition-colors"
+                                className="text-primary font-medium hover:underline underline-offset-4 transition-colors"
                             >
                                 {handle}
                             </Link>

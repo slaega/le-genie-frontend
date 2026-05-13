@@ -22,17 +22,18 @@ export const metadata: Metadata = {
 function Hero() {
     return (
         <section className="border-b border-border">
-            <div className="container mx-auto px-4 py-20 lg:py-24">
-                {/* Eyebrow — plain, no chromatic chip, no gradient blobs */}
-                <p className="mb-6 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                    Plateforme collaborative de publication
-                </p>
+            <div className="container mx-auto px-4 py-20 lg:py-28">
+                {/* Eyebrow — bold indigo brand chip */}
+                <span className="mb-7 inline-flex items-center gap-2 px-2.5 py-1 rounded-md text-[10.5px] font-bold uppercase tracking-[0.14em] bg-primary/10 text-primary">
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    Plateforme collaborative
+                </span>
 
-                {/* Headline — stepped opacity carries the rhythm */}
-                <h1 className="text-[40px] sm:text-[56px] lg:text-[68px] font-bold tracking-tight leading-[1.05] max-w-3xl">
+                {/* Headline — stepped opacity, last word carries the indigo */}
+                <h1 className="text-[40px] sm:text-[60px] lg:text-[72px] font-bold tracking-tight leading-[1.04] max-w-3xl">
                     <span className="text-foreground">Apprenez.</span>{' '}
                     <span className="text-foreground/70">Partagez.</span>{' '}
-                    <span className="text-foreground/40">Progressez.</span>
+                    <span className="text-primary">Progressez.</span>
                 </h1>
 
                 {/* Subtitle */}
