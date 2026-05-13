@@ -5,6 +5,12 @@ export type UserRole = 'USER' | 'ADMIN';
 export interface User {
     id: string;
     email: string;
+    /**
+     * Unique handle used in public URLs (e.g. /@john-doe).
+     * Optional during backend migration — frontend falls back to a name-derived
+     * slug or the email prefix when `username` is null.
+     */
+    username: string | null;
     name: string;
     avatarPath: string | null;
     coverPath: string | null;

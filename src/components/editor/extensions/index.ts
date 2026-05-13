@@ -53,9 +53,23 @@ export const editorExtensions = [
     CharacterCount,
     Focus.configure({ className: 'has-focus', mode: 'all' }),
     Placeholder.configure({
-        placeholder: ({ node }: { node: { type: { name: string } } }) => {
-            if (node.type.name === 'heading') return 'Titre...';
-            return 'Commencez à écrire...';
+        placeholder: ({
+            node,
+            pos,
+        }: {
+            node: { type: { name: string }; attrs?: { level?: number } };
+            pos: number;
+        }) => {
+            // First H1 = post title; rest of headings = section headings.
+            if (
+                node.type.name === 'heading' &&
+                node.attrs?.level === 1 &&
+                pos === 0
+            ) {
+                return 'Titre de la publication…';
+            }
+            if (node.type.name === 'heading') return 'Titre de section…';
+            return 'Commencez à écrire votre article…';
         },
         includeChildren: true,
     }),

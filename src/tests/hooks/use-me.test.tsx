@@ -15,6 +15,7 @@ import { authApi } from '@/lib/api';
 const mockUser: User = {
     id: 'u-1',
     email: 'alice@example.com',
+    username: 'alice',
     name: 'Alice',
     avatarPath: null,
     coverPath: null,

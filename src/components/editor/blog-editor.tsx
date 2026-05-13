@@ -9,11 +9,97 @@ import { EditorStatsBar } from './editor-stats-bar';
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/react';
 
+/* ── Title utilities ──────────────────────────────────────────────────────── */
+
+type TiptapNode = {
+    type?: string;
+    attrs?: Record<string, unknown>;
+    content?: TiptapNode[];
+    text?: string;
+};
+
+/**
+ * Walks a TipTap doc and returns the plain-text content of the first
+ * heading-1 node. Returns empty string when no H1 exists yet.
+ *
+ * The editor uses H1 as the "title" — Medium / Notion-style. The body
+ * starts at the second block.
+ */
+export function extractTitleFromContent(
+    content: Record<string, unknown> | null | undefined
+): string {
+    if (!content) return '';
+    const doc = content as TiptapNode;
+    const children = doc.content;
+    if (!Array.isArray(children)) return '';
+    for (const node of children) {
+        if (node.type === 'heading' && node.attrs?.level === 1) {
+            return nodeText(node).trim();
+        }
+    }
+    return '';
+}
+
+function nodeText(node: TiptapNode): string {
+    if (node.type === 'text' && typeof node.text === 'string') return node.text;
+    if (!Array.isArray(node.content)) return '';
+    return node.content.map(nodeText).join('');
+}
+
+/**
+ * Guarantees the doc starts with an H1 heading. When the post already has a
+ * stored title but the content has no H1 yet, we prepend one carrying that
+ * title (so existing posts open seamlessly in the new editor).
+ *
+ * Idempotent — returns the doc unchanged when the first block is already an H1.
+ */
+export function ensureTitleHeading(
+    content: Record<string, unknown> | null | undefined,
+    fallbackTitle: string
+): Record<string, unknown> {
+    const titleHeading = {
+        type: 'heading',
+        attrs: { level: 1 },
+        ...(fallbackTitle.trim()
+            ? { content: [{ type: 'text', text: fallbackTitle.trim() }] }
+            : {}),
+    };
+
+    if (!content) {
+        return {
+            type: 'doc',
+            content: [titleHeading, { type: 'paragraph' }],
+        };
+    }
+
+    const doc = content as TiptapNode;
+    const children = doc.content;
+
+    if (!Array.isArray(children) || children.length === 0) {
+        return {
+            type: doc.type ?? 'doc',
+            content: [titleHeading, { type: 'paragraph' }],
+        };
+    }
+
+    const first = children[0];
+    if (first.type === 'heading' && first.attrs?.level === 1) {
+        return content;
+    }
+
+    return {
+        type: doc.type ?? 'doc',
+        content: [titleHeading, ...children],
+    };
+}
+
 /* ── Public ref API ───────────────────────────────────────────────────────── */
 
 export interface BlogEditorRef {
     /** Raw JSON — may still contain blob: image URLs if flush hasn't run. */
     getJSON: () => Record<string, unknown> | null;
+    /** Plain-text content of the first H1 — used as post title. */
+    getTitle: () => string;
     getEditor: () => Editor | null;
     /** True when images were inserted but not yet uploaded to the server. */
     hasPendingImages: () => boolean;
@@ -44,7 +130,11 @@ function parseContent(
 ) {
     if (!raw) return undefined;
     if (typeof raw === 'string') {
-        try { return JSON.parse(raw); } catch { return undefined; }
+        try {
+            return JSON.parse(raw);
+        } catch {
+            return undefined;
+        }
     }
     return raw;
 }
@@ -141,7 +231,6 @@ export function BlogEditor({
             clearTimeout(saveTimer.current);
             saveTimer.current = setTimeout(async () => {
                 const rawJson = editor.getJSON() as Record<string, unknown>;
-                // Strip unresolved blob images so autosave never persists local URLs.
                 const safeJson =
                     pendingBlobs.current.size > 0
                         ? (stripBlobImages(rawJson) ?? rawJson)
@@ -164,24 +253,27 @@ export function BlogEditor({
         editorProps: {
             attributes: {
                 class: cn(
-                    'outline-none min-h-[400px] px-0 py-4',
+                    'outline-none min-h-[480px] px-0 py-4',
                     'prose prose-neutral dark:prose-invert max-w-none',
-                    'prose-h1:text-4xl prose-h1:font-bold prose-h1:tracking-tight prose-h1:leading-tight',
-                    'prose-h2:text-3xl prose-h2:font-semibold prose-h2:tracking-tight',
-                    'prose-h3:text-2xl prose-h3:font-semibold',
-                    'prose-h4:text-xl prose-h4:font-semibold',
-                    'prose-p:leading-8 prose-p:text-[1.0625rem]',
-                    'prose-a:text-primary prose-a:underline-offset-4 prose-a:decoration-primary/40 prose-a:transition-colors hover:prose-a:decoration-primary',
-                    'prose-code:text-sm prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none',
-                    'prose-pre:bg-[#0d1117] prose-pre:text-[#e6edf3] prose-pre:border prose-pre:rounded-xl prose-pre:shadow-sm',
-                    'prose-blockquote:border-l-4 prose-blockquote:border-primary/30 prose-blockquote:bg-muted/30 prose-blockquote:py-0.5 prose-blockquote:italic prose-blockquote:text-muted-foreground',
+                    // H1 = title — large, no margin top so it sits at the page top.
+                    'prose-h1:text-[2.5rem] sm:prose-h1:text-[3rem] prose-h1:font-bold prose-h1:tracking-tight prose-h1:leading-[1.1] prose-h1:mt-0 prose-h1:mb-4',
+                    'prose-h2:text-[1.75rem] prose-h2:font-bold prose-h2:tracking-tight prose-h2:mt-10 prose-h2:mb-3',
+                    'prose-h3:text-[1.375rem] prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-2',
+                    'prose-h4:text-[1.125rem] prose-h4:font-semibold prose-h4:mt-6 prose-h4:mb-2',
+                    'prose-p:leading-[1.75] prose-p:text-[1.0625rem] prose-p:text-foreground/85',
+                    'prose-a:text-primary prose-a:underline-offset-4 prose-a:decoration-primary/40 hover:prose-a:decoration-primary prose-a:transition-colors',
+                    'prose-strong:text-foreground prose-strong:font-semibold',
+                    'prose-code:text-[0.875em] prose-code:bg-muted prose-code:text-foreground prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none',
+                    'prose-pre:bg-zinc-950 prose-pre:text-zinc-100 prose-pre:border prose-pre:border-zinc-800 prose-pre:rounded-xl prose-pre:shadow-sm',
+                    'prose-blockquote:not-italic prose-blockquote:border-l-[3px] prose-blockquote:border-foreground/30 prose-blockquote:bg-transparent prose-blockquote:py-0 prose-blockquote:pl-5 prose-blockquote:text-foreground/70',
                     'prose-img:rounded-xl prose-img:shadow-md prose-img:mx-auto',
-                    'prose-li:my-1',
-                    'prose-hr:border-border',
+                    'prose-li:my-1 prose-li:marker:text-muted-foreground/50',
+                    'prose-hr:border-border/60 prose-hr:my-10',
                     'prose-table:rounded-lg prose-table:overflow-hidden',
                     'prose-th:bg-muted prose-th:font-semibold',
                     '[&_.ProseMirror-focused]:outline-none',
-                    '[&_.is-empty::before]:content-[attr(data-placeholder)] [&_.is-empty::before]:text-muted-foreground/30 [&_.is-empty::before]:float-left [&_.is-empty::before]:pointer-events-none [&_.is-empty::before]:h-0',
+                    // Placeholder: title-sized for H1, regular for the rest.
+                    '[&_.is-empty::before]:content-[attr(data-placeholder)] [&_.is-empty::before]:text-muted-foreground/25 [&_.is-empty::before]:float-left [&_.is-empty::before]:pointer-events-none [&_.is-empty::before]:h-0',
                     '[&_ul[data-type=taskList]]:list-none [&_ul[data-type=taskList]]:pl-0',
                     '[&_li[data-type=taskItem]]:flex [&_li[data-type=taskItem]]:items-start [&_li[data-type=taskItem]]:gap-2',
                     '[&_li[data-type=taskItem]>label]:mt-0.5'
@@ -206,7 +298,6 @@ export function BlogEditor({
                 pendingBlobs.current,
                 uploadFn
             );
-            // Update editor in-place without triggering autosave (emitUpdate=false).
             editor.commands.setContent(resolved, false);
             return editor.getJSON() as Record<string, unknown>;
         },
@@ -219,6 +310,10 @@ export function BlogEditor({
         const ref = editorRef as React.MutableRefObject<BlogEditorRef>;
         ref.current = {
             getJSON: () => editor.getJSON() as Record<string, unknown>,
+            getTitle: () =>
+                extractTitleFromContent(
+                    editor.getJSON() as Record<string, unknown>
+                ),
             getEditor: () => editor,
             hasPendingImages: () => pendingBlobs.current.size > 0,
             flushImages,

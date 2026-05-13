@@ -1,11 +1,9 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
-    Eye,
     EyeOff,
     Archive,
     CalendarClock,
@@ -16,11 +14,13 @@ import {
     FileText,
     Clock,
     Hash,
+    ArrowLeft,
+    Send,
 } from 'lucide-react';
-import Image from 'next/image';
 import {
     BlogEditor,
     type BlogEditorRef,
+    ensureTitleHeading,
 } from '@/components/editor/blog-editor';
 import { CollaboratorsPanel } from '@/components/organisms/collaborators-panel';
 import { TagsInput } from '@/components/molecules/tags-input';
@@ -32,135 +32,134 @@ import { toast } from 'sonner';
 import type { Post, PostStatus } from '@/lib/api/types';
 import { cn, formatDate } from '@/lib/utils';
 
-const schema = z.object({
-    title: z.string().min(1, 'Le titre est requis').max(255),
-});
-
-type FormValues = z.infer<typeof schema>;
-
 interface PostEditorProps {
     post: Post;
     isOwner: boolean;
 }
 
-/* ── Right stats panel ───────────────────────────────────────────────────── */
+/* ── Right info panel ────────────────────────────────────────────────────── */
 
-function StatsPanel({ post }: { post: Post }) {
+function InfoPanel({ post }: { post: Post }) {
     return (
-        <aside className="w-64 shrink-0 border-l border-border/50 bg-background/60 overflow-y-auto">
-            <div className="p-5 space-y-6">
-                {/* Publication info */}
-                <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 mb-3">
+        <aside className="w-72 shrink-0 border-l border-border/60 bg-muted/[0.15] overflow-y-auto">
+            <div className="p-6 space-y-7">
+                {/* Publication */}
+                <section>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
                         Publication
                     </p>
-                    <div className="space-y-2.5">
-                        <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-muted-foreground/60">
-                                Statut
-                            </span>
-                            <StatusBadge status={post.status} />
+                    <dl className="space-y-2.5 text-[12.5px]">
+                        <div className="flex items-center justify-between gap-3">
+                            <dt className="text-muted-foreground">Statut</dt>
+                            <dd>
+                                <StatusBadge status={post.status} />
+                            </dd>
                         </div>
-                        <div className="flex items-center justify-between text-[12px]">
-                            <span className="text-muted-foreground/60">
-                                Créé le
-                            </span>
-                            <span className="text-foreground/80">
+                        <div className="flex items-center justify-between gap-3">
+                            <dt className="text-muted-foreground">Créé le</dt>
+                            <dd className="text-foreground/80 tabular-nums">
                                 {formatDate(post.createdAt)}
-                            </span>
+                            </dd>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                            <dt className="text-muted-foreground">Modifié</dt>
+                            <dd className="text-foreground/80 tabular-nums">
+                                {formatDate(post.updatedAt)}
+                            </dd>
                         </div>
                         {post.scheduledAt && (
-                            <div className="flex items-center justify-between text-[12px]">
-                                <span className="text-muted-foreground/60">
+                            <div className="flex items-center justify-between gap-3">
+                                <dt className="text-muted-foreground">
                                     Programmé
-                                </span>
-                                <span className="text-amber-500/80 text-[11px]">
+                                </dt>
+                                <dd className="text-amber-600 font-medium tabular-nums">
                                     {new Date(
                                         post.scheduledAt
                                     ).toLocaleDateString('fr-FR')}
-                                </span>
+                                </dd>
                             </div>
                         )}
-                    </div>
-                </div>
+                    </dl>
+                </section>
 
-                <div className="h-px bg-border/50" />
+                <div className="h-px bg-border/60" />
 
-                {/* Writing stats */}
-                <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 mb-3">
+                {/* Rédaction stats */}
+                <section>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
                         Rédaction
                     </p>
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-                                <Clock className="h-3.5 w-3.5 text-muted-foreground/60" />
-                            </div>
-                            <div>
-                                <p className="text-[13px] font-semibold text-foreground">
-                                    {post.readingTime > 0
-                                        ? `${post.readingTime} min`
-                                        : '—'}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground/50">
-                                    Lecture estimée
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-                                <Hash className="h-3.5 w-3.5 text-muted-foreground/60" />
-                            </div>
-                            <div>
-                                <p className="text-[13px] font-semibold text-foreground">
-                                    {post.postTags.length}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground/50">
-                                    {post.postTags.length === 1
-                                        ? 'Tag'
-                                        : 'Tags'}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                            <div className="h-8 w-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-                                <FileText className="h-3.5 w-3.5 text-muted-foreground/60" />
-                            </div>
-                            <div>
-                                <p className="text-[13px] font-semibold text-foreground">
-                                    {post.commentsCount}
-                                </p>
-                                <p className="text-[10px] text-muted-foreground/50">
-                                    Commentaires
-                                </p>
-                            </div>
-                        </div>
+                    <div className="grid grid-cols-3 gap-2">
+                        <StatTile
+                            icon={Clock}
+                            value={
+                                post.readingTime > 0
+                                    ? `${post.readingTime}m`
+                                    : '—'
+                            }
+                            label="Lecture"
+                        />
+                        <StatTile
+                            icon={Hash}
+                            value={post.postTags.length}
+                            label={post.postTags.length === 1 ? 'Tag' : 'Tags'}
+                        />
+                        <StatTile
+                            icon={FileText}
+                            value={post.commentsCount}
+                            label={
+                                post.commentsCount === 1
+                                    ? 'Commentaire'
+                                    : 'Commentaires'
+                            }
+                        />
                     </div>
-                </div>
+                </section>
 
-                {/* Tags preview */}
                 {post.postTags.length > 0 && (
                     <>
-                        <div className="h-px bg-border/50" />
-                        <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 mb-3">
+                        <div className="h-px bg-border/60" />
+                        <section>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-3">
                                 Tags
                             </p>
                             <div className="flex flex-wrap gap-1.5">
                                 {post.postTags.map((tag) => (
                                     <span
                                         key={tag.id}
-                                        className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] bg-muted/60 border border-border/50 text-muted-foreground"
+                                        className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] bg-background border border-border text-foreground/70"
                                     >
                                         {tag.name}
                                     </span>
                                 ))}
                             </div>
-                        </div>
+                        </section>
                     </>
                 )}
             </div>
         </aside>
+    );
+}
+
+function StatTile({
+    icon: Icon,
+    value,
+    label,
+}: {
+    icon: React.ComponentType<{ className?: string }>;
+    value: string | number;
+    label: string;
+}) {
+    return (
+        <div className="rounded-xl border border-border/60 bg-background px-3 py-2.5">
+            <Icon className="h-3.5 w-3.5 text-muted-foreground mb-1.5" />
+            <p className="text-[15px] font-bold text-foreground leading-none tabular-nums">
+                {value}
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-1 truncate">
+                {label}
+            </p>
+        </div>
     );
 }
 
@@ -182,23 +181,21 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
     const { mutateAsync: updatePost, isPending: isSaving } = useUpdatePost();
     const { isPending: isPublishing } = usePublishPost();
 
-    const {
-        register,
-        handleSubmit,
-        getValues,
-        formState: { errors },
-    } = useForm<FormValues>({
-        resolver: zodResolver(schema),
-        defaultValues: { title: post.title },
-    });
-
     /**
-     * Silent autosave — blob images are stripped by BlogEditor before the JSON
-     * reaches here, so the draft never contains browser-local URLs.
+     * Initial editor content: legacy posts may have a title stored separately
+     * but no H1 in `content`. We prepend the title as H1 so the editor can
+     * surface it inline — and on save we read it back from there.
      */
+    const initialContent = useMemo(
+        () => ensureTitleHeading(post.content, post.title),
+        [post.content, post.title]
+    );
+
+    /** Silent autosave — title is extracted from the first H1 of the content. */
     const autosave = useCallback(
         async (json: Record<string, unknown>) => {
-            const title = getValues('title')?.trim();
+            const title = (editorRef.current?.getTitle() ?? '').trim();
+            // Refuse to autosave an empty title — would clobber the post header.
             if (!title) return;
             try {
                 await updatePost({
@@ -210,60 +207,62 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     },
                 });
             } catch {
-                // silent — failures are surfaced on next manual save
+                // silent — surfaced on next manual save
             }
         },
-        [getValues, updatePost, post.id, post.status]
+        [updatePost, post.id, post.status]
     );
 
     /**
      * Manual save:
-     * 1. Flush any pending blob images → uploads to S3, replaces src in editor.
-     * 2. Persist the resolved content + metadata.
+     *   1. Flush any pending blob images → uploads to S3, replaces src in editor.
+     *   2. Pull the title from the first H1.
+     *   3. Persist the resolved content + metadata.
      */
     async function save(status: PostStatus) {
-        await handleSubmit(async ({ title }) => {
-            try {
-                const json = await editorRef.current?.flushImages(
-                    async (file) => {
-                        const { url } = await postsApi.uploadImage(
-                            post.id,
-                            file
-                        );
-                        return url;
-                    }
-                );
+        const title = (editorRef.current?.getTitle() ?? '').trim();
+        if (!title) {
+            toast.error(
+                'Ajoute un titre — la première ligne en H1 sert de titre.'
+            );
+            return;
+        }
 
-                await updatePost({
-                    id: post.id,
-                    payload: {
-                        title,
-                        content: json ?? undefined,
-                        status,
-                        scheduledAt:
-                            status === 'DRAFT' && scheduledAt
-                                ? new Date(scheduledAt).toISOString()
-                                : undefined,
-                    },
-                    cover: coverFile ?? undefined,
-                });
+        try {
+            const json = await editorRef.current?.flushImages(async (file) => {
+                const { url } = await postsApi.uploadImage(post.id, file);
+                return url;
+            });
 
-                toast.success(
-                    status === 'PUBLISHED'
-                        ? 'Publication publiée !'
-                        : scheduledAt && status === 'DRAFT'
-                          ? `Programmée pour le ${new Date(scheduledAt).toLocaleString('fr-FR')}`
-                          : 'Brouillon enregistré'
-                );
-            } catch (err) {
-                const msg = err instanceof Error ? err.message : '';
-                toast.error(
-                    msg.startsWith('Upload failed')
-                        ? "Erreur lors de l'upload d'une image — réessayez."
-                        : "Erreur lors de l'enregistrement"
-                );
-            }
-        })();
+            await updatePost({
+                id: post.id,
+                payload: {
+                    title,
+                    content: json ?? undefined,
+                    status,
+                    scheduledAt:
+                        status === 'DRAFT' && scheduledAt
+                            ? new Date(scheduledAt).toISOString()
+                            : undefined,
+                },
+                cover: coverFile ?? undefined,
+            });
+
+            toast.success(
+                status === 'PUBLISHED'
+                    ? 'Publication publiée !'
+                    : scheduledAt && status === 'DRAFT'
+                      ? `Programmée pour le ${new Date(scheduledAt).toLocaleString('fr-FR')}`
+                      : 'Brouillon enregistré'
+            );
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : '';
+            toast.error(
+                msg.startsWith('Upload failed')
+                    ? "Erreur lors de l'upload d'une image — réessayez."
+                    : "Erreur lors de l'enregistrement"
+            );
+        }
     }
 
     function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -278,13 +277,20 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
     return (
         <div className="flex flex-col h-full bg-background">
             {/* ── Top action bar ──────────────────────────────────────── */}
-            <div className="sticky top-14 z-10 flex items-center gap-2 border-b border-border/50 bg-background/90 backdrop-blur-sm px-4 py-2">
+            <div className="sticky top-0 z-20 flex items-center gap-2 border-b border-border/60 bg-background/85 backdrop-blur-md px-4 py-2.5">
+                <Link
+                    href="/me"
+                    aria-label="Retour"
+                    className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                </Link>
+
                 <StatusBadge status={post.status} />
 
                 <div className="flex items-center gap-1.5 ml-auto">
                     <CollaboratorsPanel postId={post.id} />
 
-                    {/* Stats panel toggle */}
                     <button
                         type="button"
                         onClick={() => setShowPanel((v) => !v)}
@@ -338,7 +344,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         type="button"
                         onClick={() => save('DRAFT')}
                         disabled={isSaving || isPublishing}
-                        className="h-8 px-3 rounded-lg text-xs flex items-center gap-1.5 border border-border text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-150 disabled:opacity-40"
+                        className="h-8 px-3 rounded-lg text-xs flex items-center gap-1.5 border border-border text-foreground/80 hover:text-foreground hover:bg-accent transition-all duration-150 disabled:opacity-40"
                     >
                         <Save className="h-3.5 w-3.5" />
                         {isSaving ? 'Sauvegarde…' : 'Brouillon'}
@@ -352,11 +358,11 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             }
                             disabled={isSaving || isPublishing}
                             className={cn(
-                                'h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 font-medium',
+                                'h-8 px-3.5 rounded-lg text-xs flex items-center gap-1.5 font-semibold',
                                 'transition-all duration-150 disabled:opacity-40',
                                 isPublished
                                     ? 'bg-muted text-foreground hover:bg-accent border border-border'
-                                    : 'bg-foreground text-background hover:opacity-90'
+                                    : 'bg-foreground text-background hover:opacity-90 shadow-sm'
                             )}
                         >
                             {isPublished ? (
@@ -365,7 +371,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                                 </>
                             ) : (
                                 <>
-                                    <Eye className="h-3.5 w-3.5" /> Publier
+                                    <Send className="h-3.5 w-3.5" /> Publier
                                 </>
                             )}
                         </button>
@@ -375,7 +381,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
 
             {/* ── Scheduler strip ─────────────────────────────────────── */}
             {showScheduler && (
-                <div className="border-b border-border/50 bg-muted/20 px-4 py-2 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="border-b border-border/60 bg-muted/20 px-4 py-2.5 flex items-center gap-3 flex-wrap animate-in fade-in slide-in-from-top-1 duration-150">
                     <CalendarClock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                     <span className="text-xs text-muted-foreground">
                         Publier automatiquement le :
@@ -385,7 +391,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         value={scheduledAt}
                         min={new Date().toISOString().slice(0, 16)}
                         onChange={(e) => setScheduledAt(e.target.value)}
-                        className="h-7 rounded-lg border border-border bg-background px-2 text-xs focus:border-foreground/30 transition-colors"
+                        className="h-7 rounded-lg border border-border bg-background px-2 text-xs focus:border-foreground/40 transition-colors"
                     />
                     {scheduledAt && (
                         <button
@@ -397,7 +403,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             Annuler
                         </button>
                     )}
-                    <span className="text-xs text-muted-foreground/40 ml-auto hidden sm:block">
+                    <span className="text-xs text-muted-foreground/60 ml-auto hidden sm:block">
                         Enregistrez en brouillon pour appliquer.
                     </span>
                 </div>
@@ -407,11 +413,11 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             <div className="flex flex-1 overflow-hidden">
                 {/* Editor canvas */}
                 <div className="flex-1 overflow-y-auto">
-                    <div className="max-w-2xl mx-auto px-6 pt-10 pb-24 space-y-6">
+                    <div className="max-w-[720px] mx-auto px-6 pt-8 pb-32 space-y-5">
                         {/* Cover image */}
                         <label className="group relative block cursor-pointer">
                             {coverPreview ? (
-                                <div className="relative w-full aspect-video rounded-xl overflow-hidden">
+                                <div className="relative w-full aspect-[2.4/1] rounded-2xl overflow-hidden bg-muted">
                                     <Image
                                         src={coverPreview}
                                         alt="Couverture"
@@ -419,16 +425,16 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                                         className="object-cover"
                                     />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                        <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
-                                            <ImageIcon className="h-4 w-4" />
+                                        <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                                            <ImageIcon className="h-3.5 w-3.5" />
                                             Changer la couverture
                                         </span>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full aspect-video rounded-xl border border-dashed border-border/40 bg-muted/10 flex flex-col items-center justify-center gap-2 text-muted-foreground/30 group-hover:border-border/60 group-hover:text-muted-foreground/50 transition-all duration-200 select-none">
+                                <div className="w-full aspect-[2.4/1] rounded-2xl border border-dashed border-border bg-muted/30 flex flex-col items-center justify-center gap-2 text-muted-foreground/60 group-hover:border-foreground/30 group-hover:text-foreground/70 transition-all duration-200 select-none">
                                     <ImageIcon className="h-5 w-5" />
-                                    <span className="text-xs">
+                                    <span className="text-xs font-medium">
                                         Ajouter une image de couverture
                                     </span>
                                 </div>
@@ -441,44 +447,25 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             />
                         </label>
 
-                        {/* Title */}
-                        <div>
-                            <input
-                                {...register('title')}
-                                placeholder="Titre de la publication…"
-                                className={cn(
-                                    'w-full bg-transparent text-[2rem] sm:text-[2.5rem] font-bold text-foreground',
-                                    'border-0 focus:outline-none',
-                                    'rounded-none px-0 py-2 leading-tight',
-                                    'placeholder:text-muted-foreground/15'
-                                )}
-                            />
-                            {errors.title && (
-                                <p className="text-xs text-destructive mt-1.5">
-                                    {errors.title.message}
-                                </p>
-                            )}
-                        </div>
-
                         {/* Tags */}
                         <TagsInput
                             postId={post.id}
                             initialTags={post.postTags.map((t) => t.name)}
                         />
 
-                        {/* Editor */}
+                        {/* Editor — title is the first H1, body follows */}
                         <BlogEditor
-                            defaultContent={post.content}
+                            defaultContent={initialContent}
                             onAutoSave={autosave}
                             autoSaveInterval={5_000}
                             editorRef={editorRef}
-                            className="min-h-[400px]"
+                            className="min-h-[480px]"
                         />
                     </div>
                 </div>
 
-                {/* Right stats panel */}
-                {showPanel && <StatsPanel post={post} />}
+                {/* Right info panel */}
+                {showPanel && <InfoPanel post={post} />}
             </div>
         </div>
     );

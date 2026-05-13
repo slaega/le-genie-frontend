@@ -1,33 +1,69 @@
-import type { Post, Contributor } from '@/lib/api/types';
+import type { Post, Contributor, User } from '@/lib/api/types';
 
-/** Converts a display name to a URL-safe handle. e.g. "Seba Gedeon" → "seba-gedeon" */
+/**
+ * URL-safe handle from a display name. e.g. "Seba Gedeon" → "seba-gedeon".
+ * Used as a fallback when `user.username` is not yet provisioned.
+ */
 function slugifyName(name: string): string {
     return name
         .toLowerCase()
         .normalize('NFD')
         .replace(/[̀-ͯ]/g, '') // strip diacritics
-        .replace(/[^a-z0-9]+/g, '-')     // non-alphanumeric → hyphen
-        .replace(/^-|-$/g, '');           // trim leading/trailing hyphens
+        .replace(/[^a-z0-9]+/g, '-') // non-alphanumeric → hyphen
+        .replace(/^-|-$/g, ''); // trim leading/trailing hyphens
+}
+
+/**
+ * Resolves a user's public handle, used in URLs as `/@handle`.
+ *
+ * Precedence:
+ *   1. `user.username` — once the backend provisions it.
+ *   2. `slugifyName(user.name)` — backward-compat for legacy accounts.
+ *   3. Local part of `user.email`.
+ *   4. `user.id` — last resort.
+ *
+ * The result is always lowercase, URL-safe, and unique-by-construction at the
+ * top level (`username` is enforced unique by the backend).
+ */
+export function userHandle(
+    user: Pick<User, 'id' | 'username' | 'name' | 'email'> | null | undefined
+): string {
+    if (!user) return '';
+    if (user.username) return user.username;
+    if (user.name) {
+        const slug = slugifyName(user.name);
+        if (slug) return slug;
+    }
+    if (user.email) {
+        const local = user.email.split('@')[0]?.toLowerCase();
+        if (local) return slugifyName(local) || local;
+    }
+    return user.id;
+}
+
+/** Public profile URL for a user — `/@handle`. */
+export function userUrl(
+    user: Pick<User, 'id' | 'username' | 'name' | 'email'>
+): string {
+    const handle = userHandle(user);
+    return handle ? `/@${handle}` : `/authors/${user.id}`;
 }
 
 type PostForUrl = Pick<Post, 'id' | 'slug'> & { contributors?: Contributor[] };
 
 /**
- * Returns the canonical public URL for a post.
+ * Canonical public URL for a post.
  *
  * When the post has a slug and a known owner, the URL follows the Medium-style
- * format: `/@username/slug` (browser-visible via next.config.ts rewrite).
- *
- * Falls back to `/post/slug` or `/post/id` for legacy posts.
+ * format: `/@handle/slug` (rewritten internally to `/p/:handle/:slug`).
+ * Falls back to `/post/:slug` or `/post/:id` for legacy posts without an owner.
  */
 export function postUrl(post: PostForUrl): string {
-    if (post.slug) {
-        const owner = post.contributors?.find((c) => c.owner);
-        const username = owner?.user?.name ? slugifyName(owner.user.name) : null;
-        if (username) return `/@${username}/${post.slug}`;
-        return `/post/${post.slug}`;
-    }
-    return `/post/${post.id}`;
+    if (!post.slug) return `/post/${post.id}`;
+    const owner = post.contributors?.find((c) => c.owner)?.user;
+    const handle = owner ? userHandle(owner) : null;
+    if (handle) return `/@${handle}/${post.slug}`;
+    return `/post/${post.slug}`;
 }
 
 /**
