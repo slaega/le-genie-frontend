@@ -18,7 +18,7 @@ export function Providers({ children }: { children: ReactNode }) {
                 <AuthProvider>
                     <TooltipProvider>
                         {children}
-                        <Toaster richColors position="top-right" />
+                        <Toaster />
                     </TooltipProvider>
                 </AuthProvider>
             </QueryProvider>
