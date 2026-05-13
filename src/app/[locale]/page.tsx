@@ -21,48 +21,41 @@ export const metadata: Metadata = {
 
 function Hero() {
     return (
-        <section className="relative overflow-hidden border-b border-border/40">
-            {/* Decorative gradient blobs */}
-            <div
-                className="pointer-events-none absolute inset-0 overflow-hidden"
-                aria-hidden
-            >
-                <div className="absolute -top-32 left-1/3 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-                <div className="absolute -bottom-16 right-1/4 h-72 w-72 rounded-full bg-primary/6 blur-3xl" />
-            </div>
-
-            <div className="container mx-auto px-4 py-28 lg:py-36 relative">
-                {/* Eyebrow badge */}
-                <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-medium text-primary/80">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+        <section className="border-b border-border">
+            <div className="container mx-auto px-4 py-20 lg:py-24">
+                {/* Eyebrow — plain, no chromatic chip, no gradient blobs */}
+                <p className="mb-6 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                     Plateforme collaborative de publication
-                </div>
+                </p>
 
-                {/* Headline */}
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
-                    <span className="gradient-text">Apprenez.</span>
-                    <br />
-                    <span className="text-foreground/85">Partagez.</span>
-                    <br />
-                    <span className="text-foreground/50">Progressez.</span>
+                {/* Headline — stepped opacity carries the rhythm */}
+                <h1 className="text-[40px] sm:text-[56px] lg:text-[68px] font-bold tracking-tight leading-[1.05] max-w-3xl">
+                    <span className="text-foreground">Apprenez.</span>{' '}
+                    <span className="text-foreground/70">Partagez.</span>{' '}
+                    <span className="text-foreground/40">Progressez.</span>
                 </h1>
 
                 {/* Subtitle */}
-                <p className="mt-6 max-w-lg text-lg text-muted-foreground leading-relaxed">
+                <p className="mt-6 max-w-xl text-[16px] text-muted-foreground leading-[1.65]">
                     Le Génie est une plateforme collaborative où chacun peut
                     partager ses connaissances, co-écrire avec d&apos;autres et
                     apprendre des meilleurs.
                 </p>
 
                 {/* CTAs */}
-                <div className="mt-10 flex flex-wrap gap-3">
-                    <Button asChild size="lg" className="gap-2 shadow-lg shadow-primary/15">
+                <div className="mt-8 flex flex-wrap gap-3">
+                    <Button asChild size="lg" className="gap-2">
                         <Link href="/publications">
                             <BookOpen className="h-4 w-4" />
                             Explorer les publications
                         </Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="gap-2 group">
+                    <Button
+                        asChild
+                        size="lg"
+                        variant="outline"
+                        className="gap-2 group"
+                    >
                         <Link href="/auth/sign-in">
                             Commencer à écrire
                             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -101,17 +94,18 @@ function Features() {
     return (
         <section className="border-b border-border/40">
             <div className="container mx-auto px-4 py-16 lg:py-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14">
                     {FEATURES.map(({ icon: Icon, title, description }) => (
                         <div key={title} className="flex flex-col gap-4">
-                            <div className="h-10 w-10 rounded-xl border border-primary/20 bg-primary/8 flex items-center justify-center shrink-0">
-                                <Icon className="h-5 w-5 text-primary" />
-                            </div>
+                            <Icon
+                                className="h-5 w-5 text-foreground/70"
+                                strokeWidth={1.6}
+                            />
                             <div>
-                                <h3 className="font-semibold text-foreground mb-1.5">
+                                <h3 className="font-bold text-[15px] text-foreground mb-1.5">
                                     {title}
                                 </h3>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                <p className="text-[13px] text-muted-foreground leading-[1.7]">
                                     {description}
                                 </p>
                             </div>

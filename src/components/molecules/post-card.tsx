@@ -61,20 +61,20 @@ export function PostCard({
                     )}
                 </div>
 
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                {/* Bottom-up dark scrim for legibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
                 {/* Content */}
                 <div className="relative mt-auto p-5 w-full">
                     {category && (
-                        <span className="inline-block mb-2 text-xs font-bold uppercase tracking-wider bg-blue-500 text-white px-2.5 py-0.5 rounded">
+                        <span className="inline-block mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white/80">
                             {category}
                         </span>
                     )}
-                    <h3 className="text-white font-bold text-lg leading-snug line-clamp-2 group-hover:text-blue-300 transition-colors">
+                    <h3 className="text-white font-bold text-lg leading-snug line-clamp-2">
                         {post.title || 'Sans titre'}
                     </h3>
-                    <div className="flex items-center gap-2 mt-3 text-gray-300 text-xs">
+                    <div className="flex items-center gap-2 mt-3 text-white/70 text-xs">
                         {owner && (
                             <>
                                 <UserAvatar
@@ -84,13 +84,13 @@ export function PostCard({
                                     className="h-5 w-5"
                                 />
                                 <span>{owner.user.name}</span>
-                                <span className="text-gray-500">•</span>
+                                <span className="text-white/40">·</span>
                             </>
                         )}
                         <span>{timeAgo}</span>
                         {post.readingTime > 0 && (
                             <>
-                                <span className="text-gray-500">•</span>
+                                <span className="text-white/40">·</span>
                                 <span>{post.readingTime} min</span>
                             </>
                         )}
@@ -119,7 +119,7 @@ export function PostCard({
                         />
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                            <span className="text-xl font-bold text-primary/40">
+                            <span className="text-xl font-bold text-muted-foreground/40">
                                 {post.title.charAt(0).toUpperCase()}
                             </span>
                         </div>
@@ -129,7 +129,7 @@ export function PostCard({
                 {/* Text */}
                 <div className="flex-1 min-w-0">
                     {category && (
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-blue-500">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
                             {category}
                         </span>
                     )}
@@ -140,11 +140,11 @@ export function PostCard({
                     </Link>
                     <div className="flex items-center gap-1.5 mt-1.5 text-xs text-muted-foreground flex-wrap">
                         {owner && <span>{owner.user.name}</span>}
-                        <span>•</span>
+                        <span>·</span>
                         <span>{timeAgo}</span>
                         {post.readingTime > 0 && (
                             <>
-                                <span>•</span>
+                                <span>·</span>
                                 <span>{post.readingTime} min</span>
                             </>
                         )}
@@ -173,8 +173,8 @@ export function PostCard({
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 via-primary/5 to-transparent">
-                            <span className="text-5xl font-black text-primary/15 select-none">
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-5xl font-black text-muted-foreground/20 select-none">
                                 {post.title.charAt(0).toUpperCase()}
                             </span>
                         </div>
@@ -242,8 +242,8 @@ export function PostCard({
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                            <span className="text-4xl font-bold text-primary/20">
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-4xl font-bold text-muted-foreground/30">
                                 {post.title.charAt(0).toUpperCase()}
                             </span>
                         </div>
