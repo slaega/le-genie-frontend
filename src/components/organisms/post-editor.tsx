@@ -56,6 +56,10 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
         defaultValues: { title: post.title },
     });
 
+    /**
+     * Silent autosave — blob images are stripped by BlogEditor before the JSON
+     * reaches here, so the draft never contains browser-local URLs.
+     */
     const autosave = useCallback(
         async (json: Record<string, unknown>) => {
             const title = getValues('title')?.trim();
@@ -70,16 +74,25 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     },
                 });
             } catch {
-                // silent autosave
+                // silent — failures are surfaced on next manual save
             }
         },
         [getValues, updatePost, post.id, post.status]
     );
 
+    /**
+     * Manual save:
+     * 1. Flush any pending blob images → uploads to S3, replaces src in editor.
+     * 2. Persist the resolved content + metadata.
+     */
     async function save(status: PostStatus) {
-        const json = editorRef.current?.getJSON();
         await handleSubmit(async ({ title }) => {
             try {
+                // Upload pending images first; no-op if nothing is pending.
+                const json = await editorRef.current?.flushImages(
+                    (file) => postsApi.uploadImage(post.id, file)
+                );
+
                 await updatePost({
                     id: post.id,
                     payload: {
@@ -93,6 +106,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                     },
                     cover: coverFile ?? undefined,
                 });
+
                 toast.success(
                     status === 'PUBLISHED'
                         ? 'Publication publiée !'
@@ -100,20 +114,15 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                           ? `Programmée pour le ${new Date(scheduledAt).toLocaleString('fr-FR')}`
                           : 'Brouillon enregistré'
                 );
-            } catch {
-                toast.error("Erreur lors de l'enregistrement");
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : '';
+                toast.error(
+                    msg.startsWith('Upload failed')
+                        ? "Erreur lors de l'upload d'une image — réessayez."
+                        : "Erreur lors de l'enregistrement"
+                );
             }
         })();
-    }
-
-    async function handleImageUpload(file: File): Promise<string | null> {
-        try {
-            const { url } = await postsApi.uploadImage(post.id, file);
-            return url;
-        } catch {
-            toast.error("Erreur lors de l'upload de l'image");
-            return null;
-        }
     }
 
     function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -168,7 +177,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         </button>
                     )}
 
-                    {/* Save draft */}
                     <button
                         type="button"
                         onClick={() => save('DRAFT')}
@@ -179,7 +187,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         {isSaving ? 'Sauvegarde…' : 'Brouillon'}
                     </button>
 
-                    {/* Publish / Unpublish */}
                     {isOwner && (
                         <button
                             type="button"
@@ -293,10 +300,9 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         initialTags={post.postTags.map((t) => t.name)}
                     />
 
-                    {/* Editor */}
+                    {/* Editor — handles image insertion internally via blob URLs */}
                     <BlogEditor
                         defaultContent={post.content}
-                        onImageUpload={handleImageUpload}
                         onAutoSave={autosave}
                         autoSaveInterval={5_000}
                         editorRef={editorRef}
