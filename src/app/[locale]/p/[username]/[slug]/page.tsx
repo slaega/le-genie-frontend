@@ -1,32 +1,22 @@
 /**
  * Internal route served by next.config.ts rewrites.
- * Browser URL:  /@username/slug
- * Internal URL: /p/username/slug
+ * Browser URL:  /@handle/slug
+ * Internal URL: /p/handle/slug
  *
- * `username` is cosmetic — not used for lookup.
+ * `username` (handle) is cosmetic — not used for lookup.
  * `slug` is the post slug (or id) passed to the backend.
  */
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import type { Metadata } from 'next';
 import { serverApi } from '@/lib/api/server';
 import type { Post } from '@/lib/api/types';
 import { ApiError } from '@/lib/api/types';
-import { BlogViewer } from '@/components/editor/blog-viewer';
 import { MainLayout } from '@/components/templates/main-layout';
-import { UserAvatar } from '@/components/atoms/user-avatar';
-import { StatusBadge } from '@/components/atoms/status-badge';
-import { CommentsSection } from '@/components/organisms/comments-section';
-import { RelatedPosts } from '@/components/organisms/related-posts';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { LikeButton } from '@/components/molecules/like-button';
-import { ViewCounter } from '@/components/molecules/view-counter';
-import { FollowButton } from '@/components/molecules/follow-button';
+import { PostView } from '@/components/organisms/post-view';
 
-type Props = { params: Promise<{ locale: string; username: string; slug: string }> };
+type Props = {
+    params: Promise<{ locale: string; username: string; slug: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
@@ -57,99 +47,9 @@ export default async function AtUserPostPage({ params }: Props) {
         throw err;
     }
 
-    const owner = post.contributors.find((c) => c.owner);
-    const timeAgo = formatDistanceToNow(new Date(post.updatedAt), {
-        addSuffix: true,
-        locale: fr,
-    });
-
     return (
         <MainLayout>
-            <article className="max-w-3xl mx-auto">
-                {post.imagePath && (
-                    <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-8">
-                        <Image
-                            src={post.imagePath}
-                            alt={post.title}
-                            fill
-                            className="object-cover"
-                            priority
-                        />
-                    </div>
-                )}
-
-                <header className="mb-8 space-y-4">
-                    <div className="flex flex-wrap gap-2 items-center">
-                        <StatusBadge status={post.status} />
-                        {post.postTags.map((tag) => (
-                            <Badge key={tag.id} variant="outline" className="text-xs">
-                                {tag.name}
-                            </Badge>
-                        ))}
-                    </div>
-
-                    <h1 className="text-4xl font-bold tracking-tight leading-tight">
-                        {post.title}
-                    </h1>
-
-                    {owner && (
-                        <div className="flex items-center gap-3">
-                            <UserAvatar
-                                name={owner.user.name}
-                                avatarPath={owner.user.avatarPath}
-                                size="md"
-                            />
-                            <div>
-                                <p className="text-sm font-medium">{owner.user.name}</p>
-                                <p className="text-xs text-muted-foreground">
-                                    {owner.user.professionalRole &&
-                                        `${owner.user.professionalRole} · `}
-                                    Mis à jour {timeAgo}
-                                </p>
-                            </div>
-
-                            <FollowButton authorId={owner.user.id} />
-
-                            {post.contributors.length > 1 && (
-                                <div className="flex -space-x-2 ml-2">
-                                    {post.contributors
-                                        .filter((c) => !c.owner)
-                                        .slice(0, 3)
-                                        .map((c) => (
-                                            <UserAvatar
-                                                key={c.id}
-                                                name={c.user.name}
-                                                avatarPath={c.user.avatarPath}
-                                                size="sm"
-                                                className="ring-2 ring-background"
-                                            />
-                                        ))}
-                                    {post.contributors.length > 4 && (
-                                        <div className="h-7 w-7 rounded-full bg-muted ring-2 ring-background flex items-center justify-center text-xs text-muted-foreground">
-                                            +{post.contributors.length - 4}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </header>
-
-                <Separator className="mb-4" />
-
-                <div className="flex items-center gap-4 mb-8">
-                    <LikeButton postId={post.id} />
-                    <ViewCounter postId={post.id} />
-                </div>
-
-                <BlogViewer content={post.content} className="mb-16" />
-
-                <Separator className="mb-8" />
-
-                <CommentsSection postId={post.id} />
-
-                <RelatedPosts postId={post.id} />
-            </article>
+            <PostView post={post} />
         </MainLayout>
     );
 }

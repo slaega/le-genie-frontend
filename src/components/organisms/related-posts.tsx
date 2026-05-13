@@ -19,8 +19,15 @@ export async function RelatedPosts({ postId }: RelatedPostsProps) {
     }
     if (!posts.length) return null;
     return (
-        <section className="mt-12">
-            <h2 className="text-xl font-bold mb-6">Articles similaires</h2>
+        <section className="mt-4">
+            <div className="text-center mb-8">
+                <h2 className="text-[1.625rem] sm:text-[1.875rem] font-bold tracking-tight">
+                    Articles similaires
+                </h2>
+                <p className="text-[12.5px] text-muted-foreground mt-1.5">
+                    Continuez votre lecture
+                </p>
+            </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {posts.map((p) => (
                     <PostCard key={p.id} post={p} href={postUrl(p)} />
