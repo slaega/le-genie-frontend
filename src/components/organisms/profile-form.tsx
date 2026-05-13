@@ -36,9 +36,9 @@ const fieldClass = [
     'placeholder:text-muted-foreground/40',
 ].join(' ');
 
-/* ── Section card ─────────────────────────────────────────────────────────── */
+/* ── Section — flat, plain heading, no card wrapper ──────────────────────── */
 
-function SectionCard({
+function Section({
     title,
     description,
     children,
@@ -48,19 +48,19 @@ function SectionCard({
     children: React.ReactNode;
 }) {
     return (
-        <div className="rounded-2xl border border-border bg-background overflow-hidden">
-            <div className="px-6 py-4 border-b border-border/60 bg-muted/30">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-foreground/70">
+        <section>
+            <div className="mb-6">
+                <h2 className="text-[17px] font-bold text-foreground tracking-tight">
                     {title}
-                </p>
+                </h2>
                 {description && (
-                    <p className="text-[11.5px] text-muted-foreground mt-0.5">
+                    <p className="text-[13px] text-muted-foreground mt-1">
                         {description}
                     </p>
                 )}
             </div>
-            <div className="p-6 space-y-6">{children}</div>
-        </div>
+            <div className="space-y-7">{children}</div>
+        </section>
     );
 }
 
@@ -214,12 +214,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
               });
 
     return (
-        <div className="space-y-6">
-            {/* ── Photo section ───────────────────────────────────────── */}
-            <div className="rounded-2xl border border-border bg-background overflow-hidden">
+        <div className="space-y-12">
+            {/* ── Photo block — no card wrapper, just images ────────── */}
+            <div>
                 {/* Cover */}
                 <div
-                    className="relative h-44 bg-muted cursor-pointer group"
+                    className="relative h-40 sm:h-44 rounded-2xl bg-muted cursor-pointer group overflow-hidden"
                     onClick={() => coverInputRef.current?.click()}
                 >
                     {coverSrc && (
@@ -247,8 +247,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     />
                 </div>
 
-                {/* Avatar + identity strip */}
-                <div className="flex items-end gap-4 px-6 pb-5 -mt-10 relative z-10">
+                {/* Avatar + identity strip (sits below cover, overlaps slightly) */}
+                <div className="flex items-end gap-4 -mt-12 relative z-10 px-1 sm:px-2">
                     <div
                         className="relative group cursor-pointer shrink-0"
                         onClick={() => avatarInputRef.current?.click()}
@@ -257,7 +257,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                             name={name || user.name}
                             avatarPath={avatarSrc}
                             size="xl"
-                            className="ring-4 ring-background shadow-md"
+                            className="h-24 w-24 ring-4 ring-background"
                         />
                         <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <Camera className="h-4 w-4 text-white" />
@@ -270,22 +270,22 @@ export function ProfileForm({ user }: ProfileFormProps) {
                             onChange={(e) => handleImageFile(e, 'avatar')}
                         />
                     </div>
-                    <div className="flex-1 min-w-0 pt-10">
-                        <p className="font-bold text-[16px] leading-tight truncate text-foreground">
+                    <div className="flex-1 min-w-0 pb-2">
+                        <p className="font-bold text-[15px] leading-tight truncate text-foreground">
                             {name || user.name}
                         </p>
                         <p className="text-[12px] text-muted-foreground truncate mt-0.5">
                             @{previewHandle}
                         </p>
                     </div>
-                    <p className="text-[10px] text-muted-foreground shrink-0 pb-1">
+                    <p className="text-[10px] text-muted-foreground shrink-0 pb-2">
                         JPG, PNG · 5 Mo max
                     </p>
                 </div>
             </div>
 
             {/* ── Identité ────────────────────────────────────────────── */}
-            <SectionCard
+            <Section
                 title="Identité"
                 description="Comment vous apparaissez à la communauté."
             >
@@ -375,10 +375,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         className={fieldClass}
                     />
                 </div>
-            </SectionCard>
+            </Section>
 
             {/* ── Bio ─────────────────────────────────────────────────── */}
-            <SectionCard
+            <Section
                 title="Bio"
                 description="Quelques mots qui vous décrivent."
             >
@@ -421,10 +421,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         )}
                     />
                 </div>
-            </SectionCard>
+            </Section>
 
             {/* ── Présence en ligne ────────────────────────────────────── */}
-            <SectionCard
+            <Section
                 title="Présence en ligne"
                 description="Liens visibles sur votre page publique."
             >
@@ -483,7 +483,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                         </div>
                     </div>
                 </div>
-            </SectionCard>
+            </Section>
 
             {/* ── Save bar ─────────────────────────────────────────────── */}
             <div className="flex items-center justify-end gap-3 py-4 border-t border-border sticky bottom-0 bg-background/95 backdrop-blur-sm">

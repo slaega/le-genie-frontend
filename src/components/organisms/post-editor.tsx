@@ -553,11 +553,15 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
             <div className="flex flex-1 overflow-hidden">
                 {/* Editor canvas */}
                 <div className="flex-1 overflow-y-auto bg-background">
-                    <div className="max-w-[760px] mx-auto px-6 sm:px-10 pt-10 pb-32 space-y-6">
-                        {/* Cover image */}
-                        <label className="group relative block cursor-pointer">
+                    <div className="max-w-[760px] mx-auto px-6 sm:px-10 pt-8 pb-32">
+                        {/*
+                         * Cover thumbnail — compact horizontal strip so it never
+                         * pushes the H1 below the fold. Either a small preview
+                         * or a single-line "+ Ajouter une couverture" affordance.
+                         */}
+                        <label className="group relative block cursor-pointer mb-8">
                             {coverPreview ? (
-                                <div className="relative w-full aspect-[2.4/1] rounded-2xl overflow-hidden bg-muted shadow-sm">
+                                <div className="relative w-full h-32 sm:h-36 rounded-xl overflow-hidden bg-muted">
                                     <Image
                                         src={coverPreview}
                                         alt="Couverture"
@@ -565,20 +569,17 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                                         className="object-cover"
                                     />
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors flex items-center justify-center">
-                                        <span className="text-white text-[12.5px] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-black/55 px-3.5 py-1.5 rounded-full backdrop-blur-sm">
+                                        <span className="text-white text-[12px] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 bg-black/55 px-3 py-1.5 rounded-full backdrop-blur-sm">
                                             <ImageIcon className="h-3.5 w-3.5" />
                                             Changer la couverture
                                         </span>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="w-full aspect-[2.4/1] rounded-2xl border-2 border-dashed border-border bg-muted/20 flex flex-col items-center justify-center gap-2 text-muted-foreground/60 group-hover:border-foreground/30 group-hover:text-foreground/70 group-hover:bg-muted/40 transition-all duration-200 select-none">
-                                    <ImageIcon className="h-6 w-6" />
-                                    <span className="text-[12px] font-medium">
+                                <div className="w-full h-12 rounded-xl border border-dashed border-border bg-transparent flex items-center justify-center gap-2 text-muted-foreground hover:border-foreground/30 hover:text-foreground hover:bg-muted/30 transition-all duration-150 select-none">
+                                    <ImageIcon className="h-4 w-4" />
+                                    <span className="text-[12.5px] font-medium">
                                         Ajouter une image de couverture
-                                    </span>
-                                    <span className="text-[11px] text-muted-foreground/50">
-                                        JPG, PNG, WebP · format recommandé 12:5
                                     </span>
                                 </div>
                             )}
@@ -591,10 +592,12 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                         </label>
 
                         {/* Tags */}
-                        <TagsInput
-                            postId={post.id}
-                            initialTags={post.postTags.map((t) => t.name)}
-                        />
+                        <div className="mb-5">
+                            <TagsInput
+                                postId={post.id}
+                                initialTags={post.postTags.map((t) => t.name)}
+                            />
+                        </div>
 
                         {/* Editor — title is the first H1, body follows */}
                         <BlogEditor
@@ -602,7 +605,7 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
                             onAutoSave={autosave}
                             autoSaveInterval={5_000}
                             editorRef={editorRef}
-                            className="min-h-[520px]"
+                            className="min-h-[560px]"
                         />
                     </div>
                 </div>

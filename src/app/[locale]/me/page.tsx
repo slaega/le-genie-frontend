@@ -84,13 +84,13 @@ export default async function MePage({ params }: Props) {
 
     return (
         <MainLayout>
-            <div className="max-w-4xl mx-auto">
-                {/* ── Cover ──────────────────────────────────────────── */}
-                <div className="relative h-44 sm:h-52 rounded-2xl overflow-hidden bg-muted">
+            <div className="max-w-3xl mx-auto">
+                {/* ── Cover ─────────────────────────────────────────────── */}
+                <div className="relative h-32 sm:h-40 rounded-2xl overflow-hidden bg-muted">
                     {me.coverPath && (
                         <Image
                             src={me.coverPath}
-                            alt="Photo de couverture"
+                            alt=""
                             fill
                             className="object-cover"
                             priority
@@ -98,74 +98,72 @@ export default async function MePage({ params }: Props) {
                     )}
                 </div>
 
-                {/* ── Identity header ─────────────────────────────────── */}
-                <div className="px-2 sm:px-6 -mt-12 mb-10">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5">
-                        <UserAvatar
-                            name={me.name}
-                            avatarPath={me.avatarPath}
-                            size="xl"
-                            className="h-24 w-24 text-2xl ring-4 ring-background shrink-0"
-                        />
+                {/* ── Identity — stacked vertically ─────────────────────── */}
+                <section className="px-1 sm:px-2 -mt-14 mb-12">
+                    <UserAvatar
+                        name={me.name}
+                        avatarPath={me.avatarPath}
+                        size="xl"
+                        className="h-28 w-28 text-3xl ring-4 ring-background"
+                    />
 
-                        <div className="flex-1 min-w-0 sm:pb-1">
-                            <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <h1 className="text-[28px] sm:text-[32px] font-bold tracking-tight leading-[1.1] text-foreground">
-                                    {me.name}
-                                </h1>
-                                {me.role === 'ADMIN' && (
-                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-foreground/60 border border-border">
-                                        Admin
-                                    </span>
-                                )}
-                            </div>
-
-                            <p className="text-[13px] text-muted-foreground flex items-center gap-1 leading-tight">
-                                <AtSign className="h-3.5 w-3.5" />
-                                <Link
-                                    href={`/@${handle}`}
-                                    className="hover:text-foreground transition-colors"
-                                >
-                                    {handle}
-                                </Link>
-                                <span className="text-muted-foreground/40 mx-1.5">
-                                    ·
+                    {/* Name + handle */}
+                    <div className="mt-5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <h1 className="text-[28px] sm:text-[34px] font-bold tracking-tight leading-[1.1] text-foreground">
+                                {me.name}
+                            </h1>
+                            {me.role === 'ADMIN' && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-foreground/60 border border-border">
+                                    Admin
                                 </span>
-                                <span className="truncate">{me.email}</span>
-                            </p>
-
-                            {me.professionalRole && (
-                                <p className="text-[14px] text-foreground/70 mt-2">
-                                    {me.professionalRole}
-                                </p>
-                            )}
-
-                            {me.bio && (
-                                <p className="text-[14px] leading-relaxed text-foreground/65 mt-2 max-w-2xl">
-                                    {me.bio}
-                                </p>
                             )}
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0 sm:pb-1">
-                            <MeActions isAdmin={me.role === 'ADMIN'} />
+                        <p className="text-[13px] text-muted-foreground flex items-center gap-1 mt-2 leading-tight">
+                            <AtSign className="h-3.5 w-3.5" />
                             <Link
-                                href="/me/profile"
-                                className="h-9 px-3 rounded-lg text-[12px] font-medium border border-border text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+                                href={`/@${handle}`}
+                                className="hover:text-foreground transition-colors"
                             >
-                                <Settings className="h-3.5 w-3.5" />
-                                <span className="hidden sm:inline">
-                                    Modifier
-                                </span>
+                                {handle}
                             </Link>
-                        </div>
+                            <span className="text-muted-foreground/40 mx-1.5">
+                                ·
+                            </span>
+                            <span className="truncate">{me.email}</span>
+                        </p>
+
+                        {me.professionalRole && (
+                            <p className="text-[15px] text-foreground/80 mt-3">
+                                {me.professionalRole}
+                            </p>
+                        )}
+
+                        {me.bio && (
+                            <p className="text-[15px] leading-[1.6] text-foreground/70 mt-3 max-w-2xl">
+                                {me.bio}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Action row — full-row below identity, like Medium/Twitter */}
+                    <div className="flex items-center gap-2 mt-6">
+                        <MeActions isAdmin={me.role === 'ADMIN'} />
+                        <Link
+                            href="/me/profile"
+                            className="h-9 px-3.5 rounded-lg text-[13px] font-medium border border-border text-foreground/80 hover:text-foreground hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+                        >
+                            <Settings className="h-3.5 w-3.5" />
+                            Modifier le profil
+                        </Link>
                     </div>
 
                     {/* Socials */}
                     {hasSocials && (
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 ml-0 sm:ml-[7.5rem] text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-5 text-muted-foreground">
                             {me.location && (
-                                <span className="flex items-center gap-1.5 text-[12px]">
+                                <span className="flex items-center gap-1.5 text-[13px]">
                                     <MapPin className="h-3.5 w-3.5" />
                                     {me.location}
                                 </span>
@@ -175,7 +173,7 @@ export default async function MePage({ params }: Props) {
                                     href={me.website}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-[12px] hover:text-foreground transition-colors"
+                                    className="flex items-center gap-1.5 text-[13px] hover:text-foreground transition-colors"
                                 >
                                     <Globe className="h-3.5 w-3.5" />
                                     {me.website.replace(/^https?:\/\//, '')}
@@ -187,7 +185,7 @@ export default async function MePage({ params }: Props) {
                                     href={`https://twitter.com/${me.twitterHandle}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-[12px] hover:text-foreground transition-colors"
+                                    className="flex items-center gap-1.5 text-[13px] hover:text-foreground transition-colors"
                                 >
                                     <Twitter className="h-3.5 w-3.5" />@
                                     {me.twitterHandle}
@@ -198,7 +196,7 @@ export default async function MePage({ params }: Props) {
                                     href={`https://github.com/${me.githubHandle}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 text-[12px] hover:text-foreground transition-colors"
+                                    className="flex items-center gap-1.5 text-[13px] hover:text-foreground transition-colors"
                                 >
                                     <Github className="h-3.5 w-3.5" />
                                     {me.githubHandle}
@@ -206,23 +204,32 @@ export default async function MePage({ params }: Props) {
                             )}
                         </div>
                     )}
-                </div>
 
-                {/* ── Inline stats row ────────────────────────────────── */}
-                <div className="flex items-center gap-8 px-2 sm:px-6 py-4 border-y border-border mb-10">
-                    <InlineStat value={publishedTotal} label="publications" />
-                    <span className="h-4 w-px bg-border" />
-                    <InlineStat value={draftTotal} label="brouillons" />
-                    <span className="h-4 w-px bg-border" />
-                    <InlineStat
-                        value={`@${handle}`}
-                        label="identifiant"
-                        small
-                    />
-                </div>
+                    {/* Inline stats — Twitter/Medium style */}
+                    <div className="flex items-center gap-5 mt-6 text-[14px]">
+                        <span className="text-foreground">
+                            <strong className="font-bold tabular-nums">
+                                {publishedTotal}
+                            </strong>
+                            <span className="text-muted-foreground ml-1.5">
+                                {publishedTotal === 1
+                                    ? 'publication'
+                                    : 'publications'}
+                            </span>
+                        </span>
+                        <span className="text-foreground">
+                            <strong className="font-bold tabular-nums">
+                                {draftTotal}
+                            </strong>
+                            <span className="text-muted-foreground ml-1.5">
+                                {draftTotal === 1 ? 'brouillon' : 'brouillons'}
+                            </span>
+                        </span>
+                    </div>
+                </section>
 
-                {/* ── Tabs ────────────────────────────────────────────── */}
-                <Tabs defaultValue="published" className="px-2 sm:px-6">
+                {/* ── Tabs — underline only, full-width baseline ────────── */}
+                <Tabs defaultValue="published">
                     <TabsList className="mb-8 bg-transparent p-0 h-auto border-b border-border rounded-none w-full justify-start gap-7">
                         <TabTriggerStyled
                             value="published"
@@ -278,33 +285,6 @@ export default async function MePage({ params }: Props) {
                 </Tabs>
             </div>
         </MainLayout>
-    );
-}
-
-/* ── Inline stat (no card, no color) ─────────────────────────────────────── */
-
-function InlineStat({
-    value,
-    label,
-    small,
-}: {
-    value: number | string;
-    label: string;
-    small?: boolean;
-}) {
-    return (
-        <div className="flex items-baseline gap-2">
-            <span
-                className={
-                    small
-                        ? 'text-[14px] font-semibold text-foreground tabular-nums truncate max-w-[180px]'
-                        : 'text-[20px] font-bold text-foreground tabular-nums'
-                }
-            >
-                {value}
-            </span>
-            <span className="text-[12px] text-muted-foreground">{label}</span>
-        </div>
     );
 }
 

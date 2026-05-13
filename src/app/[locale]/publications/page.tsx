@@ -25,19 +25,18 @@ export default async function PublicationsPage() {
         <div className="min-h-screen flex flex-col">
             <SiteHeader />
             <main className="flex-1">
-                <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-24">
-                    {/* Page heading */}
-                    <div className="mb-10">
-                        <p className="text-[11px] font-bold uppercase tracking-widest text-foreground/50 mb-2">
-                            Le Blog
-                        </p>
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
-                            Parcourir les articles
-                        </h1>
-                        <p className="text-sm text-muted-foreground mt-2 max-w-md">
-                            Articles, tutoriels et ressources rédigés par notre
-                            communauté.
-                        </p>
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-24">
+                    {/* Page heading — tight, single-line on desktop */}
+                    <div className="flex items-baseline justify-between gap-4 mb-8 pb-6 border-b border-border">
+                        <div>
+                            <h1 className="text-[26px] sm:text-[30px] font-bold tracking-tight leading-tight">
+                                Le Blog
+                            </h1>
+                            <p className="text-[13px] text-muted-foreground mt-1">
+                                Articles, tutoriels et ressources rédigés par
+                                notre communauté.
+                            </p>
+                        </div>
                     </div>
 
                     <BlogPage allTags={allTags} />

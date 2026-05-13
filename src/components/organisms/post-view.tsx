@@ -255,17 +255,36 @@ export function PostView({ post }: PostViewProps) {
                 </div>
             )}
 
-            {/* ── Two-column body ────────────────────────────────────── */}
-            <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-10 lg:gap-14">
-                {/* Author sticky sidebar */}
+            {/*
+             * Two-column body — article on the LEFT (primary content), author
+             * sidebar on the RIGHT. Reading flows naturally; the sidebar is
+             * peripheral context, not navigation.
+             */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-12 lg:gap-16">
+                {/* Article content (left, primary) */}
+                <div className="min-w-0">
+                    {/* Engagement bar at the top of the article */}
+                    <div className="flex items-center gap-4 mb-8 pb-5 border-b border-border/60">
+                        <LikeButton postId={post.id} />
+                        <ViewCounter postId={post.id} />
+                    </div>
+
+                    <BlogViewer
+                        content={post.content}
+                        skipTitle
+                        className="mb-16"
+                    />
+                </div>
+
+                {/* Author sidebar (right, sticky) */}
                 {owner && (
-                    <aside className="lg:sticky lg:top-24 self-start">
+                    <aside className="lg:sticky lg:top-24 self-start order-first lg:order-last">
                         <AuthorCard author={owner} />
 
                         {/* Co-authors */}
                         {coAuthors.length > 0 && (
-                            <div className="mt-4 rounded-2xl border border-border bg-background p-4">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/80 mb-3">
+                            <div className="mt-5 rounded-2xl border border-border bg-background p-5">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground mb-3">
                                     Co-auteurs
                                 </p>
                                 <div className="space-y-2.5">
@@ -293,29 +312,8 @@ export function PostView({ post }: PostViewProps) {
                                 </div>
                             </div>
                         )}
-
-                        {/* Engagement (vertical on desktop) */}
-                        <div className="hidden lg:flex flex-col gap-2 mt-4 rounded-2xl border border-border bg-background p-4">
-                            <LikeButton postId={post.id} />
-                            <ViewCounter postId={post.id} />
-                        </div>
                     </aside>
                 )}
-
-                {/* Article content */}
-                <div className="min-w-0">
-                    {/* Engagement (inline on mobile) */}
-                    <div className="flex lg:hidden items-center gap-4 mb-6 pb-4 border-b border-border/60">
-                        <LikeButton postId={post.id} />
-                        <ViewCounter postId={post.id} />
-                    </div>
-
-                    <BlogViewer
-                        content={post.content}
-                        skipTitle
-                        className="mb-16"
-                    />
-                </div>
             </div>
 
             {/* ── Footer card (tags + author + contact) ──────────────── */}
