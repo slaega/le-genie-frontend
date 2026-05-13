@@ -7,13 +7,12 @@
 
 /* ─── Le Génie design system ─────────────────────────────────────────────────
  *
- * Editorial blog aesthetic, inspired by the UInugget reference:
- *   pure white canvas + near-black typography + ONE warm orange accent.
+ * Editorial blog aesthetic:
+ *   pure white canvas + near-black typography + ONE muted khaki accent.
  *
- * Orange (#D97706 family) was chosen DELIBERATELY — the references the
- * product owner shared the most (UInugget article detail) use a warm
- * orange left rule on blockquotes and accent buttons. It carries an
- * editorial / warm feel that blue/purple tech palettes don't.
+ * Khaki / olive (#7A7142 area, oklch hue 100°) was chosen as a chic,
+ * understated brand color — warm without being aggressive like orange,
+ * earthy without being dull. Pairs naturally with editorial monochrome.
  *
  * The accent is used for: blockquote rule, category pills, primary CTAs,
  * link emphasis, active nav indicator. Everything else is monochrome.
@@ -27,31 +26,31 @@
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.14 0.018 264);
 
-    /* Brand accent — warm editorial orange, ~#E26B0F */
-    --primary: oklch(0.66 0.18 49);
+    /* Brand accent — muted khaki / olive, ~#7A7142 */
+    --primary: oklch(0.55 0.08 100);
     --primary-foreground: oklch(0.99 0 0);
 
     --secondary: oklch(0.97 0.004 265);
     --secondary-foreground: oklch(0.14 0.018 264);
     --muted: oklch(0.97 0.004 265);
     --muted-foreground: oklch(0.5 0.02 265);
-    --accent: oklch(0.96 0.012 49); /* faint orange-tinted hover surface */
+    --accent: oklch(0.96 0.012 100); /* faint khaki-tinted hover surface */
     --accent-foreground: oklch(0.14 0.018 264);
     --destructive: oklch(0.58 0.22 27);
     --destructive-foreground: oklch(1 0 0);
     --border: oklch(0.92 0.005 265);
     --input: oklch(0.92 0.005 265);
-    --ring: oklch(0.66 0.18 49);
+    --ring: oklch(0.55 0.08 100);
     --radius: 0.75rem;
 
     --sidebar: oklch(0.99 0.003 265);
     --sidebar-foreground: oklch(0.14 0.018 264);
     --sidebar-border: oklch(0.92 0.005 265);
-    --sidebar-primary: oklch(0.66 0.18 49);
+    --sidebar-primary: oklch(0.55 0.08 100);
     --sidebar-primary-foreground: oklch(0.99 0 0);
-    --sidebar-accent: oklch(0.96 0.012 49);
+    --sidebar-accent: oklch(0.96 0.012 100);
     --sidebar-accent-foreground: oklch(0.14 0.018 264);
-    --sidebar-ring: oklch(0.66 0.18 49);
+    --sidebar-ring: oklch(0.55 0.08 100);
 
     /* Elevation tokens — used by .surface utility */
     --shadow-sm:
@@ -64,7 +63,7 @@
         0 4px 12px -4px rgb(15 15 25 / 0.06);
 }
 
-/* Dark mode — same orange accent, near-black surfaces */
+/* Dark mode — same khaki accent, near-black surfaces */
 .dark {
     --background: oklch(0.09 0.006 265);
     --foreground: oklch(0.97 0.003 265);
@@ -72,27 +71,27 @@
     --card-foreground: oklch(0.97 0.003 265);
     --popover: oklch(0.13 0.008 265);
     --popover-foreground: oklch(0.97 0.003 265);
-    --primary: oklch(0.7 0.19 49); /* slightly brighter orange in dark */
+    --primary: oklch(0.7 0.09 100); /* slightly brighter khaki in dark */
     --primary-foreground: oklch(0.14 0.018 264);
     --secondary: oklch(0.16 0.009 265);
     --secondary-foreground: oklch(0.97 0.003 265);
     --muted: oklch(0.15 0.008 265);
     --muted-foreground: oklch(0.6 0.028 265);
-    --accent: oklch(0.18 0.02 49);
+    --accent: oklch(0.18 0.015 100);
     --accent-foreground: oklch(0.97 0.003 265);
     --destructive: oklch(0.65 0.22 25);
     --destructive-foreground: oklch(0.97 0.003 265);
     --border: oklch(1 0 0 / 8%);
     --input: oklch(1 0 0 / 8%);
-    --ring: oklch(0.7 0.19 49);
+    --ring: oklch(0.7 0.09 100);
     --sidebar: oklch(0.1 0.007 265);
     --sidebar-foreground: oklch(0.97 0.003 265);
     --sidebar-border: oklch(1 0 0 / 6%);
-    --sidebar-primary: oklch(0.7 0.19 49);
+    --sidebar-primary: oklch(0.7 0.09 100);
     --sidebar-primary-foreground: oklch(0.14 0.018 264);
     --sidebar-accent: oklch(1 0 0 / 5%);
     --sidebar-accent-foreground: oklch(0.97 0.003 265);
-    --sidebar-ring: oklch(0.7 0.19 49);
+    --sidebar-ring: oklch(0.7 0.09 100);
 }
 
 @theme inline {
