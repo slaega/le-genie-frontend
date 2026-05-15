@@ -22,7 +22,7 @@ import {
     type BlogEditorRef,
     ensureTitleHeading,
 } from '@/components/editor/blog-editor';
-import { CollaboratorsPanel } from '@/components/organisms/collaborators-panel';
+import { CollaboratorsSection } from '@/components/organisms/collaborators-section';
 import { TagsInput } from '@/components/molecules/tags-input';
 import { StatusBadge } from '@/components/atoms/status-badge';
 import { useUpdatePost } from '@/hooks/mutations/use-update-post';
@@ -176,6 +176,9 @@ function InfoPanel({ post, wordCount }: { post: Post; wordCount: number }) {
                         </div>
                     </section>
                 )}
+
+                {/* ── Collaborators — always visible, with email invite ── */}
+                <CollaboratorsSection postId={post.id} />
 
                 {/* ── Quick actions ────────────────────────────────────── */}
                 <section className="rounded-2xl border border-border bg-background p-5">
@@ -446,8 +449,6 @@ export function PostEditor({ post, isOwner }: PostEditorProps) {
 
                 {/* Right: actions — Hashnode-style rounded pills */}
                 <div className="flex items-center gap-2 ml-auto">
-                    <CollaboratorsPanel postId={post.id} />
-
                     <button
                         type="button"
                         onClick={() => setShowPanel((v) => !v)}

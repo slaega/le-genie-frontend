@@ -9,6 +9,9 @@ import {
     Loader2,
     ChevronDown,
     SlidersHorizontal,
+    PenSquare,
+    Sparkles,
+    SearchX,
 } from 'lucide-react';
 import { useInfinitePosts } from '@/hooks/queries/use-posts';
 import { cn, extractExcerpt } from '@/lib/utils';
@@ -370,20 +373,12 @@ export function BlogPage({ allTags }: BlogPageProps) {
                         </div>
                     </>
                 ) : filtered.length === 0 ? (
-                    <div className="text-center py-24 space-y-3">
-                        <p className="text-muted-foreground text-sm">
-                            Aucun article trouvé.
-                        </p>
-                        <button
-                            onClick={() => {
-                                setActiveTag(null);
-                                setSearch('');
-                            }}
-                            className="text-xs text-primary hover:underline underline-offset-4"
-                        >
-                            Réinitialiser les filtres
-                        </button>
-                    </div>
+                    <EmptyResults
+                        onReset={() => {
+                            setActiveTag(null);
+                            setSearch('');
+                        }}
+                    />
                 ) : (
                     <>
                         {/* Featured post */}
@@ -396,6 +391,26 @@ export function BlogPage({ allTags }: BlogPageProps) {
                                     <GridCard key={post.id} post={post} />
                                 ))}
                             </div>
+                        )}
+
+                        {/*
+                         * Sparse-state filler — when there are < 3 posts total
+                         * the page feels empty. We complete the grid with
+                         * "Coming soon" placeholder cards (subtle, dashed) so
+                         * the visual density holds, plus an encouragement CTA
+                         * at the end.
+                         */}
+                        {filtered.length < 3 && !hasNextPage && (
+                            <>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5">
+                                    {Array.from({
+                                        length: 3 - filtered.length,
+                                    }).map((_, i) => (
+                                        <ComingSoonCard key={i} index={i} />
+                                    ))}
+                                </div>
+                                <ContributeCta />
+                            </>
                         )}
 
                         {/* Load more */}
@@ -420,6 +435,97 @@ export function BlogPage({ allTags }: BlogPageProps) {
                     </>
                 )}
             </div>
+        </div>
+    );
+}
+
+/* ── Empty state — no results for the current filter ─────────────────────── */
+
+function EmptyResults({ onReset }: { onReset: () => void }) {
+    return (
+        <div className="surface text-center py-20 px-8">
+            <div className="h-12 w-12 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-5">
+                <SearchX
+                    className="h-5 w-5 text-muted-foreground"
+                    strokeWidth={1.6}
+                />
+            </div>
+            <h3 className="text-[16px] font-bold text-foreground mb-1.5">
+                Aucun article trouvé
+            </h3>
+            <p className="text-[13px] text-muted-foreground max-w-xs mx-auto leading-relaxed mb-5">
+                Essayez d&apos;élargir vos critères ou explorez d&apos;autres
+                catégories.
+            </p>
+            <button
+                onClick={onReset}
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full text-[12.5px] font-semibold bg-foreground text-background hover:opacity-90 transition-opacity"
+            >
+                Réinitialiser les filtres
+            </button>
+        </div>
+    );
+}
+
+/* ── Coming-soon placeholder card — fills sparse listings without lying ── */
+
+function ComingSoonCard({ index }: { index: number }) {
+    const lines = [
+        'Un nouvel article arrive bientôt',
+        'La communauté écrit en ce moment',
+        'Restez à l’écoute',
+    ];
+    const line = lines[index % lines.length];
+
+    return (
+        <div className="rounded-2xl border border-dashed border-border/70 bg-muted/20 flex flex-col overflow-hidden">
+            <div className="aspect-[16/10] bg-gradient-to-br from-muted/50 via-muted/30 to-transparent flex items-center justify-center">
+                <Sparkles
+                    className="h-6 w-6 text-muted-foreground/30 animate-pulse"
+                    strokeWidth={1.5}
+                    style={{ animationDelay: `${index * 400}ms` }}
+                />
+            </div>
+            <div className="p-6 flex flex-col gap-2.5 flex-1">
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60">
+                    Bientôt
+                </span>
+                <p className="text-[15px] font-bold leading-snug text-foreground/40">
+                    {line}
+                </p>
+                <div className="flex items-center gap-2 mt-3">
+                    <div className="h-7 w-7 rounded-full bg-muted/60 shrink-0" />
+                    <div className="h-3 w-24 rounded bg-muted/60" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ── Contribute CTA — surfaces at the bottom of sparse listings ──────────── */
+
+function ContributeCta() {
+    return (
+        <div className="surface mt-10 px-8 sm:px-10 py-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="flex-1">
+                <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-primary mb-2">
+                    Vous avez quelque chose à dire&nbsp;?
+                </p>
+                <h3 className="text-[20px] sm:text-[22px] font-bold tracking-tight text-foreground leading-snug">
+                    Votre prochain article peut faire partie de cette page.
+                </h3>
+                <p className="text-[13.5px] text-muted-foreground mt-2 leading-relaxed max-w-md">
+                    Inscrivez-vous gratuitement et publiez votre premier article
+                    en quelques minutes — sans paywall, sans publicité.
+                </p>
+            </div>
+            <Link
+                href="/auth/sign-in?redirect=/me"
+                className="shrink-0 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-foreground text-background text-[13px] font-semibold shadow-sm hover:shadow-md hover:opacity-90 transition-all"
+            >
+                <PenSquare className="h-4 w-4" />
+                Commencer à écrire
+            </Link>
         </div>
     );
 }

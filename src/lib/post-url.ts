@@ -65,6 +65,13 @@ type PostForUrl = Pick<Post, 'id' | 'slug'> & { contributors?: Contributor[] };
  * When the post has a slug and a known owner, the URL follows the Medium-style
  * format: `/@handle/slug` (rewritten internally to `/p/:handle/:slug`).
  * Falls back to `/post/:slug` or `/post/:id` for legacy posts without an owner.
+ *
+ * Slug format — backend convention:
+ *   The backend must generate slugs as `<slugified-title>-<short-hash>` to
+ *   guarantee uniqueness across the platform (Medium pattern, e.g.
+ *   `my-article-d32840a26655`). The frontend treats `post.slug` as opaque
+ *   and never alters it; any URL-safe value works (Next.js handles both
+ *   bare slugs and hash-suffixed slugs identically through `:slug*` rewrite).
  */
 export function postUrl(post: PostForUrl): string {
     if (!post.slug) return `/post/${post.id}`;
